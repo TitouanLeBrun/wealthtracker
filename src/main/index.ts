@@ -66,25 +66,31 @@ app.whenReady().then(() => {
     }
   })
 
-  ipcMain.handle('transaction:create', async (_, data: {
-    label: string
-    amount: number
-    date: Date
-  }) => {
-    try {
-      const prisma = getPrismaClient()
-      return await prisma.transaction.create({
-        data: {
-          label: data.label,
-          amount: data.amount,
-          date: new Date(data.date)
-        }
-      })
-    } catch (error) {
-      console.error('[IPC] Error creating transaction:', error)
-      throw error
+  ipcMain.handle(
+    'transaction:create',
+    async (
+      _,
+      data: {
+        label: string
+        amount: number
+        date: Date
+      }
+    ) => {
+      try {
+        const prisma = getPrismaClient()
+        return await prisma.transaction.create({
+          data: {
+            label: data.label,
+            amount: data.amount,
+            date: new Date(data.date)
+          }
+        })
+      } catch (error) {
+        console.error('[IPC] Error creating transaction:', error)
+        throw error
+      }
     }
-  })
+  )
 
   createWindow()
 

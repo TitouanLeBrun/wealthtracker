@@ -3,14 +3,17 @@
 ## ✅ Étapes complétées
 
 ### 1. ✅ Vérification des prérequis
+
 - Node.js: v24.11.1 ✓
 - npm: 11.6.2 ✓
 
 ### 2. ✅ Initialisation du projet Electron + React
+
 - Projet créé avec `@quick-start/electron` (template react-ts)
 - Structure Electron + Vite + React + TypeScript en place
 
 ### 3. ✅ Installation et configuration de Prisma
+
 - Prisma CLI installé (v7.0.0)
 - Prisma Client installé
 - Base de données SQLite initialisée (`prisma/dev.db`)
@@ -18,6 +21,7 @@
 - Migration initiale créée et appliquée
 
 ### 4. ✅ Configuration Electron pour Prisma
+
 - Helper `getPrismaClient()` créé dans `src/main/database/client.ts`
 - Handlers IPC configurés dans `src/main/index.ts`:
   - `transaction:getAll` - Récupère toutes les transactions
@@ -26,6 +30,7 @@
 - Types TypeScript définis pour l'API (`src/preload/index.d.ts`)
 
 ### 5. ✅ Installation de TailwindCSS
+
 - TailwindCSS v4 installé
 - Plugin PostCSS `@tailwindcss/postcss` installé
 - Configuration PostCSS créée (`postcss.config.js`)
@@ -33,9 +38,20 @@
 - Directives Tailwind ajoutées à `main.css`
 
 ### 6. ✅ Script de seed (optionnel)
+
 - Fichier `prisma/seed.ts` créé
 - Script `npm run db:seed` configuré dans `package.json`
 - ⚠️ Note: Le seed a des problèmes avec Prisma v7, mais la DB est fonctionnelle
+
+### 7. ✅ Configuration Git et GitHub Actions
+
+- Repository Git initialisé
+- `.gitignore` amélioré (exclusion .db, .env, etc.)
+- Workflow GitHub Actions créé (`.github/workflows/lint.yml`)
+- Vérification automatique ESLint + TypeScript à chaque push
+- README.md complet avec badges et documentation
+- Premier commit créé : "🎉 Initial commit - WealthTracker v0.1 Walking Skeleton"
+- Guide GitHub Setup créé (`docs/GITHUB_SETUP.md`)
 
 ## 📁 Structure actuelle du projet
 
@@ -77,16 +93,19 @@ wealthtracker/
 Maintenant que l'infrastructure est en place, nous devons créer les composants React :
 
 ### 1. Créer `TransactionList.tsx`
+
 - Composant pour afficher la liste des transactions
 - Appelle `window.api.getAllTransactions()`
 - Affiche les colonnes: Label, Montant, Date
 
 ### 2. Créer `TransactionForm.tsx`
+
 - Formulaire pour ajouter une transaction
 - Champs: label, amount, date
 - Appelle `window.api.createTransaction()`
 
 ### 3. Modifier `App.tsx`
+
 - Intégrer les deux composants
 - Gérer l'état global
 - Rafraîchir la liste après ajout
@@ -94,12 +113,14 @@ Maintenant que l'infrastructure est en place, nous devons créer les composants 
 ## 🐛 Problèmes connus
 
 ### Prisma v7 et le seed
+
 - **Problème**: `prisma db seed` échoue avec une erreur `__internal` undefined
 - **Impact**: Les données de test ne peuvent pas être ajoutées automatiquement
 - **Solution temporaire**: Ajouter des transactions manuellement via l'interface une fois créée
 - **Solution permanente**: Downgrade vers Prisma v6 ou attendre un fix de Prisma v7
 
 ### Warnings npm
+
 - **Problème**: Warnings sur `electron_mirror` config
 - **Impact**: Aucun, warnings seulement
 - **Action**: Ignorer pour l'instant

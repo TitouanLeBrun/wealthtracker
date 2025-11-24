@@ -137,6 +137,7 @@ Ce projet est sous licence MIT.
 ## 📚 Documentation
 
 Voir le dossier [docs/](./docs/) pour plus de détails :
+
 - [Guide d'installation](./docs/INSTALL_GUIDE.md)
 - [Spécifications v0.1](./docs/SPECS_V0.1.md)
 - [Progression](./docs/PROGRESS.md)

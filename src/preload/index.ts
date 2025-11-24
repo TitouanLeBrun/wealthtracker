@@ -5,7 +5,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   // Transactions API
   getAllTransactions: () => ipcRenderer.invoke('transaction:getAll'),
-  createTransaction: (data: { label: string; amount: number; date: Date }) => 
+  createTransaction: (data: { label: string; amount: number; date: Date }) =>
     ipcRenderer.invoke('transaction:create', data)
 }
 
