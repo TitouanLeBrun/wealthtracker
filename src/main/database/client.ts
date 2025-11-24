@@ -31,13 +31,9 @@ export function getPrismaClient(): PrismaClient {
     }
   }
 
-  // Créer le client Prisma avec l'URL dynamique
+  // Créer le client Prisma (Prisma 7 style - pas de datasources dans le constructeur)
+  // La configuration de l'URL se fait via les variables d'environnement ou prisma.config.ts
   prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: `file:${dbPath}`
-      }
-    },
     log: isDev ? ['query', 'error', 'warn'] : ['error']
   })
 
