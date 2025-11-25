@@ -1,0 +1,219 @@
+/* ============================================
+   📱 RESPONSIVE - Media Queries
+   ============================================ */
+
+/* ============================================
+   📊 ASSET TABLE RESPONSIVE
+   ============================================ */
+
+/* Par défaut : afficher le tableau, masquer les cards */
+.asset-table-desktop {
+  display: block;
+  min-width: 1040px; /* Largeur minimale du tableau pour forcer le scroll horizontal si nécessaire */
+}
+
+/* Style de la scrollbar pour le tableau */
+.asset-table-desktop::-webkit-scrollbar {
+  height: 8px;
+}
+
+.asset-table-desktop::-webkit-scrollbar-track {
+  background: var(--color-input-bg);
+  border-radius: 4px;
+}
+
+.asset-table-desktop::-webkit-scrollbar-thumb {
+  background: var(--color-text-secondary);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.asset-table-desktop::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+.asset-cards-mobile {
+  display: none;
+}
+
+/* ============================================
+   📋 TRANSACTION CARD RESPONSIVE
+   ============================================ */
+
+/* Par défaut : afficher le tableau, masquer les cards */
+.transaction-card-desktop {
+  display: block;
+}
+
+/* Style de la scrollbar pour les transactions */
+.transaction-card-desktop::-webkit-scrollbar {
+  height: 8px;
+}
+
+.transaction-card-desktop::-webkit-scrollbar-track {
+  background: var(--color-input-bg);
+  border-radius: 4px;
+}
+
+.transaction-card-desktop::-webkit-scrollbar-thumb {
+  background: var(--color-text-secondary);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.transaction-card-desktop::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+.transaction-card-mobile {
+  display: none;
+}
+
+/* ============================================
+   TABLETTE (≤ 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  /* Tableau des actifs : passer en cards */
+  .asset-table-desktop {
+    display: none;
+  }
+
+  .asset-cards-mobile {
+    display: block;
+  }
+
+  /* Asset Detail Page : passer en colonne unique */
+  .asset-detail-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Supprimer le sticky sur mobile */
+  .asset-info-panel {
+    position: static !important;
+  }
+}
+
+/* ============================================
+   TABLETTE ET MOBILE (≤ 768px)
+   ============================================ */
+@media (max-width: 768px) {
+  :root {
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+  }
+
+  .grid-responsive {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Navigation responsive : masquer le texte, garder les icônes */
+  .nav-text {
+    display: none;
+  }
+
+  /* Réduire le padding du main sur mobile */
+  main {
+    padding: var(--spacing-md) var(--spacing-sm) !important;
+  }
+
+  /* Transactions : passer en cards */
+  .transaction-card-desktop {
+    display: none;
+  }
+
+  .transaction-card-mobile {
+    display: block;
+  }
+
+  /* Settings Page : passer en colonne unique */
+  .category-pie-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Réduire la hauteur du graphique sur mobile */
+  .category-pie-chart-container {
+    max-height: 300px;
+  }
+
+  /* Masquer le texte hint sur mobile */
+  .category-pie-hint {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   PETITE TABLETTE (≤ 600px)
+   ============================================ */
+@media (max-width: 600px) {
+  /* Masquer le nom complet, afficher la version courte "WT" */
+  .logo-full {
+    display: none !important;
+  }
+
+  .logo-short {
+    display: inline !important;
+  }
+}
+
+/* ============================================
+   PETIT MOBILE (≤ 500px)
+   ============================================ */
+@media (max-width: 500px) {
+  /* Masquer complètement le camembert pour éviter débordement */
+  .category-pie-chart-container {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   MOBILE (≤ 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  :root {
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+  }
+
+  /* Navigation ultra compacte */
+  nav {
+    padding: 0 var(--spacing-sm) !important;
+  }
+
+  /* Masquer le badge version */
+  .version-badge {
+    display: none !important;
+  }
+
+  /* Boutons de navigation plus compacts */
+  nav button {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ============================================
+   TRÈS PETIT MOBILE (≤ 350px)
+   ============================================ */
+@media (max-width: 350px) {
+  /* Masquer l'emoji pour gagner de la place */
+  .logo-emoji {
+    display: none !important;
+  }
+
+  /* Logo encore plus compact */
+  .logo-short {
+    font-size: 16px !important;
+  }
+
+  /* Boutons ultra-compacts (icônes seulement) */
+  nav button {
+    padding: 8px !important;
+    min-width: 40px;
+  }
+
+  /* Réduire le gap entre les boutons */
+  nav > div > div:last-child {
+    gap: 4px !important;
+  }
+}

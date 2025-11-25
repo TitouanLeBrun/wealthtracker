@@ -1,0 +1,53 @@
+/* ============================================
+   🎨 DESIGN SYSTEM - Variables CSS
+   ============================================ */
+:root {
+  /* Couleurs principales */
+  --color-primary: #2196f3;
+  --color-primary-dark: #1976d2;
+  --color-primary-light: #bbdefb;
+
+  --color-success: #4caf50;
+  --color-success-dark: #388e3c;
+  --color-success-light: #c8e6c9;
+
+  --color-danger: #f44336;
+  --color-danger-dark: #d32f2f;
+  --color-danger-light: #ffcdd2;
+
+  --color-warning: #ff9800;
+  --color-warning-dark: #f57c00;
+  --color-warning-light: #ffe0b2;
+
+  /* Couleurs neutres */
+  --color-bg: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-border: #e0e0e0;
+  --color-text: #212121;
+  --color-text-secondary: #757575;
+  --color-text-disabled: #bdbdbd;
+
+  /* Ombres */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+
+  /* Espacements */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
