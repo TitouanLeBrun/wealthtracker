@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { LayoutDashboard } from 'lucide-react'
-import PriceTicker from '../components/PriceTicker'
-import PortfolioKPI from '../components/PortfolioKPI'
-import AssetPerformanceList from '../components/AssetPerformanceList'
-import { calculatePortfolioMetrics } from '../utils/portfolioCalculations'
+import PriceTicker from '../components/dashboard/PriceTicker'
+import PortfolioKPI from '../components/dashboard/PortfolioKPI'
+import AssetPerformanceList from '../components/dashboard/AssetPerformanceList'
+import { calculatePortfolioMetrics } from '../utils/calculations/portfolioCalculations'
 import type { Transaction, Asset, PortfolioMetrics } from '../types'
 
 interface DashboardPageProps {

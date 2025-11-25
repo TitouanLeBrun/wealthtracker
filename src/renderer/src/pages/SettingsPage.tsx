@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Settings2 } from 'lucide-react'
-import Modal from '../components/Modal'
-import CategoryForm from '../components/CategoryForm'
-import AssetForm from '../components/AssetForm'
-import CategoryPieChart from '../components/CategoryPieChart'
+import Modal from '../components/common/Modal'
+import CategoryForm from '../components/forms/CategoryForm'
+import AssetForm from '../components/forms/AssetForm'
+import CategoryPieChart from '../components/category/CategoryPieChart'
 import type {
   Category,
   Asset,
@@ -12,7 +12,7 @@ import type {
   AssetFormData,
   CategoryValue
 } from '../types'
-import { calculateCategoryValues } from '../utils/categoryCalculations'
+import { calculateCategoryValues } from '../utils/calculations/categoryCalculations'
 
 interface SettingsPageProps {
   onSuccess: (message: string) => void

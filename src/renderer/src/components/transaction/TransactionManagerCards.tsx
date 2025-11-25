@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight, Calendar, Filter } from 'lucide-react'
-import type { Transaction } from '../types'
+import type { Transaction } from '../../types'
 
 interface TransactionManagerCardsProps {
   transactions: Transaction[]

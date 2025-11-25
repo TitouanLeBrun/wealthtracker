@@ -1,6 +1,6 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import CategoryList from './CategoryList'
-import type { CategoryValue } from '../types'
+import type { CategoryValue } from '../../types'
 
 interface CategoryPieChartProps {
   categoryValues: CategoryValue[]

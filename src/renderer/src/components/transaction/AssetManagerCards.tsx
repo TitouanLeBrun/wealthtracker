@@ -1,5 +1,5 @@
 import { Plus, Folder } from 'lucide-react'
-import type { Category, Asset } from '../types'
+import type { Category, Asset } from '../../types'
 
 interface AssetManagerCardsProps {
   categories: Category[]

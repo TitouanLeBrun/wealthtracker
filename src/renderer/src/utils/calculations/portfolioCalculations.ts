@@ -1,4 +1,4 @@
-import type { Asset, Transaction, AssetPerformance, PortfolioMetrics } from '../types'
+import type { Asset, Transaction, AssetPerformance, PortfolioMetrics } from '../../types'
 
 /**
  * Calcule les quantités nettes possédées par actif (achats - ventes)
@@ -54,29 +54,13 @@ function calculateAssetPerformance(
   netQuantity: number,
   transactions: Transaction[]
 ): AssetPerformance {
-  const { averageBuyPrice, totalBuyQuantity, totalCost } = calculateAverageBuyPrice(
-    asset.id,
-    transactions
-  )
+  const { averageBuyPrice } = calculateAverageBuyPrice(asset.id, transactions)
 
   const currentValue = asset.currentPrice * netQuantity
   const investedValue = averageBuyPrice * netQuantity
 
   const unrealizedPnL = currentValue - investedValue
   const unrealizedPnLPercent = investedValue > 0 ? (unrealizedPnL / investedValue) * 100 : 0
-
-  // 🐛 DEBUG - À retirer après correction
-  console.log('📊 CALCUL ASSET:', asset.ticker, {
-    netQuantity,
-    currentPrice: asset.currentPrice,
-    averageBuyPrice,
-    totalBuyQuantity,
-    totalCost,
-    currentValue,
-    investedValue,
-    unrealizedPnL,
-    unrealizedPnLPercent
-  })
 
   return {
     assetId: asset.id,

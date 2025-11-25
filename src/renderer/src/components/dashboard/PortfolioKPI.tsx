@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, DollarSign, PiggyBank } from 'lucide-react'
-import type { PortfolioMetrics } from '../types'
+import type { PortfolioMetrics } from '../../types'
 
 interface PortfolioKPIProps {
   metrics: PortfolioMetrics

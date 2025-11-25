@@ -1,5 +1,5 @@
 import { FormEvent, useState, useEffect } from 'react'
-import type { AssetFormData, Category } from '../types'
+import type { AssetFormData, Category } from '../../types'
 
 interface AssetFormProps {
   onSubmit: (data: AssetFormData) => Promise<void>

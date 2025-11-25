@@ -3,7 +3,7 @@ import DashboardPage from './pages/DashboardPage'
 import TransactionsPage from './pages/TransactionsPage'
 import SettingsPage from './pages/SettingsPage'
 import CategoryDetailPage from './pages/CategoryDetailPage'
-import Notification from './components/Notification'
+import Notification from './components/common/Notification'
 import type { NotificationMessage, CategoryValue } from './types'
 
 function App(): React.JSX.Element {

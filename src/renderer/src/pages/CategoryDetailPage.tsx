@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { ArrowLeft, Plus, PieChart as PieChartIcon } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import Modal from '../components/Modal'
-import AssetForm from '../components/AssetForm'
-import TransactionManagerCards from '../components/TransactionManagerCards'
+import Modal from '../components/common/Modal'
+import AssetForm from '../components/forms/AssetForm'
+import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
 import type {
   Category,
   Asset,
@@ -12,7 +12,7 @@ import type {
   AssetFormData,
   AssetValue
 } from '../types'
-import { getCategoryValue } from '../utils/categoryCalculations'
+import { getCategoryValue } from '../utils/calculations/categoryCalculations'
 
 interface CategoryDetailPageProps {
   categoryId: number

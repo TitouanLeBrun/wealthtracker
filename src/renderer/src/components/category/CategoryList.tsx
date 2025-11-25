@@ -1,4 +1,4 @@
-import type { CategoryValue } from '../types'
+import type { CategoryValue } from '../../types'
 
 interface CategoryListProps {
   categoryValues: CategoryValue[]

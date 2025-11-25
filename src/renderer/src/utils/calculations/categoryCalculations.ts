@@ -1,4 +1,4 @@
-import type { Category, Asset, Transaction, CategoryValue, AssetValue } from '../types'
+import type { Category, Asset, Transaction, CategoryValue, AssetValue } from '../../types'
 
 /**
  * Calcule les quantités nettes par actif (achats - ventes)

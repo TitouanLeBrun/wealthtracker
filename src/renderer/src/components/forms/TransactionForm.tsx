@@ -1,5 +1,5 @@
 import { FormEvent, useState, useEffect } from 'react'
-import type { Asset } from '../types'
+import type { Asset } from '../../types'
 
 interface TransactionFormData {
   assetId: string

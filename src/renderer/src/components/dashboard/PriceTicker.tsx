@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TrendingUp, Edit2, Check, X } from 'lucide-react'
-import type { Asset } from '../types'
+import type { Asset } from '../../types'
 
 interface PriceTickerProps {
   assets: Asset[]

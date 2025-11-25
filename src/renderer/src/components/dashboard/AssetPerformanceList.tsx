@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react'
-import type { AssetPerformance } from '../types'
+import type { AssetPerformance } from '../../types'
 
 interface AssetPerformanceListProps {
   assets: AssetPerformance[]
@@ -179,11 +179,7 @@ function AssetPerformanceList({ assets }: AssetPerformanceListProps): React.JSX.
                         color: isPositive ? 'var(--color-success)' : 'var(--color-error)'
                       }}
                     >
-                      {isPositive ? (
-                        <TrendingUp size={16} />
-                      ) : (
-                        <TrendingDown size={16} />
-                      )}
+                      {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                       <span>
                         {isPositive ? '+' : ''}
                         {asset.unrealizedPnL.toFixed(2)} €
