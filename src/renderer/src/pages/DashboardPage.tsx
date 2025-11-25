@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { LayoutDashboard } from 'lucide-react'
 import PriceTicker from '../components/dashboard/PriceTicker'
-import PortfolioKPI from '../components/dashboard/PortfolioKPI'
-import AssetPerformanceList from '../components/dashboard/AssetPerformanceList'
-import { calculatePortfolioMetrics } from '../utils/calculations/portfolioCalculations'
-import type { Transaction, Asset, PortfolioMetrics } from '../types'
+import EnhancedPortfolioKPI from '../components/dashboard/EnhancedPortfolioKPI'
+import AssetDetailsTable from '../components/dashboard/AssetDetailsTable'
+import { calculateEnhancedPortfolioMetrics } from '../utils/calculations/enhancedPortfolioCalculations'
+import type { Transaction, Asset } from '../types'
+import type { PortfolioMetrics } from '../utils/calculations/enhancedPortfolioCalculations'
 
 interface DashboardPageProps {
   onSuccess: (message: string) => void
@@ -19,9 +20,15 @@ function DashboardPage({ onSuccess, onError }: DashboardPageProps): React.JSX.El
   const [portfolioMetrics, setPortfolioMetrics] = useState<PortfolioMetrics>({
     totalValue: 0,
     totalInvested: 0,
+    totalRecovered: 0,
+    netInvested: 0,
     unrealizedPnL: 0,
     unrealizedPnLPercent: 0,
-    assetCount: 0,
+    realizedPnL: 0,
+    totalPnL: 0,
+    totalPnLPercent: 0,
+    totalFees: 0,
+    feesPercent: 0,
     assets: []
   })
 
@@ -40,7 +47,7 @@ function DashboardPage({ onSuccess, onError }: DashboardPageProps): React.JSX.El
   // Recalculer les métriques quand les données changent
   useEffect(() => {
     if (!loadingTransactions && !loadingAssets) {
-      const metrics = calculatePortfolioMetrics(assets, transactions)
+      const metrics = calculateEnhancedPortfolioMetrics(assets, transactions)
       setPortfolioMetrics(metrics)
     }
   }, [transactions, assets, loadingTransactions, loadingAssets])
@@ -132,20 +139,20 @@ function DashboardPage({ onSuccess, onError }: DashboardPageProps): React.JSX.El
       {/* Contenu principal */}
       {!loading && (
         <>
-          {/* KPI Cards */}
-          <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-            <PortfolioKPI metrics={portfolioMetrics} />
+          {/* KPI Cards - Vue d'ensemble */}
+          <div style={{ marginBottom: 'var(--spacing-xxl)' }}>
+            <EnhancedPortfolioKPI metrics={portfolioMetrics} />
           </div>
 
-          {/* Liste détaillée des performances par actif */}
+          {/* Tableau détaillé */}
           <div>
-            <AssetPerformanceList assets={portfolioMetrics.assets} />
+            <AssetDetailsTable assets={portfolioMetrics.assets} />
           </div>
         </>
       )}
 
       {/* État vide */}
-      {!loading && portfolioMetrics.assetCount === 0 && (
+      {!loading && portfolioMetrics.assets.length === 0 && (
         <div
           style={{
             textAlign: 'center',

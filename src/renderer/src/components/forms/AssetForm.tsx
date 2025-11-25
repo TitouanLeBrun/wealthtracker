@@ -4,15 +4,22 @@ import type { AssetFormData, Category } from '../../types'
 interface AssetFormProps {
   onSubmit: (data: AssetFormData) => Promise<void>
   onError: (message: string) => void
+  initialCategoryId?: number // Catégorie par défaut
+  lockCategory?: boolean // Si true, désactive la sélection de catégorie
 }
 
-function AssetForm({ onSubmit, onError }: AssetFormProps): React.JSX.Element {
+function AssetForm({
+  onSubmit,
+  onError,
+  initialCategoryId,
+  lockCategory = false
+}: AssetFormProps): React.JSX.Element {
   const [categories, setCategories] = useState<Category[]>([])
   const [formData, setFormData] = useState<AssetFormData>({
     name: '',
     ticker: '',
     currentPrice: 0,
-    categoryId: 0
+    categoryId: initialCategoryId || 0
   })
 
   // Charger les catégories au montage
@@ -63,11 +70,20 @@ function AssetForm({ onSubmit, onError }: AssetFormProps): React.JSX.Element {
         name: '',
         ticker: '',
         currentPrice: 0,
-        categoryId: 0
+        categoryId: initialCategoryId || 0
       })
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Erreur lors de la création de l'actif:", error)
-      onError("Erreur lors de la création de l'actif")
+
+      // Vérifier si c'est une erreur de ticker déjà existant
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (errorMessage.includes('Unique constraint failed') || errorMessage.includes('ticker')) {
+        onError(
+          `Le ticker "${formData.ticker.toUpperCase()}" existe déjà. Veuillez en choisir un autre.`
+        )
+      } else {
+        onError("Erreur lors de la création de l'actif")
+      }
     }
   }
 
@@ -182,11 +198,14 @@ function AssetForm({ onSubmit, onError }: AssetFormProps): React.JSX.Element {
                 id="asset-category"
                 value={formData.categoryId}
                 onChange={(e) => setFormData({ ...formData, categoryId: parseInt(e.target.value) })}
+                disabled={lockCategory}
                 style={{
                   width: '100%',
                   padding: '10px',
                   marginTop: '5px',
-                  fontSize: '14px'
+                  fontSize: '14px',
+                  backgroundColor: lockCategory ? '#f0f0f0' : 'white',
+                  cursor: lockCategory ? 'not-allowed' : 'pointer'
                 }}
               >
                 <option value="0">-- Sélectionner une catégorie --</option>
@@ -197,6 +216,9 @@ function AssetForm({ onSubmit, onError }: AssetFormProps): React.JSX.Element {
                 ))}
               </select>
             </label>
+            {lockCategory && (
+              <small style={{ color: '#666' }}>📌 Catégorie verrouillée pour cette section</small>
+            )}
           </div>
         </div>
 

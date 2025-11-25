@@ -430,7 +430,12 @@ function CategoryDetailPage({
         onClose={() => setShowAssetModal(false)}
         title={`➕ Nouvel Actif - ${category.name}`}
       >
-        <AssetForm onSubmit={handleCreateAsset} onError={onError} />
+        <AssetForm
+          onSubmit={handleCreateAsset}
+          onError={onError}
+          initialCategoryId={category.id}
+          lockCategory={true}
+        />
       </Modal>
     </div>
   )
