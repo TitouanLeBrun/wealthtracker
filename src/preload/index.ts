@@ -13,6 +13,7 @@ const api = {
     fee: number
     date: Date
   }) => ipcRenderer.invoke('transaction:create', data),
+  deleteTransaction: (id: number) => ipcRenderer.invoke('transaction:delete', id),
 
   // Categories API
   getAllCategories: () => ipcRenderer.invoke('category:getAll'),

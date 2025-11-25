@@ -115,6 +115,17 @@ function CategoryDetailPage({
     onSuccess(`Actif "${data.ticker}" créé avec succès !`)
   }
 
+  const handleDeleteTransaction = async (transactionId: number): Promise<void> => {
+    try {
+      await window.api.deleteTransaction(transactionId)
+      await loadData()
+      onSuccess('Transaction supprimée avec succès !')
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error)
+      onError('Erreur lors de la suppression de la transaction')
+    }
+  }
+
   if (loading || !category || !categoryValue) {
     return (
       <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}>
@@ -406,7 +417,11 @@ function CategoryDetailPage({
         <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: 'var(--spacing-md)' }}>
           📊 Historique des Transactions
         </h3>
-        <TransactionManagerCards transactions={transactions} loading={false} />
+        <TransactionManagerCards
+          transactions={transactions}
+          loading={false}
+          onDelete={handleDeleteTransaction}
+        />
       </div>
 
       {/* Modal ajout actif */}

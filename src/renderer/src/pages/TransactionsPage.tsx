@@ -73,6 +73,17 @@ function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.
     onSuccess('Transaction ajoutée avec succès !')
   }
 
+  const handleDeleteTransaction = async (transactionId: number): Promise<void> => {
+    try {
+      await window.api.deleteTransaction(transactionId)
+      await loadTransactions()
+      onSuccess('Transaction supprimée avec succès !')
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error)
+      onError('Erreur lors de la suppression de la transaction')
+    }
+  }
+
   const loading = loadingTransactions || loadingAssets
 
   return (
@@ -133,7 +144,11 @@ function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.
       </div>
 
       {/* Affichage des transactions avec statistiques */}
-      <TransactionManagerCards transactions={transactions} loading={loading} />
+      <TransactionManagerCards
+        transactions={transactions}
+        loading={loading}
+        onDelete={handleDeleteTransaction}
+      />
 
       {/* Modale de création de transaction */}
       <Modal

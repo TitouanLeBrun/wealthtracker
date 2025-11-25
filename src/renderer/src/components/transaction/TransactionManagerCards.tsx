@@ -1,21 +1,25 @@
 import { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Calendar, Filter } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar, Filter, Trash2 } from 'lucide-react'
+import ConfirmDialog from '../common/ConfirmDialog'
 import type { Transaction } from '../../types'
 
 interface TransactionManagerCardsProps {
   transactions: Transaction[]
   loading?: boolean
+  onDelete?: (transactionId: number) => Promise<void>
 }
 
 const ITEMS_PER_PAGE = 5
 
 function TransactionManagerCards({
   transactions,
-  loading = false
+  loading = false,
+  onDelete
 }: TransactionManagerCardsProps): React.JSX.Element {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [dateFilter, setDateFilter] = useState<string>('')
+  const [deleteConfirm, setDeleteConfirm] = useState<Transaction | null>(null)
 
   // Extraire les catégories uniques
   const categories = useMemo(() => {
@@ -248,134 +252,190 @@ function TransactionManagerCards({
                     e.currentTarget.style.boxShadow = 'none'
                   }}
                 >
+                  {/* Layout en grille avec colonnes uniformes */}
                   <div
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      flexWrap: 'wrap',
-                      gap: 'var(--spacing-md)'
+                      display: 'grid',
+                      gridTemplateColumns: 'auto 1fr 100px 100px 100px 100px 150px auto',
+                      gap: 'var(--spacing-md)',
+                      alignItems: 'center'
                     }}
                   >
-                    {/* Infos principales */}
-                    <div style={{ flex: '1', minWidth: '200px' }}>
-                      <div
+                    {/* Col 1: Badge Type */}
+                    <div>
+                      <span
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 'var(--spacing-sm)',
-                          marginBottom: 'var(--spacing-xs)'
+                          padding: '4px 12px',
+                          borderRadius: '12px',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          background: isBuy
+                            ? 'rgba(239, 68, 68, 0.15)'
+                            : 'rgba(16, 185, 129, 0.15)',
+                          color: isBuy ? '#ef4444' : '#10b981',
+                          whiteSpace: 'nowrap'
                         }}
                       >
-                        <span
-                          style={{
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            background: isBuy
-                              ? 'rgba(239, 68, 68, 0.15)'
-                              : 'rgba(16, 185, 129, 0.15)',
-                            color: isBuy ? '#ef4444' : '#10b981'
-                          }}
-                        >
-                          {isBuy ? 'ACHAT' : 'VENTE'}
-                        </span>
-                        <span style={{ fontSize: '16px', fontWeight: '600' }}>
-                          {transaction.asset?.ticker}
-                        </span>
+                        {isBuy ? 'ACHAT' : 'VENTE'}
+                      </span>
+                    </div>
+
+                    {/* Col 2: Asset (Ticker + Nom + Catégorie) */}
+                    <div style={{ minWidth: '0' }}>
+                      <div
+                        style={{
+                          fontSize: '16px',
+                          fontWeight: '600',
+                          marginBottom: '4px'
+                        }}
+                      >
+                        {transaction.asset?.ticker}
                       </div>
                       <div
                         style={{
-                          fontSize: '14px',
+                          fontSize: '13px',
                           color: 'var(--color-text-secondary)',
-                          marginBottom: 'var(--spacing-xs)'
+                          marginBottom: '4px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
                         }}
                       >
                         {transaction.asset?.name}
                       </div>
+                      <span
+                        style={{
+                          padding: '2px 8px',
+                          background: transaction.asset?.category?.color || '#4CAF50',
+                          color: 'white',
+                          borderRadius: '8px',
+                          fontSize: '11px'
+                        }}
+                      >
+                        {transaction.asset?.category?.name}
+                      </span>
+                    </div>
+
+                    {/* Col 3: Quantité */}
+                    <div style={{ textAlign: 'center' }}>
                       <div
                         style={{
                           fontSize: '12px',
                           color: 'var(--color-text-secondary)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 'var(--spacing-xs)'
+                          marginBottom: '4px'
                         }}
                       >
-                        <span
-                          style={{
-                            padding: '2px 8px',
-                            background: transaction.asset?.category?.color || '#4CAF50',
-                            color: 'white',
-                            borderRadius: '8px',
-                            fontSize: '11px'
-                          }}
-                        >
-                          {transaction.asset?.category?.name}
-                        </span>
+                        Quantité
+                      </div>
+                      <div style={{ fontSize: '16px', fontWeight: '600' }}>
+                        {transaction.quantity}
                       </div>
                     </div>
 
-                    {/* Détails */}
-                    <div style={{ display: 'flex', gap: 'var(--spacing-lg)', flexWrap: 'wrap' }}>
-                      <div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                          Quantité
-                        </div>
-                        <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                          {transaction.quantity}
-                        </div>
+                    {/* Col 4: Prix unitaire */}
+                    <div style={{ textAlign: 'center' }}>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--color-text-secondary)',
+                          marginBottom: '4px'
+                        }}
+                      >
+                        Prix/u
                       </div>
-                      <div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                          Prix unitaire
-                        </div>
-                        <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                          {transaction.pricePerUnit.toFixed(2)} €
-                        </div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                          Frais
-                        </div>
-                        <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                          {transaction.fee.toFixed(2)} €
-                        </div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                          Total
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '18px',
-                            fontWeight: '700',
-                            color: isBuy ? '#ef4444' : '#10b981'
-                          }}
-                        >
-                          {total.toFixed(2)} €
-                        </div>
+                      <div style={{ fontSize: '16px', fontWeight: '600' }}>
+                        {transaction.pricePerUnit.toFixed(2)} €
                       </div>
                     </div>
 
-                    {/* Date */}
+                    {/* Col 5: Frais */}
+                    <div style={{ textAlign: 'center' }}>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--color-text-secondary)',
+                          marginBottom: '4px'
+                        }}
+                      >
+                        Frais
+                      </div>
+                      <div style={{ fontSize: '16px', fontWeight: '600' }}>
+                        {transaction.fee.toFixed(2)} €
+                      </div>
+                    </div>
+
+                    {/* Col 6: Total */}
+                    <div style={{ textAlign: 'center' }}>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--color-text-secondary)',
+                          marginBottom: '4px'
+                        }}
+                      >
+                        Total
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '18px',
+                          fontWeight: '700',
+                          color: isBuy ? '#ef4444' : '#10b981'
+                        }}
+                      >
+                        {total.toFixed(2)} €
+                      </div>
+                    </div>
+
+                    {/* Col 7: Date */}
                     <div
                       style={{
                         fontSize: '12px',
                         color: 'var(--color-text-secondary)',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 'var(--spacing-xs)'
+                        gap: 'var(--spacing-xs)',
+                        justifyContent: 'center'
                       }}
                     >
                       <Calendar size={14} />
-                      {new Date(transaction.date).toLocaleDateString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      <span>
+                        {new Date(transaction.date).toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
+                      </span>
                     </div>
+
+                    {/* Col 8: Bouton Supprimer (à la fin) */}
+                    {onDelete && (
+                      <button
+                        onClick={() => setDeleteConfirm(transaction)}
+                        title="Supprimer cette transaction"
+                        style={{
+                          padding: '8px',
+                          background: 'transparent',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: 'var(--radius-md)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.2s ease',
+                          marginLeft: 'auto'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#fee2e2'
+                          e.currentTarget.style.borderColor = '#ef4444'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent'
+                          e.currentTarget.style.borderColor = '#e5e7eb'
+                        }}
+                      >
+                        <Trash2 size={16} color="#ef4444" />
+                      </button>
+                    )}
                   </div>
                 </div>
               )
@@ -487,6 +547,27 @@ function TransactionManagerCards({
           </div>
         </>
       )}
+
+      {/* Dialog de confirmation de suppression */}
+      <ConfirmDialog
+        isOpen={deleteConfirm !== null}
+        title="Supprimer la transaction"
+        message="Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action est irréversible."
+        details={
+          deleteConfirm
+            ? `${deleteConfirm.type === 'BUY' ? 'ACHAT' : 'VENTE'} | ${deleteConfirm.asset?.ticker} | Quantité: ${deleteConfirm.quantity} | Total: ${(deleteConfirm.quantity * deleteConfirm.pricePerUnit + deleteConfirm.fee).toFixed(2)} €`
+            : undefined
+        }
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        onConfirm={async () => {
+          if (deleteConfirm && onDelete) {
+            await onDelete(deleteConfirm.id)
+            setDeleteConfirm(null)
+          }
+        }}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </div>
   )
 }

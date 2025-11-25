@@ -115,6 +115,20 @@ app.whenReady().then(() => {
     }
   )
 
+  // ✨ NOUVEAU : Suppression d'une transaction
+  ipcMain.handle('transaction:delete', async (_, transactionId: number) => {
+    try {
+      const prisma = getPrismaClient()
+      await prisma.transaction.delete({
+        where: { id: transactionId }
+      })
+      return { success: true }
+    } catch (error) {
+      console.error('[IPC] Error deleting transaction:', error)
+      throw error
+    }
+  })
+
   // ==================== CATEGORIES ====================
   ipcMain.handle('category:getAll', async () => {
     try {

@@ -43,6 +43,7 @@ export interface API {
     fee: number
     date: Date
   }) => Promise<Transaction>
+  deleteTransaction: (id: number) => Promise<{ success: boolean }>
 
   // Categories
   getAllCategories: () => Promise<Category[]>
