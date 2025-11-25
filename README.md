@@ -415,16 +415,22 @@ import AssetForm from '../components/forms/asset/AssetForm'
 git clone https://github.com/TitouanLeBrun/wealthtracker.git
 cd wealthtracker
 
-# 2. Installer les dépendances
+# 2. Créer le fichier .env (requis pour Prisma)
+# Copier le fichier .env.example vers .env
+cp .env.example .env
+# Ou créer manuellement le fichier .env avec :
+# DATABASE_URL="file:./dev.db"
+
+# 3. Installer les dépendances
 npm install
 
-# 3. Générer le client Prisma
+# 4. Générer le client Prisma
 npx prisma generate
 
-# 4. Créer la base de données
+# 5. Créer la base de données
 npx prisma migrate dev
 
-# 5. (Optionnel) Charger des données de test
+# 6. (Optionnel) Charger des données de test
 npx prisma db seed
 ```
 
