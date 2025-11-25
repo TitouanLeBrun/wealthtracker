@@ -37,13 +37,9 @@ function App(): React.JSX.Element {
 
   // Fonction pour gérer la soumission du formulaire
   const handleTransactionSubmit = async (data: TransactionFormData): Promise<void> => {
-    try {
-      await window.api.createTransaction(data)
-      await loadTransactions()
-      showMessage('success', 'Transaction ajoutée avec succès !')
-    } catch (error) {
-      throw error // Laisse le composant TransactionForm gérer l'erreur
-    }
+    await window.api.createTransaction(data)
+    await loadTransactions()
+    showMessage('success', 'Transaction ajoutée avec succès !')
   }
 
   return (
