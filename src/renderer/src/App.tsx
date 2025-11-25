@@ -61,7 +61,7 @@ function App(): React.JSX.Element {
                 fontWeight: '600'
               }}
             >
-              v0.2
+              v0.3.1
             </span>
           </div>
 
@@ -152,7 +152,7 @@ function App(): React.JSX.Element {
         }}
       >
         <div style={{ marginBottom: 'var(--spacing-sm)' }}>
-          <strong>WealthTracker v0.2</strong> - Gestion professionnelle de portefeuille financier
+          <strong>WealthTracker v0.3.1</strong> - Gestion professionnelle de portefeuille financier
         </div>
         <div style={{ fontSize: '12px', color: 'var(--color-text-disabled)' }}>
           Made with ❤️ using Electron + React + Prisma

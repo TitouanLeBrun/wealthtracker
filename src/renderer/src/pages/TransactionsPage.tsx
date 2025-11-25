@@ -4,7 +4,7 @@ import Modal from '../components/Modal'
 import PriceTicker from '../components/PriceTicker'
 import TransactionForm from '../components/TransactionForm'
 import TransactionManagerCards from '../components/TransactionManagerCards'
-import type { Transaction, Asset, TransactionFormData } from '../types'
+import type { Transaction, Asset } from '../types'
 
 interface TransactionsPageProps {
   onSuccess: (message: string) => void
@@ -58,8 +58,17 @@ function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.
     }
   }
 
-  const handleTransactionSubmit = async (data: TransactionFormData): Promise<void> => {
-    await window.api.createTransaction(data)
+  const handleTransactionSubmit = async (data: {
+    assetId: number
+    type: 'BUY' | 'SELL'
+    quantity: number
+    pricePerUnit: number
+    fee: number
+  }): Promise<void> => {
+    await window.api.createTransaction({
+      ...data,
+      date: new Date()
+    })
     await loadTransactions()
     setShowTransactionModal(false)
     onSuccess('Transaction ajoutée avec succès !')
@@ -150,11 +159,13 @@ function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.
       <TransactionManagerCards transactions={transactions} loading={loading} />
 
       {/* Modale de création de transaction */}
-      {showTransactionModal && (
-        <Modal title="Nouvelle Transaction" onClose={() => setShowTransactionModal(false)}>
-          <TransactionForm onSubmit={handleTransactionSubmit} onError={onError} />
-        </Modal>
-      )}
+      <Modal
+        isOpen={showTransactionModal}
+        title="Nouvelle Transaction"
+        onClose={() => setShowTransactionModal(false)}
+      >
+        <TransactionForm onSubmit={handleTransactionSubmit} onError={onError} />
+      </Modal>
     </div>
   )
 }
