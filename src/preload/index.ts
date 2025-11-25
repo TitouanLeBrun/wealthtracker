@@ -25,7 +25,8 @@ const api = {
   createAsset: (data: { name: string; ticker: string; currentPrice: number; categoryId: number }) =>
     ipcRenderer.invoke('asset:create', data),
   updateAssetPrice: (data: { assetId: number; newPrice: number }) =>
-    ipcRenderer.invoke('asset:updatePrice', data)
+    ipcRenderer.invoke('asset:updatePrice', data),
+  deleteAsset: (assetId: number) => ipcRenderer.invoke('asset:delete', assetId)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

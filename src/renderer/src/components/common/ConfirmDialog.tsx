@@ -3,12 +3,14 @@ import { AlertTriangle, X } from 'lucide-react'
 interface ConfirmDialogProps {
   isOpen: boolean
   title: string
-  message: string
+  message: string | React.ReactNode
   details?: string
   confirmLabel?: string
   cancelLabel?: string
   onConfirm: () => void
   onCancel: () => void
+  isDestructive?: boolean
+  disabled?: boolean
 }
 
 function ConfirmDialog({
@@ -19,7 +21,9 @@ function ConfirmDialog({
   confirmLabel = 'Confirmer',
   cancelLabel = 'Annuler',
   onConfirm,
-  onCancel
+  onCancel,
+  isDestructive = false,
+  disabled = false
 }: ConfirmDialogProps): React.JSX.Element | null {
   if (!isOpen) return null
 
@@ -165,26 +169,30 @@ function ConfirmDialog({
             </button>
             <button
               onClick={onConfirm}
+              disabled={disabled}
               style={{
                 padding: '10px 20px',
-                background: '#ef4444',
+                background: isDestructive ? '#ef4444' : 'var(--color-primary)',
                 color: 'white',
                 border: 'none',
                 borderRadius: 'var(--radius-md)',
                 fontSize: '14px',
                 fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                opacity: disabled ? 0.5 : 1
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#dc2626'
-                e.currentTarget.style.transform = 'translateY(-1px)'
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)'
+                if (!disabled) {
+                  e.currentTarget.style.background = isDestructive ? '#dc2626' : '#2563eb'
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#ef4444'
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = 'none'
+                if (!disabled) {
+                  e.currentTarget.style.background = isDestructive
+                    ? '#ef4444'
+                    : 'var(--color-primary)'
+                }
               }}
             >
               {confirmLabel}

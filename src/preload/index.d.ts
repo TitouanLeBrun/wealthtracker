@@ -58,6 +58,7 @@ export interface API {
     categoryId: number
   }) => Promise<Asset>
   updateAssetPrice: (data: { assetId: number; newPrice: number }) => Promise<Asset>
+  deleteAsset: (assetId: number) => Promise<Asset>
 }
 
 declare global {

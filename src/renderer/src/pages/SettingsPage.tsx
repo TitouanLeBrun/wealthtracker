@@ -4,6 +4,7 @@ import Modal from '../components/common/Modal'
 import CategoryForm from '../components/forms/category/CategoryForm'
 import AssetForm from '../components/forms/asset/AssetForm'
 import CategoryPieChart from '../components/category/CategoryPieChart'
+import AssetWithoutPositionAccordion from '../components/asset/AssetWithoutPositionAccordion'
 import type { Category, Asset, Transaction, CategoryFormData, AssetFormData } from '../types'
 import { calculateCategoryValues } from '../utils/calculations/categoryCalculations'
 
@@ -160,6 +161,21 @@ function SettingsPage({
           categoryValues={categoryValues}
           onCategoryClick={(categoryId) => onCategoryClick(categoryId)}
         />
+      )}
+
+      {/* Actifs sans position */}
+      {!loadingCategories && !loadingAssets && !loadingTransactions && (
+        <div style={{ marginTop: 'var(--spacing-xl)' }}>
+          <AssetWithoutPositionAccordion
+            assets={assets}
+            transactions={transactions}
+            onAssetDeleted={() => {
+              loadAssets()
+              onSuccess('Actif supprimé avec succès !')
+            }}
+            onError={onError}
+          />
+        </div>
       )}
 
       {/* Modal Catégorie */}

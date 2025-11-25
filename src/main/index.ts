@@ -211,6 +211,32 @@ app.whenReady().then(() => {
     }
   })
 
+  // ✨ NOUVEAU : Suppression d'un actif (uniquement si aucune transaction)
+  ipcMain.handle('asset:delete', async (_, assetId: number) => {
+    try {
+      const prisma = getPrismaClient()
+
+      // Vérifier qu'il n'y a aucune transaction pour cet actif
+      const transactionCount = await prisma.transaction.count({
+        where: { assetId }
+      })
+
+      if (transactionCount > 0) {
+        throw new Error(
+          `Impossible de supprimer cet actif : ${transactionCount} transaction(s) associée(s)`
+        )
+      }
+
+      // Supprimer l'actif
+      return await prisma.asset.delete({
+        where: { id: assetId }
+      })
+    } catch (error) {
+      console.error('[IPC] Error deleting asset:', error)
+      throw error
+    }
+  })
+
   createWindow()
 
   app.on('activate', function () {

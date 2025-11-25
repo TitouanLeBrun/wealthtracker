@@ -14,6 +14,9 @@ function CategoryAssetsList({
   onAddAsset,
   onAssetClick
 }: CategoryAssetsListProps): React.JSX.Element {
+  // Filtrer pour n'afficher que les actifs avec position en cours (quantité > 0)
+  const assetsWithPosition = sortedAssets.filter((asset) => asset.netQuantity > 0)
+
   return (
     <div style={{ marginBottom: 'var(--spacing-xl)' }}>
       <div
@@ -25,7 +28,7 @@ function CategoryAssetsList({
         }}
       >
         <h3 style={{ fontSize: '18px', fontWeight: '600', margin: 0 }}>
-          📋 Actifs de la catégorie ({sortedAssets.length})
+          📋 Actifs de la catégorie ({assetsWithPosition.length})
         </h3>
         <button
           onClick={onAddAsset}
@@ -60,7 +63,7 @@ function CategoryAssetsList({
         </button>
       </div>
 
-      {sortedAssets.length > 0 ? (
+      {assetsWithPosition.length > 0 ? (
         <div
           style={{
             display: 'grid',
@@ -68,8 +71,7 @@ function CategoryAssetsList({
             gap: 'var(--spacing-md)'
           }}
         >
-          {sortedAssets.map((assetValue) => {
-            const isInactive = assetValue.netQuantity === 0
+          {assetsWithPosition.map((assetValue) => {
             return (
               <div
                 key={assetValue.assetId}
@@ -78,9 +80,7 @@ function CategoryAssetsList({
                   borderRadius: 'var(--border-radius)',
                   padding: 'var(--spacing-lg)',
                   borderLeft: `4px solid ${category.color}`,
-                  transition: 'all 0.2s ease',
-                  opacity: isInactive ? 0.6 : 1,
-                  position: 'relative'
+                  transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)'
@@ -91,23 +91,6 @@ function CategoryAssetsList({
                   e.currentTarget.style.boxShadow = 'none'
                 }}
               >
-                {isInactive && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 'var(--spacing-sm)',
-                      right: 'var(--spacing-sm)',
-                      padding: '4px 8px',
-                      background: '#f59e0b',
-                      color: 'white',
-                      borderRadius: '4px',
-                      fontSize: '11px',
-                      fontWeight: '600'
-                    }}
-                  >
-                    📊 Sans position
-                  </div>
-                )}
                 <div style={{ marginBottom: 'var(--spacing-sm)' }}>
                   <div
                     onClick={() => onAssetClick(assetValue.assetId)}
@@ -179,7 +162,12 @@ function CategoryAssetsList({
             color: 'var(--color-text-secondary)'
           }}
         >
-          <p style={{ margin: 0 }}>Aucun actif dans cette catégorie</p>
+          <p style={{ margin: 0, fontSize: '14px' }}>
+            ℹ️ Aucun actif en position dans cette catégorie.
+          </p>
+          <p style={{ margin: '8px 0 0 0', fontSize: '13px' }}>
+            Toutes les positions ont été soldées ou aucun actif créé.
+          </p>
         </div>
       )}
     </div>
