@@ -390,6 +390,50 @@ table tbody tr:hover {
 }
 
 /* ============================================
+   📋 TRANSACTION CARD RESPONSIVE
+   ============================================ */
+
+/* Par défaut : afficher le tableau, masquer les cards */
+.transaction-card-desktop {
+  display: block;
+}
+
+/* Style de la scrollbar pour les transactions */
+.transaction-card-desktop::-webkit-scrollbar {
+  height: 8px;
+}
+
+.transaction-card-desktop::-webkit-scrollbar-track {
+  background: var(--color-input-bg);
+  border-radius: 4px;
+}
+
+.transaction-card-desktop::-webkit-scrollbar-thumb {
+  background: var(--color-text-secondary);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.transaction-card-desktop::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+.transaction-card-mobile {
+  display: none;
+}
+
+/* Tablette et mobile : afficher les cards, masquer le tableau */
+@media (max-width: 768px) {
+  .transaction-card-desktop {
+    display: none;
+  }
+
+  .transaction-card-mobile {
+    display: block;
+  }
+}
+
+/* ============================================
    ♿ ACCESSIBILITY
    ============================================ */
 .sr-only {
