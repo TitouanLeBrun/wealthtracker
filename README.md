@@ -27,6 +27,7 @@
 ### Contexte
 
 Dans un monde où les investissements boursiers sont de plus en plus accessibles, il devient crucial de pouvoir **suivre efficacement son patrimoine financier** pour prendre des décisions éclairées. Les solutions existantes sont souvent :
+
 - Limitées aux plateformes de courtage (vision silotée)
 - Complexes et payantes
 - Non adaptées aux investisseurs particuliers français
@@ -71,14 +72,12 @@ Dans un monde où les investissements boursiers sont de plus en plus accessibles
 
 Le prochain module majeur permettra de **planifier l'avenir de son patrimoine** grâce à :
 
-- **📈 Projection de Patrimoine** : 
+- **📈 Projection de Patrimoine** :
   - Visualisation graphique de l'évolution prévisionnelle sur X années
   - Calcul du capital nécessaire pour atteindre un objectif Y €
-  
 - **💡 Recommandations Personnalisées** :
   - "Pour atteindre **100 000 €** dans **10 ans**, investissez **450 €/mois**"
   - Ajustement dynamique selon le rendement espéré (5%, 7%, 10%)
-  
 - **📊 Graphiques Long Terme** :
   - Courbe de croissance du capital avec intérêts composés
   - Comparaison de plusieurs scénarios (pessimiste, réaliste, optimiste)
@@ -100,6 +99,7 @@ Le prochain module majeur permettra de **planifier l'avenir de son patrimoine** 
 **Description** : L'utilisateur souhaite centraliser tous ses investissements pour avoir une vue d'ensemble.
 
 **Flux Principal** :
+
 1. L'utilisateur crée des catégories (Actions, Crypto, ETF, Immobilier)
 2. Il ajoute ses actifs dans chaque catégorie
 3. Il enregistre ses transactions d'achat/vente
@@ -116,6 +116,7 @@ Le prochain module majeur permettra de **planifier l'avenir de son patrimoine** 
 **Description** : L'utilisateur veut connaître sa plus/moins-value latente et réalisée.
 
 **Flux Principal** :
+
 1. L'utilisateur accède au Dashboard
 2. Il consulte les KPI : Valeur totale, Montant investi, PnL latente
 3. Il voit la performance détaillée par actif (%, €, PMA)
@@ -132,6 +133,7 @@ Le prochain module majeur permettra de **planifier l'avenir de son patrimoine** 
 **Description** : L'utilisateur veut mettre à jour les prix de marché rapidement.
 
 **Flux Principal** :
+
 1. L'utilisateur accède au Price Ticker (Dashboard)
 2. Il clique sur l'actif à mettre à jour
 3. Il saisit le nouveau prix
@@ -148,6 +150,7 @@ Le prochain module majeur permettra de **planifier l'avenir de son patrimoine** 
 **Description** : L'utilisateur veut voir la répartition de son patrimoine par type d'actif.
 
 **Flux Principal** :
+
 1. L'utilisateur accède à la page Catégories
 2. Il voit le graphique camembert de répartition
 3. Il clique sur une catégorie pour voir le détail
@@ -164,6 +167,7 @@ Le prochain module majeur permettra de **planifier l'avenir de son patrimoine** 
 **Description** : L'utilisateur veut savoir combien investir pour atteindre un objectif.
 
 **Flux Principal** :
+
 1. L'utilisateur accède au module Conseils
 2. Il définit son objectif : 100 000 € dans 10 ans
 3. Il sélectionne un rendement espéré : 7%/an
@@ -219,8 +223,8 @@ Le prochain module majeur permettra de **planifier l'avenir de son patrimoine** 
 
 ### Relations
 
-- **Category** (1) ──< (*) **Asset** : Une catégorie contient plusieurs actifs
-- **Asset** (1) ──< (*) **Transaction** : Un actif a plusieurs transactions
+- **Category** (1) ──< (\*) **Asset** : Une catégorie contient plusieurs actifs
+- **Asset** (1) ──< (\*) **Transaction** : Un actif a plusieurs transactions
 
 ### Règles Métier
 
@@ -384,12 +388,14 @@ ipcMain.handle('get-all-assets', async () => {
 ### Principe d'Architecture par Domaine (forms/)
 
 Les formulaires sont organisés par **domaine métier** pour :
+
 - ✅ Améliorer la **maintenabilité** (changement isolé)
 - ✅ Faciliter la **réutilisation** (import clair)
 - ✅ Respecter le **principe de responsabilité unique**
 - ✅ Simplifier la **navigation** dans le code
 
 **Exemple** :
+
 ```typescript
 // ❌ AVANT (tout dans forms/)
 import AssetForm from '../components/forms/AssetForm'
@@ -442,6 +448,7 @@ npm run dev
 ```
 
 L'application se lance avec :
+
 - ⚡ **Hot Reload** : Les modifications sont appliquées instantanément
 - 🔍 **DevTools** : Outils de développement intégrés
 - 📊 **Prisma Studio** : Interface de gestion de la base (port 5555)
@@ -700,6 +707,7 @@ npx prisma studio
 #### Formules Utilisées
 
 **Valeur Future avec Versements Mensuels** :
+
 ```
 VF = VM × [((1 + r)^n - 1) / r]
 
@@ -711,6 +719,7 @@ Où :
 ```
 
 **Exemple** :
+
 - Objectif : 100 000 €
 - Durée : 10 ans (120 mois)
 - Rendement : 7%/an (0.583%/mois)

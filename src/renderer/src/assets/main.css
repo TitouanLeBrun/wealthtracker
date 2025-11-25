@@ -260,6 +260,8 @@ table tbody tr:hover {
 /* ============================================
    📱 RESPONSIVE
    ============================================ */
+
+/* Tablette et plus petit */
 @media (max-width: 768px) {
   :root {
     --spacing-lg: 16px;
@@ -268,6 +270,77 @@ table tbody tr:hover {
 
   .grid-responsive {
     grid-template-columns: 1fr !important;
+  }
+
+  /* Navigation responsive : masquer le texte, garder les icônes */
+  .nav-text {
+    display: none;
+  }
+
+  /* Réduire le padding du main sur mobile */
+  main {
+    padding: var(--spacing-md) var(--spacing-sm) !important;
+  }
+}
+
+/* Tablette petite - Réduire le nom de l'app */
+@media (max-width: 600px) {
+  /* Masquer le nom complet, afficher la version courte "WT" */
+  .logo-full {
+    display: none !important;
+  }
+  
+  .logo-short {
+    display: inline !important;
+  }
+}
+
+/* Mobile - Masquer le badge version */
+@media (max-width: 480px) {
+  :root {
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+  }
+
+  /* Navigation ultra compacte */
+  nav {
+    padding: 0 var(--spacing-sm) !important;
+  }
+
+  /* Masquer le badge version */
+  .version-badge {
+    display: none !important;
+  }
+
+  /* Boutons de navigation plus compacts */
+  nav button {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Très petits écrans - Masquer l'emoji */
+@media (max-width: 350px) {
+  /* Masquer l'emoji pour gagner de la place */
+  .logo-emoji {
+    display: none !important;
+  }
+
+  /* Logo encore plus compact */
+  .logo-short {
+    font-size: 16px !important;
+  }
+
+  /* Boutons ultra-compacts (icônes seulement) */
+  nav button {
+    padding: 8px !important;
+    min-width: 40px;
+  }
+  
+  /* Réduire le gap entre les boutons */
+  nav > div > div:last-child {
+    gap: 4px !important;
   }
 }
 

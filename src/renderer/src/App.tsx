@@ -70,7 +70,10 @@ function App(): React.JSX.Element {
             margin: '0 auto',
             display: 'flex',
             alignItems: 'center',
-            padding: '0 var(--spacing-lg)'
+            justifyContent: 'space-between',
+            padding: '0 var(--spacing-md)',
+            flexWrap: 'wrap',
+            gap: 'var(--spacing-sm)'
           }}
         >
           {/* Logo avec gradient */}
@@ -78,34 +81,49 @@ function App(): React.JSX.Element {
             style={{
               padding: 'var(--spacing-md) 0',
               fontWeight: 'bold',
-              fontSize: '24px',
+              fontSize: 'clamp(18px, 4vw, 24px)',
               display: 'flex',
               alignItems: 'center',
-              gap: 'var(--spacing-sm)'
+              gap: 'var(--spacing-sm)',
+              flexShrink: 0
             }}
           >
-            <span style={{ fontSize: '28px' }}>💰</span>
-            <span className="text-gradient">WealthTracker</span>
+            <span className="logo-emoji" style={{ fontSize: 'clamp(24px, 5vw, 28px)' }}>
+              💰
+            </span>
+            <span className="text-gradient logo-full">WealthTracker</span>
+            <span className="text-gradient logo-short" style={{ display: 'none' }}>
+              WT
+            </span>
             <span
+              className="version-badge"
               style={{
-                fontSize: '12px',
+                fontSize: 'clamp(10px, 2vw, 12px)',
                 padding: '2px 8px',
                 backgroundColor: 'var(--color-primary-light)',
                 color: 'var(--color-primary-dark)',
                 borderRadius: 'var(--radius-full)',
-                fontWeight: '600'
+                fontWeight: '600',
+                whiteSpace: 'nowrap'
               }}
             >
-              v0.4.0
+              v0.5.0
             </span>
           </div>
 
           {/* Menu Navigation */}
-          <div style={{ display: 'flex', marginLeft: 'auto', gap: 'var(--spacing-xs)' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: 'var(--spacing-xs)',
+              flexWrap: 'wrap',
+              justifyContent: 'flex-end'
+            }}
+          >
             <button
               onClick={() => setActivePage('dashboard')}
               style={{
-                padding: '12px 24px',
+                padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px)',
                 backgroundColor:
                   activePage === 'dashboard' ? 'var(--color-primary)' : 'transparent',
                 color: activePage === 'dashboard' ? 'white' : 'var(--color-text-secondary)',
@@ -113,19 +131,21 @@ function App(): React.JSX.Element {
                 borderRadius: 'var(--radius-md)',
                 cursor: 'pointer',
                 fontWeight: activePage === 'dashboard' ? '600' : '500',
-                fontSize: '15px',
+                fontSize: 'clamp(13px, 2.5vw, 15px)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 'var(--spacing-sm)'
+                gap: 'var(--spacing-xs)',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease'
               }}
             >
               <span>📈</span>
-              <span>Dashboard</span>
+              <span className="nav-text">Dashboard</span>
             </button>
             <button
               onClick={() => setActivePage('transactions')}
               style={{
-                padding: '12px 24px',
+                padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px)',
                 backgroundColor:
                   activePage === 'transactions' ? 'var(--color-primary)' : 'transparent',
                 color: activePage === 'transactions' ? 'white' : 'var(--color-text-secondary)',
@@ -133,33 +153,37 @@ function App(): React.JSX.Element {
                 borderRadius: 'var(--radius-md)',
                 cursor: 'pointer',
                 fontWeight: activePage === 'transactions' ? '600' : '500',
-                fontSize: '15px',
+                fontSize: 'clamp(13px, 2.5vw, 15px)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 'var(--spacing-sm)'
+                gap: 'var(--spacing-xs)',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease'
               }}
             >
               <span>📊</span>
-              <span>Transactions</span>
+              <span className="nav-text">Transactions</span>
             </button>
             <button
               onClick={() => setActivePage('settings')}
               style={{
-                padding: '12px 24px',
+                padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px)',
                 backgroundColor: activePage === 'settings' ? 'var(--color-success)' : 'transparent',
                 color: activePage === 'settings' ? 'white' : 'var(--color-text-secondary)',
                 border: 'none',
                 borderRadius: 'var(--radius-md)',
                 cursor: 'pointer',
                 fontWeight: activePage === 'settings' ? '600' : '500',
-                fontSize: '15px',
+                fontSize: 'clamp(13px, 2.5vw, 15px)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 'var(--spacing-sm)'
+                gap: 'var(--spacing-xs)',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease'
               }}
             >
               <span>⚙️</span>
-              <span>Configuration</span>
+              <span className="nav-text">Configuration</span>
             </button>
           </div>
         </div>
