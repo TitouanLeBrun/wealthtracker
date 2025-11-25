@@ -451,7 +451,23 @@ table tbody tr:hover {
 /* En dessous de 500px : réduire encore plus le camembert pour éviter débordement */
 @media (max-width: 500px) {
   .category-pie-chart-container {
-    display: none !important;  /* Masquer complètement le camembert */
+    display: none !important; /* Masquer complètement le camembert */
+  }
+}
+
+/* ============================================
+   📄 ASSET DETAIL PAGE RESPONSIVE
+   ============================================ */
+
+/* Mobile (≤ 1024px) : passer en colonne unique */
+@media (max-width: 1024px) {
+  .asset-detail-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Supprimer le sticky sur mobile */
+  .asset-info-panel {
+    position: static !important;
   }
 }
 

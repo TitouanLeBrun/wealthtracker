@@ -40,6 +40,7 @@ function AssetInfoPanel({
 
   return (
     <div
+      className="asset-info-panel"
       style={{
         background: 'var(--color-card-bg)',
         borderRadius: '12px',
@@ -67,9 +68,23 @@ function AssetInfoPanel({
               background: categoryColor
             }}
           />
-          <h2 style={{ fontSize: '24px', fontWeight: '700', margin: 0 }}>{asset.ticker}</h2>
+          <h2
+            style={{
+              fontSize: 'clamp(20px, 4vw, 24px)',
+              fontWeight: '700',
+              margin: 0
+            }}
+          >
+            {asset.ticker}
+          </h2>
         </div>
-        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', margin: 0 }}>
+        <p
+          style={{
+            fontSize: 'clamp(13px, 2.5vw, 14px)',
+            color: 'var(--color-text-secondary)',
+            margin: 0
+          }}
+        >
           {asset.name}
         </p>
       </div>

@@ -36,8 +36,8 @@ function AssetPriceChart({
 
     // Créer le graphique
     const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth,
-      height: 400,
+      width: chartContainerRef.current.clientWidth - 16, // Soustraire le padding (2 * 8px)
+      height: window.innerWidth <= 768 ? 300 : 400,
       layout: {
         background: { color: '#ffffff' },
         textColor: '#333'
@@ -80,7 +80,8 @@ function AssetPriceChart({
     const handleResize = (): void => {
       if (chartContainerRef.current) {
         chart.applyOptions({
-          width: chartContainerRef.current.clientWidth
+          width: chartContainerRef.current.clientWidth - 16, // Soustraire le padding (2 * 8px)
+          height: window.innerWidth <= 768 ? 300 : 400
         })
       }
     }
@@ -137,7 +138,9 @@ function AssetPriceChart({
           borderRadius: '8px',
           padding: 'var(--spacing-sm)',
           border: '1px solid #e5e7eb',
-          marginBottom: 'var(--spacing-md)'
+          marginBottom: 'var(--spacing-md)',
+          width: '100%',
+          boxSizing: 'border-box'
         }}
       />
 

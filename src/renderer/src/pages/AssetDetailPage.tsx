@@ -126,7 +126,8 @@ function AssetDetailPage({
           marginBottom: 'var(--spacing-xl)',
           display: 'flex',
           alignItems: 'center',
-          gap: 'var(--spacing-md)'
+          gap: 'var(--spacing-md)',
+          flexWrap: 'wrap'
         }}
       >
         <button
@@ -161,11 +162,23 @@ function AssetDetailPage({
           Retour
         </button>
 
-        <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700' }}>
+        <div style={{ flex: 1, minWidth: '200px' }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 'clamp(20px, 5vw, 28px)',
+              fontWeight: '700'
+            }}
+          >
             {asset.ticker} - {asset.name}
           </h1>
-          <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '16px' }}>
+          <p
+            style={{
+              color: 'var(--color-text-secondary)',
+              margin: 0,
+              fontSize: 'clamp(14px, 3vw, 16px)'
+            }}
+          >
             Catégorie : {category.name}
           </p>
         </div>
@@ -173,6 +186,7 @@ function AssetDetailPage({
 
       {/* Layout 2 colonnes */}
       <div
+        className="asset-detail-layout"
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 400px',
