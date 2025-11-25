@@ -10,11 +10,11 @@
 
 ## 📌 Versions
 
-| Version | Date | Changements majeurs |
-|---------|------|---------------------|
+| Version  | Date             | Changements majeurs                                                                               |
+| -------- | ---------------- | ------------------------------------------------------------------------------------------------- |
 | **v0.3** | 29 décembre 2024 | 🎨 **UX Revolution** : Price Ticker Bloomberg, Modales élégantes, AssetManagerCards, lucide-react |
-| v0.2 | 25 novembre 2024 | Gestion complète catégories/actifs/transactions |
-| v0.1 | Initial | Architecture de base |
+| v0.2     | 25 novembre 2024 | Gestion complète catégories/actifs/transactions                                                   |
+| v0.1     | Initial          | Architecture de base                                                                              |
 
 ---
 
@@ -25,6 +25,7 @@ WealthTracker est une **application desktop complète de gestion de portefeuille
 ### ⚡ Nouveautés v0.3 - UX Revolution
 
 **🎯 Changements majeurs** :
+
 - 🎨 **Price Ticker Bloomberg-style** : Barre de prix en temps réel avec édition inline
 - 🪟 **Modales élégantes** : Formulaires dans des modales au lieu de zones permanentes
 - 🎴 **AssetManagerCards** : Affichage moderne en cards avec icônes lucide-react
@@ -33,14 +34,17 @@ WealthTracker est une **application desktop complète de gestion de portefeuille
 - 🎭 **Animations améliorées** : Lift effects, scale-in, fade-in fluides
 
 **📦 Nouvelles dépendances** :
+
 - `lucide-react` : Icônes modernes (TrendingUp, Folder, Settings2, Edit2, Check, X, Plus)
 
 **🆕 Nouveaux composants** :
+
 - `PriceTicker.tsx` : Barre de prix horizontale scrollable avec édition inline
 - `Modal.tsx` : Modal réutilisable avec backdrop blur et animations
 - `AssetManagerCards.tsx` : Affichage en grille de cards pour catégories et actifs
 
 **🔄 Pages refondues** :
+
 - `SettingsPage.tsx` : Modales pour création + AssetManagerCards
 - `TransactionsPage.tsx` : Integration PriceTicker en haut
 
