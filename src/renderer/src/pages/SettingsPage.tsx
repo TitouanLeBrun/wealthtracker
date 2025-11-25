@@ -4,20 +4,13 @@ import Modal from '../components/common/Modal'
 import CategoryForm from '../components/forms/CategoryForm'
 import AssetForm from '../components/forms/AssetForm'
 import CategoryPieChart from '../components/category/CategoryPieChart'
-import type {
-  Category,
-  Asset,
-  Transaction,
-  CategoryFormData,
-  AssetFormData,
-  CategoryValue
-} from '../types'
+import type { Category, Asset, Transaction, CategoryFormData, AssetFormData } from '../types'
 import { calculateCategoryValues } from '../utils/calculations/categoryCalculations'
 
 interface SettingsPageProps {
   onSuccess: (message: string) => void
   onError: (message: string) => void
-  onCategoryClick: (categoryId: number, categoryValues: CategoryValue[]) => void
+  onCategoryClick: (categoryId: number) => void
 }
 
 function SettingsPage({
@@ -150,7 +143,7 @@ function SettingsPage({
       {!loadingCategories && !loadingAssets && !loadingTransactions && (
         <CategoryPieChart
           categoryValues={categoryValues}
-          onCategoryClick={(categoryId) => onCategoryClick(categoryId, categoryValues)}
+          onCategoryClick={(categoryId) => onCategoryClick(categoryId)}
         />
       )}
 

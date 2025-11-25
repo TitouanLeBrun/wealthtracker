@@ -5,7 +5,7 @@ import SettingsPage from './pages/SettingsPage'
 import CategoryDetailPage from './pages/CategoryDetailPage'
 import AssetDetailPage from './pages/AssetDetailPage'
 import Notification from './components/common/Notification'
-import type { NotificationMessage, CategoryValue } from './types'
+import type { NotificationMessage } from './types'
 
 function App(): React.JSX.Element {
   const [activePage, setActivePage] = useState<
@@ -13,7 +13,6 @@ function App(): React.JSX.Element {
   >('dashboard')
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [selectedAssetId, setSelectedAssetId] = useState<number | null>(null)
-  const [categoryValues, setCategoryValues] = useState<CategoryValue[]>([])
   const [message, setMessage] = useState<NotificationMessage | null>(null)
 
   // Fonction pour afficher un message temporaire
@@ -23,9 +22,8 @@ function App(): React.JSX.Element {
   }
 
   // Navigation vers une catégorie
-  const navigateToCategory = (categoryId: number, values: CategoryValue[]): void => {
+  const navigateToCategory = (categoryId: number): void => {
     setSelectedCategoryId(categoryId)
-    setCategoryValues(values)
     setActivePage('category')
   }
 
@@ -208,7 +206,6 @@ function App(): React.JSX.Element {
         {activePage === 'category' && selectedCategoryId && (
           <CategoryDetailPage
             categoryId={selectedCategoryId}
-            categoryValues={categoryValues}
             onBack={navigateToSettings}
             onNavigateToAsset={navigateToAsset}
             onSuccess={(msg) => showMessage('success', msg)}

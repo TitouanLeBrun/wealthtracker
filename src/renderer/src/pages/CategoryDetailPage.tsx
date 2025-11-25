@@ -6,12 +6,11 @@ import CategoryHeader from '../components/category/CategoryHeader'
 import CategoryStats from '../components/category/CategoryStats'
 import CategoryAssetsList from '../components/category/CategoryAssetsList'
 import CategoryTransactionsSection from '../components/category/CategoryTransactionsSection'
-import type { Category, Asset, Transaction, CategoryValue, AssetFormData } from '../types'
-import { getCategoryValue } from '../utils/calculations/categoryCalculations'
+import type { Category, Asset, Transaction, AssetFormData } from '../types'
+import { calculateCategoryValues } from '../utils/calculations/categoryCalculations'
 
 interface CategoryDetailPageProps {
   categoryId: number
-  categoryValues: CategoryValue[]
   onBack: () => void
   onNavigateToAsset: (assetId: number) => void
   onSuccess: (message: string) => void
@@ -20,24 +19,30 @@ interface CategoryDetailPageProps {
 
 function CategoryDetailPage({
   categoryId,
-  categoryValues,
   onBack,
   onNavigateToAsset,
   onSuccess,
   onError
 }: CategoryDetailPageProps): React.JSX.Element {
   const [category, setCategory] = useState<Category | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
   const [assets, setAssets] = useState<Asset[]>([])
+  const [allAssets, setAllAssets] = useState<Asset[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [showAssetModal, setShowAssetModal] = useState(false)
   const [showTransactionModal, setShowTransactionModal] = useState(false)
 
+  // Recalculer les categoryValues dynamiquement à chaque changement
+  const categoryValues = useMemo(() => {
+    if (categories.length === 0 || allAssets.length === 0) return []
+    return calculateCategoryValues(categories, allAssets, transactions)
+  }, [categories, allAssets, transactions])
+
   // Récupérer les valeurs calculées de cette catégorie
-  const categoryValue = useMemo(
-    () => getCategoryValue(categoryId, categoryValues),
-    [categoryId, categoryValues]
-  )
+  const categoryValue = useMemo(() => {
+    return categoryValues.find((cv) => cv.categoryId === categoryId)
+  }, [categoryId, categoryValues])
 
   // Créer une liste complète des actifs (avec et sans transactions)
   const allCategoryAssets = useMemo(() => {
@@ -103,18 +108,15 @@ function CategoryDetailPage({
         return
       }
 
+      // Stocker toutes les données (nécessaires pour recalculer categoryValues)
+      setCategories(categoriesData)
+      setAllAssets(assetsData)
+      setTransactions(transactionsData)
+
       // Filtrer les actifs de cette catégorie
       const categoryAssets = assetsData.filter((a: Asset) => a.categoryId === categoryId)
-
-      // Filtrer les transactions liées aux actifs de cette catégorie
-      const assetIds = new Set(categoryAssets.map((a: Asset) => a.id))
-      const categoryTransactions = transactionsData.filter((t: Transaction) =>
-        assetIds.has(t.assetId)
-      )
-
-      setCategory(foundCategory)
       setAssets(categoryAssets)
-      setTransactions(categoryTransactions)
+      setCategory(foundCategory)
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error)
       onError('Impossible de charger les données')
