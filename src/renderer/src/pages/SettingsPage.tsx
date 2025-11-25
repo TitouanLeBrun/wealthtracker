@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
+import { Settings2 } from 'lucide-react'
+import Modal from '../components/Modal'
+import AssetManagerCards from '../components/AssetManagerCards'
 import CategoryForm from '../components/CategoryForm'
-import CategoryList from '../components/CategoryList'
 import AssetForm from '../components/AssetForm'
-import AssetList from '../components/AssetList'
 import type { Category, Asset, CategoryFormData, AssetFormData } from '../types'
 
 interface SettingsPageProps {
@@ -11,11 +12,14 @@ interface SettingsPageProps {
 }
 
 function SettingsPage({ onSuccess, onError }: SettingsPageProps): React.JSX.Element {
-  const [activeTab, setActiveTab] = useState<'categories' | 'assets'>('categories')
   const [categories, setCategories] = useState<Category[]>([])
   const [assets, setAssets] = useState<Asset[]>([])
   const [loadingCategories, setLoadingCategories] = useState(true)
   const [loadingAssets, setLoadingAssets] = useState(true)
+
+  // États des modales
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [showAssetModal, setShowAssetModal] = useState(false)
 
   // Charger les catégories
   useEffect(() => {
@@ -58,82 +62,73 @@ function SettingsPage({ onSuccess, onError }: SettingsPageProps): React.JSX.Elem
   const handleCreateCategory = async (data: CategoryFormData): Promise<void> => {
     await window.api.createCategory(data)
     await loadCategories()
+    setShowCategoryModal(false)
     onSuccess(`Catégorie "${data.name}" créée avec succès !`)
   }
 
   const handleCreateAsset = async (data: AssetFormData): Promise<void> => {
     await window.api.createAsset(data)
     await loadAssets()
+    setShowAssetModal(false)
     onSuccess(`Actif "${data.ticker}" créé avec succès !`)
   }
 
+  if (loadingCategories || loadingAssets) {
+    return (
+      <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}>
+        <div
+          className="loading-skeleton"
+          style={{ width: '100%', height: '200px', borderRadius: 'var(--radius-md)' }}
+        />
+      </div>
+    )
+  }
+
   return (
-    <div>
+    <div className="animate-fadeIn">
       {/* En-tête */}
-      <div style={{ marginBottom: '30px' }}>
-        <h1>⚙️ Configuration</h1>
-        <p style={{ color: '#666' }}>Gérez vos catégories d&apos;actifs et vos actifs financiers</p>
+      <div style={{ marginBottom: 'var(--spacing-xl)' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--spacing-md)',
+            marginBottom: 'var(--spacing-sm)'
+          }}
+        >
+          <Settings2 size={32} color="var(--color-success)" />
+          <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700' }}>Configuration</h1>
+        </div>
+        <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '16px' }}>
+          Gérez vos catégories et actifs financiers
+        </p>
       </div>
 
-      {/* Onglets */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '10px',
-          borderBottom: '2px solid #ddd',
-          marginBottom: '30px'
-        }}
+      {/* Cards de gestion */}
+      <AssetManagerCards
+        categories={categories}
+        assets={assets}
+        onAddCategory={() => setShowCategoryModal(true)}
+        onAddAsset={() => setShowAssetModal(true)}
+      />
+
+      {/* Modal Catégorie */}
+      <Modal
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        title="➕ Nouvelle Catégorie"
       >
-        <button
-          onClick={() => setActiveTab('categories')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: activeTab === 'categories' ? '#4CAF50' : 'transparent',
-            color: activeTab === 'categories' ? 'white' : '#666',
-            border: 'none',
-            borderBottom: activeTab === 'categories' ? '3px solid #4CAF50' : 'none',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '16px',
-            transition: 'all 0.3s'
-          }}
-        >
-          📁 Catégories ({categories.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('assets')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: activeTab === 'assets' ? '#2196F3' : 'transparent',
-            color: activeTab === 'assets' ? 'white' : '#666',
-            border: 'none',
-            borderBottom: activeTab === 'assets' ? '3px solid #2196F3' : 'none',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '16px',
-            transition: 'all 0.3s'
-          }}
-        >
-          💼 Actifs ({assets.length})
-        </button>
-      </div>
+        <CategoryForm onSubmit={handleCreateCategory} onError={onError} />
+      </Modal>
 
-      {/* Contenu des onglets */}
-      {activeTab === 'categories' && (
-        <div>
-          <CategoryForm onSubmit={handleCreateCategory} onError={onError} />
-          <hr style={{ margin: '30px 0', border: 'none', borderTop: '1px solid #ddd' }} />
-          <CategoryList categories={categories} loading={loadingCategories} />
-        </div>
-      )}
-
-      {activeTab === 'assets' && (
-        <div>
-          <AssetForm onSubmit={handleCreateAsset} onError={onError} />
-          <hr style={{ margin: '30px 0', border: 'none', borderTop: '1px solid #ddd' }} />
-          <AssetList assets={assets} loading={loadingAssets} />
-        </div>
-      )}
+      {/* Modal Actif */}
+      <Modal
+        isOpen={showAssetModal}
+        onClose={() => setShowAssetModal(false)}
+        title="➕ Nouvel Actif"
+      >
+        <AssetForm onSubmit={handleCreateAsset} onError={onError} />
+      </Modal>
     </div>
   )
 }
