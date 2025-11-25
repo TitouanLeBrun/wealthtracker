@@ -5,7 +5,7 @@ import TransactionForm from '../components/forms/TransactionForm'
 import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
 import AssetPriceChart from '../components/asset/AssetPriceChart'
 import AssetInfoPanel from '../components/asset/AssetInfoPanel'
-import type { Asset, Transaction, Category, TransactionFormData } from '../types'
+import type { Asset, Transaction, Category } from '../types'
 
 interface AssetDetailPageProps {
   assetId: number
@@ -75,24 +75,29 @@ function AssetDetailPage({
     loadData()
   }, [loadData])
 
-  const handleBuy = async (data: TransactionFormData): Promise<void> => {
-    await window.api.createTransaction({ ...data, assetId, type: 'BUY' })
-    await loadData()
-    setShowBuyModal(false)
-    onSuccess("Transaction d'achat créée avec succès !")
-  }
-
-  const handleSell = async (data: TransactionFormData): Promise<void> => {
-    // Vérifier que la quantité à vendre est disponible
-    if (data.quantity > netQuantity) {
-      onError(`Quantité insuffisante. Vous possédez ${netQuantity.toFixed(4)} ${asset?.ticker}`)
+  const handleTransaction = async (data: {
+    assetId: number
+    type: 'BUY' | 'SELL'
+    quantity: number
+    pricePerUnit: number
+    fee: number
+    date: Date
+  }): Promise<void> => {
+    // Vérification pour les ventes
+    if (data.type === 'SELL' && data.quantity > netQuantity) {
+      onError(`Quantité insuffisante. Vous possédez ${netQuantity.toFixed(8)} ${asset?.ticker}`)
       return
     }
 
-    await window.api.createTransaction({ ...data, assetId, type: 'SELL' })
+    await window.api.createTransaction(data)
     await loadData()
+    setShowBuyModal(false)
     setShowSellModal(false)
-    onSuccess('Transaction de vente créée avec succès !')
+    onSuccess(
+      data.type === 'BUY'
+        ? "Transaction d'achat créée avec succès !"
+        : 'Transaction de vente créée avec succès !'
+    )
   }
 
   const handleDeleteTransaction = async (transactionId: number): Promise<void> => {
@@ -235,7 +240,13 @@ function AssetDetailPage({
         onClose={() => setShowBuyModal(false)}
         title={`🟢 Acheter ${asset.ticker}`}
       >
-        <TransactionForm assets={[asset]} onSubmit={handleBuy} onError={onError} />
+        <TransactionForm
+          preselectedCategoryId={asset.categoryId}
+          preselectedAssetId={assetId}
+          preselectedType="BUY"
+          onSubmit={handleTransaction}
+          onError={onError}
+        />
       </Modal>
 
       {/* Modal Vendre */}
@@ -244,7 +255,13 @@ function AssetDetailPage({
         onClose={() => setShowSellModal(false)}
         title={`🔴 Vendre ${asset.ticker}`}
       >
-        <TransactionForm assets={[asset]} onSubmit={handleSell} onError={onError} />
+        <TransactionForm
+          preselectedCategoryId={asset.categoryId}
+          preselectedAssetId={assetId}
+          preselectedType="SELL"
+          onSubmit={handleTransaction}
+          onError={onError}
+        />
       </Modal>
     </div>
   )

@@ -6,14 +6,7 @@ import CategoryHeader from '../components/category/CategoryHeader'
 import CategoryStats from '../components/category/CategoryStats'
 import CategoryAssetsList from '../components/category/CategoryAssetsList'
 import CategoryTransactionsSection from '../components/category/CategoryTransactionsSection'
-import type {
-  Category,
-  Asset,
-  Transaction,
-  CategoryValue,
-  AssetFormData,
-  TransactionFormData
-} from '../types'
+import type { Category, Asset, Transaction, CategoryValue, AssetFormData } from '../types'
 import { getCategoryValue } from '../utils/calculations/categoryCalculations'
 
 interface CategoryDetailPageProps {
@@ -141,7 +134,14 @@ function CategoryDetailPage({
     onSuccess(`Actif "${data.ticker}" créé avec succès !`)
   }
 
-  const handleCreateTransaction = async (data: TransactionFormData): Promise<void> => {
+  const handleCreateTransaction = async (data: {
+    assetId: number
+    type: 'BUY' | 'SELL'
+    quantity: number
+    pricePerUnit: number
+    fee: number
+    date: Date
+  }): Promise<void> => {
     await window.api.createTransaction(data)
     await loadData()
     setShowTransactionModal(false)
@@ -215,7 +215,11 @@ function CategoryDetailPage({
         onClose={() => setShowTransactionModal(false)}
         title={`💰 Nouvelle Transaction - ${category.name}`}
       >
-        <TransactionForm assets={assets} onSubmit={handleCreateTransaction} onError={onError} />
+        <TransactionForm
+          preselectedCategoryId={category.id}
+          onSubmit={handleCreateTransaction}
+          onError={onError}
+        />
       </Modal>
     </div>
   )

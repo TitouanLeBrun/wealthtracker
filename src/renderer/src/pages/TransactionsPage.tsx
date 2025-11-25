@@ -68,11 +68,9 @@ function TransactionsPage({
     quantity: number
     pricePerUnit: number
     fee: number
+    date: Date
   }): Promise<void> => {
-    await window.api.createTransaction({
-      ...data,
-      date: new Date()
-    })
+    await window.api.createTransaction(data)
     await loadTransactions()
     setShowTransactionModal(false)
     onSuccess('Transaction ajoutée avec succès !')
