@@ -289,7 +289,7 @@ table tbody tr:hover {
   .logo-full {
     display: none !important;
   }
-  
+
   .logo-short {
     display: inline !important;
   }
@@ -337,10 +337,55 @@ table tbody tr:hover {
     padding: 8px !important;
     min-width: 40px;
   }
-  
+
   /* Réduire le gap entre les boutons */
   nav > div > div:last-child {
     gap: 4px !important;
+  }
+}
+
+/* ============================================
+   📊 ASSET TABLE RESPONSIVE
+   ============================================ */
+
+/* Par défaut : afficher le tableau, masquer les cards */
+.asset-table-desktop {
+  display: block;
+  min-width: 1040px; /* Largeur minimale du tableau pour forcer le scroll horizontal si nécessaire */
+}
+
+/* Style de la scrollbar pour le tableau */
+.asset-table-desktop::-webkit-scrollbar {
+  height: 8px;
+}
+
+.asset-table-desktop::-webkit-scrollbar-track {
+  background: var(--color-input-bg);
+  border-radius: 4px;
+}
+
+.asset-table-desktop::-webkit-scrollbar-thumb {
+  background: var(--color-text-secondary);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.asset-table-desktop::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+.asset-cards-mobile {
+  display: none;
+}
+
+/* Tablette et mobile : afficher les cards, masquer le tableau */
+@media (max-width: 1024px) {
+  .asset-table-desktop {
+    display: none;
+  }
+
+  .asset-cards-mobile {
+    display: block;
   }
 }
 
