@@ -186,6 +186,7 @@ function CategoryDetailPage({
 
       {/* Historique des transactions */}
       <CategoryTransactionsSection
+        category={category}
         transactions={transactions}
         onAddTransaction={() => setShowTransactionModal(true)}
         onDeleteTransaction={handleDeleteTransaction}

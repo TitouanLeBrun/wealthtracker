@@ -19,25 +19,29 @@ function CategoryHeader({ category, onBack }: CategoryHeaderProps): React.JSX.El
       <button
         onClick={onBack}
         style={{
-          padding: '8px 16px',
-          background: 'var(--color-border)',
-          border: 'none',
-          borderRadius: 'var(--border-radius)',
+          padding: '10px 20px',
+          background: 'white',
+          border: '1px solid #e5e7eb',
+          borderRadius: '12px',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           gap: 'var(--spacing-xs)',
           fontSize: '14px',
-          fontWeight: '500',
+          fontWeight: '600',
+          color: '#374151',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
           transition: 'all 0.2s ease'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'var(--color-primary)'
-          e.currentTarget.style.color = 'white'
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)'
+          e.currentTarget.style.transform = 'translateY(-1px)'
+          e.currentTarget.style.borderColor = '#d1d5db'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'var(--color-border)'
-          e.currentTarget.style.color = 'inherit'
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.06)'
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.borderColor = '#e5e7eb'
         }}
       >
         <ArrowLeft size={18} />

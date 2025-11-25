@@ -1,14 +1,16 @@
 import { Plus } from 'lucide-react'
 import TransactionManagerCards from '../transaction/TransactionManagerCards'
-import type { Transaction } from '../../types'
+import type { Category, Transaction } from '../../types'
 
 interface CategoryTransactionsSectionProps {
+  category: Category
   transactions: Transaction[]
   onAddTransaction: () => void
   onDeleteTransaction: (transactionId: number) => Promise<void>
 }
 
 function CategoryTransactionsSection({
+  category,
   transactions,
   onAddTransaction,
   onDeleteTransaction
@@ -32,26 +34,29 @@ function CategoryTransactionsSection({
             display: 'flex',
             alignItems: 'center',
             gap: 'var(--spacing-xs)',
-            padding: '8px 16px',
-            background: '#10b981',
+            padding: '10px 20px',
+            background: category.color,
             color: 'white',
             border: 'none',
-            borderRadius: 'var(--border-radius)',
-            fontSize: '13px',
+            borderRadius: '12px',
+            fontSize: '14px',
             fontWeight: '600',
             cursor: 'pointer',
+            boxShadow: `0 2px 8px ${category.color}40`,
             transition: 'all 0.2s ease'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)'
+            e.currentTarget.style.boxShadow = `0 6px 16px ${category.color}60`
+            e.currentTarget.style.filter = 'brightness(1.1)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = 'none'
+            e.currentTarget.style.boxShadow = `0 2px 8px ${category.color}40`
+            e.currentTarget.style.filter = 'brightness(1)'
           }}
         >
-          <Plus size={16} />
+          <Plus size={18} />
           Ajouter une Transaction
         </button>
       </div>
