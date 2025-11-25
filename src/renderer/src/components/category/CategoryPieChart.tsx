@@ -99,6 +99,7 @@ function CategoryPieChart({
 
       {/* Layout flex avec camembert à gauche et liste à droite */}
       <div
+        className="category-pie-layout"
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -107,7 +108,7 @@ function CategoryPieChart({
         }}
       >
         {/* Camembert */}
-        <div>
+        <div className="category-pie-chart-container">
           <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
@@ -141,7 +142,9 @@ function CategoryPieChart({
             </PieChart>
           </ResponsiveContainer>
 
+          {/* Texte d'information - Visible uniquement sur desktop */}
           <div
+            className="category-pie-hint"
             style={{
               marginTop: 'var(--spacing-md)',
               textAlign: 'center',

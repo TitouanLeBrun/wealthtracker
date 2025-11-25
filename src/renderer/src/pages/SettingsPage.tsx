@@ -128,13 +128,28 @@ function SettingsPage({
             display: 'flex',
             alignItems: 'center',
             gap: 'var(--spacing-md)',
-            marginBottom: 'var(--spacing-sm)'
+            marginBottom: 'var(--spacing-sm)',
+            flexWrap: 'wrap'
           }}
         >
           <Settings2 size={32} color="var(--color-success)" />
-          <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700' }}>Configuration</h1>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 'clamp(22px, 5vw, 28px)',
+              fontWeight: '700'
+            }}
+          >
+            Configuration
+          </h1>
         </div>
-        <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '16px' }}>
+        <p
+          style={{
+            color: 'var(--color-text-secondary)',
+            margin: 0,
+            fontSize: 'clamp(14px, 3vw, 16px)'
+          }}
+        >
           Gérez vos catégories et actifs financiers
         </p>
       </div>

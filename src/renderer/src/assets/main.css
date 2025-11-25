@@ -431,6 +431,28 @@ table tbody tr:hover {
   .transaction-card-mobile {
     display: block;
   }
+
+  /* Settings Page : passer en colonne unique */
+  .category-pie-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Réduire la hauteur du graphique sur mobile */
+  .category-pie-chart-container {
+    max-height: 300px;
+  }
+
+  /* Masquer le texte hint sur mobile */
+  .category-pie-hint {
+    display: none !important;
+  }
+}
+
+/* En dessous de 500px : réduire encore plus le camembert pour éviter débordement */
+@media (max-width: 500px) {
+  .category-pie-chart-container {
+    display: none !important;  /* Masquer complètement le camembert */
+  }
 }
 
 /* ============================================
