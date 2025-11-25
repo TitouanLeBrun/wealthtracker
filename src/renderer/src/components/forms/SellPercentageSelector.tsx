@@ -23,7 +23,13 @@ function SellPercentageSelector({
   }, [currentQuantity, maxQuantity])
 
   const handlePercentageClick = (percentage: number): void => {
-    const quantity = (maxQuantity * percentage) / 100
+    let quantity = (maxQuantity * percentage) / 100
+    // Si c'est 100%, utiliser exactement maxQuantity pour éviter les erreurs d'arrondi
+    if (percentage === 100) {
+      quantity = maxQuantity
+    }
+    // Arrondir à 8 décimales pour éviter les résidus de virgule flottante
+    quantity = Math.round(quantity * 100000000) / 100000000
     onQuantityChange(quantity.toString())
   }
 

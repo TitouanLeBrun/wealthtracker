@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { ArrowLeft } from 'lucide-react'
+import { calculateOwnedQuantity } from '../utils/calculations/quantityUtils'
 import Modal from '../components/common/Modal'
 import TransactionForm from '../components/forms/TransactionForm'
 import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
@@ -27,11 +28,9 @@ function AssetDetailPage({
   const [showBuyModal, setShowBuyModal] = useState(false)
   const [showSellModal, setShowSellModal] = useState(false)
 
-  // Calculer la quantité nette et la valeur totale
+  // Calculer la quantité nette et la valeur totale avec arrondi correct
   const { netQuantity, totalValue } = useMemo(() => {
-    const net = transactions.reduce((sum, t) => {
-      return t.type === 'BUY' ? sum + t.quantity : sum - t.quantity
-    }, 0)
+    const net = calculateOwnedQuantity(transactions)
     const value = asset ? net * asset.currentPrice : 0
     return { netQuantity: net, totalValue: value }
   }, [transactions, asset])

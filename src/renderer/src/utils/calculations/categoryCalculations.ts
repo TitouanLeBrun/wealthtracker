@@ -1,4 +1,5 @@
 import type { Category, Asset, Transaction, CategoryValue, AssetValue } from '../../types'
+import { roundQuantity, isQuantityZero } from './quantityUtils'
 
 /**
  * Calcule les quantités nettes par actif (achats - ventes)
@@ -6,12 +7,20 @@ import type { Category, Asset, Transaction, CategoryValue, AssetValue } from '..
  * @returns Map<assetId, quantitéNette>
  */
 export function calculateNetQuantities(transactions: Transaction[]): Map<number, number> {
-  return transactions.reduce((acc, transaction) => {
+  const quantities = transactions.reduce((acc, transaction) => {
     const sign = transaction.type === 'BUY' ? 1 : -1
     const currentQuantity = acc.get(transaction.assetId) || 0
     acc.set(transaction.assetId, currentQuantity + transaction.quantity * sign)
     return acc
   }, new Map<number, number>())
+
+  // Arrondir toutes les quantités et traiter les résidus
+  quantities.forEach((qty, assetId) => {
+    const rounded = roundQuantity(qty)
+    quantities.set(assetId, isQuantityZero(rounded) ? 0 : rounded)
+  })
+
+  return quantities
 }
 
 /**

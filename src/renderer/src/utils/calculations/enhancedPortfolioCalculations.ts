@@ -1,4 +1,5 @@
 import type { Asset, Transaction } from '../../types'
+import { roundQuantity, isQuantityZero } from './quantityUtils'
 
 /**
  * Métriques financières complètes pour un actif
@@ -80,7 +81,9 @@ export function calculateAssetMetrics(asset: Asset, transactions: Transaction[])
   // Quantités
   const totalBought = buyTransactions.reduce((sum, t) => sum + t.quantity, 0)
   const totalSold = sellTransactions.reduce((sum, t) => sum + t.quantity, 0)
-  const currentQuantity = totalBought - totalSold
+  const rawQuantity = totalBought - totalSold
+  // Arrondir et traiter les résidus de virgule flottante
+  const currentQuantity = isQuantityZero(rawQuantity) ? 0 : roundQuantity(rawQuantity)
 
   // Frais
   const buyFees = buyTransactions.reduce((sum, t) => sum + t.fee, 0)

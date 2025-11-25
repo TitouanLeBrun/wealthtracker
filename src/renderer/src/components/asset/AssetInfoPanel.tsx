@@ -1,5 +1,6 @@
 import { ShoppingCart, TrendingDown } from 'lucide-react'
 import type { Asset, Transaction } from '../../types'
+import { roundQuantity, isQuantityZero } from '../../utils/calculations/quantityUtils'
 
 interface AssetInfoPanelProps {
   asset: Asset
@@ -26,13 +27,16 @@ function AssetInfoPanel({
   const totalBought = buyTransactions.reduce((sum, t) => sum + t.quantity, 0)
   const averageBuyPrice = totalBought > 0 ? totalSpent / totalBought : 0
 
+  // Arrondir netQuantity pour éviter les résidus de virgule flottante
+  const roundedNetQuantity = roundQuantity(netQuantity)
+
   // Calculer la plus-value
-  const investedAmount = netQuantity * averageBuyPrice
+  const investedAmount = roundedNetQuantity * averageBuyPrice
   const gainLoss = totalValue - investedAmount
   const gainLossPercentage = investedAmount > 0 ? (gainLoss / investedAmount) * 100 : 0
 
-  // Vérifier si on peut vendre
-  const canSell = netQuantity > 0
+  // Vérifier si on peut vendre (considérer < 1e-8 comme zéro)
+  const canSell = !isQuantityZero(roundedNetQuantity) && roundedNetQuantity > 0
 
   return (
     <div
@@ -121,7 +125,7 @@ function AssetInfoPanel({
           <div>
             <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>Quantité</div>
             <div style={{ fontSize: '20px', fontWeight: '600' }}>
-              {netQuantity.toFixed(4)} {asset.ticker}
+              {roundedNetQuantity.toFixed(8)} {asset.ticker}
             </div>
           </div>
 
