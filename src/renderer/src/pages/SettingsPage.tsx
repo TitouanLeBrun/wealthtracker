@@ -1,21 +1,37 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Settings2 } from 'lucide-react'
 import Modal from '../components/Modal'
 import AssetManagerCards from '../components/AssetManagerCards'
 import CategoryForm from '../components/CategoryForm'
 import AssetForm from '../components/AssetForm'
-import type { Category, Asset, CategoryFormData, AssetFormData } from '../types'
+import CategoryPieChart from '../components/CategoryPieChart'
+import type {
+  Category,
+  Asset,
+  Transaction,
+  CategoryFormData,
+  AssetFormData,
+  CategoryValue
+} from '../types'
+import { calculateCategoryValues } from '../utils/categoryCalculations'
 
 interface SettingsPageProps {
   onSuccess: (message: string) => void
   onError: (message: string) => void
+  onCategoryClick: (categoryId: number, categoryValues: CategoryValue[]) => void
 }
 
-function SettingsPage({ onSuccess, onError }: SettingsPageProps): React.JSX.Element {
+function SettingsPage({
+  onSuccess,
+  onError,
+  onCategoryClick
+}: SettingsPageProps): React.JSX.Element {
   const [categories, setCategories] = useState<Category[]>([])
   const [assets, setAssets] = useState<Asset[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loadingCategories, setLoadingCategories] = useState(true)
   const [loadingAssets, setLoadingAssets] = useState(true)
+  const [loadingTransactions, setLoadingTransactions] = useState(true)
 
   // États des modales
   const [showCategoryModal, setShowCategoryModal] = useState(false)
@@ -32,6 +48,20 @@ function SettingsPage({ onSuccess, onError }: SettingsPageProps): React.JSX.Elem
     loadAssets()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Charger les transactions
+  useEffect(() => {
+    loadTransactions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Calculer les valeurs par catégorie
+  const categoryValues = useMemo(() => {
+    if (loadingCategories || loadingAssets || loadingTransactions) {
+      return []
+    }
+    return calculateCategoryValues(categories, assets, transactions)
+  }, [categories, assets, transactions, loadingCategories, loadingAssets, loadingTransactions])
 
   const loadCategories = async (): Promise<void> => {
     try {
@@ -56,6 +86,19 @@ function SettingsPage({ onSuccess, onError }: SettingsPageProps): React.JSX.Elem
       onError('Erreur lors du chargement des actifs')
     } finally {
       setLoadingAssets(false)
+    }
+  }
+
+  const loadTransactions = async (): Promise<void> => {
+    try {
+      setLoadingTransactions(true)
+      const data = await window.api.getAllTransactions()
+      setTransactions(data)
+    } catch (error) {
+      console.error('Erreur lors du chargement des transactions:', error)
+      onError('Erreur lors du chargement des transactions')
+    } finally {
+      setLoadingTransactions(false)
     }
   }
 
@@ -104,13 +147,13 @@ function SettingsPage({ onSuccess, onError }: SettingsPageProps): React.JSX.Elem
         </p>
       </div>
 
-      {/* Cards de gestion */}
-      <AssetManagerCards
-        categories={categories}
-        assets={assets}
-        onAddCategory={() => setShowCategoryModal(true)}
-        onAddAsset={() => setShowAssetModal(true)}
-      />
+      {/* Camembert de répartition */}
+      {!loadingCategories && !loadingAssets && !loadingTransactions && (
+        <CategoryPieChart
+          categoryValues={categoryValues}
+          onCategoryClick={(categoryId) => onCategoryClick(categoryId, categoryValues)}
+        />
+      )}
 
       {/* Modal Catégorie */}
       <Modal

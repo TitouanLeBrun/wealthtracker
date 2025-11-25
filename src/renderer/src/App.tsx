@@ -1,17 +1,35 @@
 import { useState } from 'react'
 import TransactionsPage from './pages/TransactionsPage'
 import SettingsPage from './pages/SettingsPage'
+import CategoryDetailPage from './pages/CategoryDetailPage'
 import Notification from './components/Notification'
-import type { NotificationMessage } from './types'
+import type { NotificationMessage, CategoryValue } from './types'
 
 function App(): React.JSX.Element {
-  const [activePage, setActivePage] = useState<'transactions' | 'settings'>('transactions')
+  const [activePage, setActivePage] = useState<'transactions' | 'settings' | 'category'>(
+    'transactions'
+  )
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+  const [categoryValues, setCategoryValues] = useState<CategoryValue[]>([])
   const [message, setMessage] = useState<NotificationMessage | null>(null)
 
   // Fonction pour afficher un message temporaire
   const showMessage = (type: 'success' | 'error', text: string): void => {
     setMessage({ type, text })
     setTimeout(() => setMessage(null), 3000)
+  }
+
+  // Navigation vers une catégorie
+  const navigateToCategory = (categoryId: number, values: CategoryValue[]): void => {
+    setSelectedCategoryId(categoryId)
+    setCategoryValues(values)
+    setActivePage('category')
+  }
+
+  // Retour à la page settings
+  const navigateToSettings = (): void => {
+    setActivePage('settings')
+    setSelectedCategoryId(null)
   }
 
   return (
@@ -133,6 +151,17 @@ function App(): React.JSX.Element {
 
         {activePage === 'settings' && (
           <SettingsPage
+            onSuccess={(msg) => showMessage('success', msg)}
+            onError={(msg) => showMessage('error', msg)}
+            onCategoryClick={navigateToCategory}
+          />
+        )}
+
+        {activePage === 'category' && selectedCategoryId && (
+          <CategoryDetailPage
+            categoryId={selectedCategoryId}
+            categoryValues={categoryValues}
+            onBack={navigateToSettings}
             onSuccess={(msg) => showMessage('success', msg)}
             onError={(msg) => showMessage('error', msg)}
           />

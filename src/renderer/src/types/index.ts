@@ -58,3 +58,25 @@ export interface NotificationMessage {
   type: 'success' | 'error'
   text: string
 }
+
+// Types pour les calculs de valeur par actif
+export interface AssetValue {
+  assetId: number
+  ticker: string
+  name: string
+  currentPrice: number
+  netQuantity: number // Quantité nette (achats - ventes)
+  totalValue: number // currentPrice × netQuantity
+  percentage: number // % au sein de la catégorie
+}
+
+// Types pour les calculs de valeur par catégorie
+export interface CategoryValue {
+  categoryId: number
+  categoryName: string
+  color: string
+  totalValue: number // Somme des valeurs des actifs
+  percentage: number // % du total global
+  assetCount: number // Nombre d'actifs avec quantité > 0
+  assets: AssetValue[] // Détails par actif
+}
