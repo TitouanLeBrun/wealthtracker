@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { ArrowLeft, Plus, PieChart as PieChartIcon } from 'lucide-react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import Modal from '../components/common/Modal'
 import AssetForm from '../components/forms/AssetForm'
-import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
+import TransactionForm from '../components/forms/TransactionForm'
+import CategoryHeader from '../components/category/CategoryHeader'
+import CategoryStats from '../components/category/CategoryStats'
+import CategoryAssetsList from '../components/category/CategoryAssetsList'
+import CategoryTransactionsSection from '../components/category/CategoryTransactionsSection'
 import type {
   Category,
   Asset,
   Transaction,
   CategoryValue,
   AssetFormData,
-  AssetValue
+  TransactionFormData
 } from '../types'
 import { getCategoryValue } from '../utils/calculations/categoryCalculations'
 
@@ -22,11 +24,6 @@ interface CategoryDetailPageProps {
   onError: (message: string) => void
 }
 
-interface AssetTooltipProps {
-  active?: boolean
-  payload?: Array<{ payload: AssetValue }>
-}
-
 function CategoryDetailPage({
   categoryId,
   categoryValues,
@@ -35,9 +32,11 @@ function CategoryDetailPage({
   onError
 }: CategoryDetailPageProps): React.JSX.Element {
   const [category, setCategory] = useState<Category | null>(null)
+  const [assets, setAssets] = useState<Asset[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [showAssetModal, setShowAssetModal] = useState(false)
+  const [showTransactionModal, setShowTransactionModal] = useState(false)
 
   // Récupérer les valeurs calculées de cette catégorie
   const categoryValue = useMemo(
@@ -45,27 +44,51 @@ function CategoryDetailPage({
     [categoryId, categoryValues]
   )
 
-  // Composant tooltip pour le camembert des actifs
-  const AssetPieTooltip = ({ active, payload }: AssetTooltipProps): React.JSX.Element | null => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload
-      return (
-        <div
-          style={{
-            background: 'var(--color-card-bg)',
-            padding: 'var(--spacing-sm)',
-            borderRadius: 'var(--border-radius)',
-            border: '1px solid var(--color-border)'
-          }}
-        >
-          <p style={{ margin: 0, fontWeight: '600' }}>{data.ticker}</p>
-          <p style={{ margin: 0, fontSize: '14px' }}>{data.totalValue.toFixed(2)} €</p>
-          <p style={{ margin: 0, fontSize: '14px' }}>{data.netQuantity} unités</p>
-        </div>
-      )
-    }
-    return null
-  }
+  // Créer une liste complète des actifs (avec et sans transactions)
+  const allCategoryAssets = useMemo(() => {
+    if (!categoryValue || !assets) return []
+
+    // Créer un Map des actifs avec transactions (depuis categoryValue)
+    const assetsWithTransactions = new Map(categoryValue.assets.map((a) => [a.assetId, a]))
+
+    // Ajouter tous les actifs de la catégorie
+    const completeList = assets.map((asset) => {
+      const assetValue = assetsWithTransactions.get(asset.id)
+      if (assetValue) {
+        // L'actif a des transactions, utiliser les données calculées
+        return assetValue
+      } else {
+        // L'actif n'a pas de transactions, créer une structure AssetValue
+        return {
+          assetId: asset.id,
+          ticker: asset.ticker,
+          name: asset.name,
+          currentPrice: asset.currentPrice || 0,
+          netQuantity: 0,
+          totalValue: 0,
+          percentage: 0,
+          categoryName: category?.name || '',
+          categoryColor: category?.color || '#999999'
+        }
+      }
+    })
+
+    return completeList
+  }, [categoryValue, assets, category])
+
+  // Trier les actifs : quantité > 0 d'abord, puis quantité = 0
+  const sortedAssets = useMemo(() => {
+    return [...allCategoryAssets].sort((a, b) => {
+      // Tri par quantité (> 0 d'abord)
+      if (a.netQuantity > 0 && b.netQuantity === 0) return -1
+      if (a.netQuantity === 0 && b.netQuantity > 0) return 1
+      // Si même statut, tri par valeur totale puis par ticker
+      if (b.totalValue !== a.totalValue) {
+        return b.totalValue - a.totalValue
+      }
+      return a.ticker.localeCompare(b.ticker)
+    })
+  }, [allCategoryAssets])
 
   // Charger les données
   const loadData = useCallback(async (): Promise<void> => {
@@ -95,6 +118,7 @@ function CategoryDetailPage({
       )
 
       setCategory(foundCategory)
+      setAssets(categoryAssets)
       setTransactions(categoryTransactions)
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error)
@@ -113,6 +137,13 @@ function CategoryDetailPage({
     await loadData()
     setShowAssetModal(false)
     onSuccess(`Actif "${data.ticker}" créé avec succès !`)
+  }
+
+  const handleCreateTransaction = async (data: TransactionFormData): Promise<void> => {
+    await window.api.createTransaction(data)
+    await loadData()
+    setShowTransactionModal(false)
+    onSuccess('Transaction créée avec succès !')
   }
 
   const handleDeleteTransaction = async (transactionId: number): Promise<void> => {
@@ -137,292 +168,28 @@ function CategoryDetailPage({
   return (
     <div className="animate-fadeIn">
       {/* Header avec bouton retour */}
-      <div
-        style={{
-          marginBottom: 'var(--spacing-xl)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--spacing-md)'
-        }}
-      >
-        <button
-          onClick={onBack}
-          style={{
-            padding: '8px 16px',
-            background: 'var(--color-border)',
-            border: 'none',
-            borderRadius: 'var(--border-radius)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--spacing-xs)',
-            fontSize: '14px',
-            fontWeight: '500',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--color-primary)'
-            e.currentTarget.style.color = 'white'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'var(--color-border)'
-            e.currentTarget.style.color = 'inherit'
-          }}
-        >
-          <ArrowLeft size={18} />
-          Retour
-        </button>
-
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                background: category.color,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <PieChartIcon size={18} color="white" />
-            </div>
-            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700' }}>{category.name}</h1>
-          </div>
-          <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '16px' }}>
-            Vue détaillée de la catégorie
-          </p>
-        </div>
-
-        <button
-          onClick={() => setShowAssetModal(true)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--spacing-sm)',
-            padding: '12px 24px',
-            background: 'var(--color-primary)',
-            color: 'white',
-            border: 'none',
-            borderRadius: 'var(--border-radius)',
-            fontSize: '14px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = 'none'
-          }}
-        >
-          <Plus size={18} />
-          Ajouter un Actif
-        </button>
-      </div>
+      <CategoryHeader category={category} onBack={onBack} />
 
       {/* Stats et Camembert */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: 'var(--spacing-lg)',
-          marginBottom: 'var(--spacing-xl)'
-        }}
-      >
-        {/* Camembert des actifs */}
-        <div
-          style={{
-            background: 'var(--color-card-bg)',
-            borderRadius: 'var(--border-radius)',
-            padding: 'var(--spacing-lg)'
-          }}
-        >
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: 'var(--spacing-md)' }}>
-            Répartition des Actifs
-          </h3>
-          {categoryValue.assets.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryValue.assets as never[]}
-                  dataKey="totalValue"
-                  nameKey="ticker"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label={(props: { percent?: number }) =>
-                    `${((props.percent || 0) * 100).toFixed(1)}%`
-                  }
-                  labelLine={false}
-                >
-                  {categoryValue.assets.map((_asset, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={category.color}
-                      opacity={1 - index * 0.15}
-                      stroke="#fff"
-                      strokeWidth={2}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip content={AssetPieTooltip as never} />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)' }}>
-              Aucun actif avec position
-            </p>
-          )}
-        </div>
-
-        {/* Statistiques */}
-        <div
-          style={{
-            background: 'var(--color-card-bg)',
-            borderRadius: 'var(--border-radius)',
-            padding: 'var(--spacing-lg)'
-          }}
-        >
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: 'var(--spacing-md)' }}>
-            Statistiques
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-            <div>
-              <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-                Valeur Totale
-              </div>
-              <div style={{ fontSize: '32px', fontWeight: '700', color: category.color }}>
-                {categoryValue.totalValue.toFixed(2)} €
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-                Pourcentage du Portefeuille
-              </div>
-              <div style={{ fontSize: '24px', fontWeight: '600' }}>
-                {categoryValue.percentage.toFixed(1)}%
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-                Nombre d&apos;Actifs
-              </div>
-              <div style={{ fontSize: '24px', fontWeight: '600' }}>{categoryValue.assetCount}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-                Transactions
-              </div>
-              <div style={{ fontSize: '24px', fontWeight: '600' }}>{transactions.length}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CategoryStats
+        category={category}
+        categoryValue={categoryValue}
+        transactionCount={transactions.length}
+      />
 
       {/* Liste des actifs */}
-      <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: 'var(--spacing-md)' }}>
-          📋 Actifs de la catégorie ({categoryValue.assets.length})
-        </h3>
-        {categoryValue.assets.length > 0 ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              gap: 'var(--spacing-md)'
-            }}
-          >
-            {categoryValue.assets.map((assetValue) => (
-              <div
-                key={assetValue.assetId}
-                style={{
-                  background: 'var(--color-card-bg)',
-                  borderRadius: 'var(--border-radius)',
-                  padding: 'var(--spacing-lg)',
-                  borderLeft: `4px solid ${category.color}`,
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = 'none'
-                }}
-              >
-                <div style={{ marginBottom: 'var(--spacing-sm)' }}>
-                  <div style={{ fontSize: '18px', fontWeight: '600' }}>{assetValue.ticker}</div>
-                  <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-                    {assetValue.name}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    marginTop: 'var(--spacing-md)'
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                      Prix actuel
-                    </div>
-                    <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                      {assetValue.currentPrice.toFixed(2)} €
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                      Quantité
-                    </div>
-                    <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                      {assetValue.netQuantity}
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                      Valeur totale
-                    </div>
-                    <div style={{ fontSize: '16px', fontWeight: '700', color: category.color }}>
-                      {assetValue.totalValue.toFixed(2)} €
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: 'var(--spacing-xl)',
-              background: 'var(--color-card-bg)',
-              borderRadius: 'var(--border-radius)',
-              color: 'var(--color-text-secondary)'
-            }}
-          >
-            <p style={{ margin: 0 }}>Aucun actif avec position dans cette catégorie</p>
-          </div>
-        )}
-      </div>
+      <CategoryAssetsList
+        category={category}
+        sortedAssets={sortedAssets}
+        onAddAsset={() => setShowAssetModal(true)}
+      />
 
       {/* Historique des transactions */}
-      <div>
-        <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: 'var(--spacing-md)' }}>
-          📊 Historique des Transactions
-        </h3>
-        <TransactionManagerCards
-          transactions={transactions}
-          loading={false}
-          onDelete={handleDeleteTransaction}
-        />
-      </div>
+      <CategoryTransactionsSection
+        transactions={transactions}
+        onAddTransaction={() => setShowTransactionModal(true)}
+        onDeleteTransaction={handleDeleteTransaction}
+      />
 
       {/* Modal ajout actif */}
       <Modal
@@ -436,6 +203,15 @@ function CategoryDetailPage({
           initialCategoryId={category.id}
           lockCategory={true}
         />
+      </Modal>
+
+      {/* Modal ajout transaction */}
+      <Modal
+        isOpen={showTransactionModal}
+        onClose={() => setShowTransactionModal(false)}
+        title={`💰 Nouvelle Transaction - ${category.name}`}
+      >
+        <TransactionForm assets={assets} onSubmit={handleCreateTransaction} onError={onError} />
       </Modal>
     </div>
   )

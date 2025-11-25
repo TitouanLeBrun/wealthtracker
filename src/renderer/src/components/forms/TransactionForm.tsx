@@ -20,9 +20,14 @@ interface TransactionFormProps {
     date: Date
   }) => Promise<void>
   onError: (message: string) => void
+  assets?: Asset[] // Liste optionnelle d'actifs pré-filtrés
 }
 
-function TransactionForm({ onSubmit, onError }: TransactionFormProps): React.JSX.Element {
+function TransactionForm({
+  onSubmit,
+  onError,
+  assets: propsAssets
+}: TransactionFormProps): React.JSX.Element {
   const [assets, setAssets] = useState<Asset[]>([])
   const [loadingAssets, setLoadingAssets] = useState(true)
 
@@ -45,7 +50,8 @@ function TransactionForm({ onSubmit, onError }: TransactionFormProps): React.JSX
   useEffect(() => {
     const loadAssets = async (): Promise<void> => {
       try {
-        const data = await window.api.getAllAssets()
+        // Si des actifs sont passés en props, les utiliser directement
+        const data = propsAssets || (await window.api.getAllAssets())
         setAssets(data)
         // Pré-sélectionner le premier actif et son prix
         if (data.length > 0) {
@@ -63,7 +69,7 @@ function TransactionForm({ onSubmit, onError }: TransactionFormProps): React.JSX
       }
     }
     loadAssets()
-  }, [onError])
+  }, [onError, propsAssets])
 
   // Mettre à jour le prix quand l'actif change
   const handleAssetChange = (assetId: string): void => {
