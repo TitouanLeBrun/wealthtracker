@@ -22,7 +22,9 @@ const api = {
   // Assets API
   getAllAssets: () => ipcRenderer.invoke('asset:getAll'),
   createAsset: (data: { name: string; ticker: string; currentPrice: number; categoryId: number }) =>
-    ipcRenderer.invoke('asset:create', data)
+    ipcRenderer.invoke('asset:create', data),
+  updateAssetPrice: (data: { assetId: number; newPrice: number }) =>
+    ipcRenderer.invoke('asset:updatePrice', data)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

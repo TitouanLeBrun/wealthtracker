@@ -180,6 +180,21 @@ app.whenReady().then(() => {
     }
   )
 
+  // ✨ NOUVEAU : Mise à jour du prix d'un actif
+  ipcMain.handle('asset:updatePrice', async (_, data: { assetId: number; newPrice: number }) => {
+    try {
+      const prisma = getPrismaClient()
+      return await prisma.asset.update({
+        where: { id: data.assetId },
+        data: { currentPrice: data.newPrice },
+        include: { category: true }
+      })
+    } catch (error) {
+      console.error('[IPC] Error updating asset price:', error)
+      throw error
+    }
+  })
+
   createWindow()
 
   app.on('activate', function () {
