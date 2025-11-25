@@ -107,6 +107,10 @@ function TransactionForm({
   const isTypeLocked = preselectedType !== undefined
   const canSell = ownedQuantity > 0
 
+  // Trouver la catégorie sélectionnée pour obtenir sa couleur
+  const selectedCategory = categories.find((c) => c.id === Number(formData.categoryId))
+  const categoryColor = selectedCategory?.color || '#3b82f6'
+
   return (
     <form onSubmit={handleSubmit}>
       {/* Catégorie | Actif */}
@@ -135,6 +139,7 @@ function TransactionForm({
           onChange={(type) => setFormData({ ...formData, type })}
           isLocked={isTypeLocked}
           canSell={canSell}
+          categoryColor={categoryColor}
         />
 
         <DateField value={formData.date} onChange={(date) => setFormData({ ...formData, date })} />
@@ -181,10 +186,11 @@ function TransactionForm({
         pricePerUnit={formData.pricePerUnit}
         fee={formData.fee}
         total={transactionTotal}
+        categoryColor={categoryColor}
       />
 
       {/* Bouton Submit */}
-      <SubmitButton type={formData.type} />
+      <SubmitButton type={formData.type} categoryColor={categoryColor} />
     </form>
   )
 }

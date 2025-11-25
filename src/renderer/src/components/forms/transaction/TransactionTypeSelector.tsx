@@ -5,13 +5,15 @@ interface TransactionTypeSelectorProps {
   onChange: (type: 'BUY' | 'SELL') => void
   isLocked: boolean
   canSell: boolean
+  categoryColor?: string
 }
 
 function TransactionTypeSelector({
   type,
   onChange,
   isLocked,
-  canSell
+  canSell,
+  categoryColor = '#10b981'
 }: TransactionTypeSelectorProps): React.JSX.Element {
   return (
     <div>
@@ -34,9 +36,9 @@ function TransactionTypeSelector({
           style={{
             flex: 1,
             padding: '12px',
-            background: type === 'BUY' ? '#10b981' : isLocked ? '#f3f4f6' : 'var(--color-card)',
+            background: type === 'BUY' ? categoryColor : isLocked ? '#f3f4f6' : 'var(--color-card)',
             color: type === 'BUY' ? 'white' : 'var(--color-text-primary)',
-            border: `2px solid ${type === 'BUY' ? '#10b981' : 'var(--color-border)'}`,
+            border: `2px solid ${type === 'BUY' ? categoryColor : 'var(--color-border)'}`,
             borderRadius: 'var(--border-radius)',
             fontSize: '14px',
             fontWeight: '600',

@@ -3,13 +3,20 @@ import { MouseEvent } from 'react'
 interface SubmitButtonProps {
   type: 'BUY' | 'SELL'
   disabled?: boolean
+  categoryColor?: string
 }
 
-function SubmitButton({ type, disabled = false }: SubmitButtonProps): React.JSX.Element {
+function SubmitButton({
+  type,
+  disabled = false,
+  categoryColor = '#10b981'
+}: SubmitButtonProps): React.JSX.Element {
+  const buttonColor = type === 'BUY' ? categoryColor : '#ef4444'
+
   const baseStyle = {
     width: '100%',
     padding: '14px',
-    background: type === 'BUY' ? '#10b981' : '#ef4444',
+    background: buttonColor,
     color: 'white',
     border: 'none',
     borderRadius: 'var(--border-radius)',
@@ -23,8 +30,7 @@ function SubmitButton({ type, disabled = false }: SubmitButtonProps): React.JSX.
   const handleMouseEnter = (e: MouseEvent<HTMLButtonElement>): void => {
     if (!disabled) {
       e.currentTarget.style.transform = 'translateY(-2px)'
-      e.currentTarget.style.boxShadow =
-        type === 'BUY' ? '0 4px 12px rgba(16, 185, 129, 0.4)' : '0 4px 12px rgba(239, 68, 68, 0.4)'
+      e.currentTarget.style.boxShadow = `0 4px 12px ${buttonColor}66`
     }
   }
 

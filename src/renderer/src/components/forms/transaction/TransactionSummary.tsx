@@ -7,6 +7,7 @@ interface TransactionSummaryProps {
   pricePerUnit: string
   fee: string
   total: number
+  categoryColor?: string
 }
 
 function TransactionSummary({
@@ -15,18 +16,23 @@ function TransactionSummary({
   quantity,
   pricePerUnit,
   fee,
-  total
+  total,
+  categoryColor = '#3b82f6'
 }: TransactionSummaryProps): React.JSX.Element {
   if (total <= 0) return <></>
+
+  // Utiliser la couleur de la catégorie pour les achats, rouge pour les ventes
+  const bgColor = type === 'BUY' ? categoryColor : '#ef4444'
+  const borderColor = type === 'BUY' ? categoryColor : '#ef4444'
 
   return (
     <div
       style={{
         padding: 'var(--spacing-md)',
-        background: 'rgba(59, 130, 246, 0.1)',
+        background: `${bgColor}15`,
         borderRadius: 'var(--border-radius)',
         marginBottom: 'var(--spacing-md)',
-        border: '1px solid rgba(59, 130, 246, 0.3)'
+        border: `1px solid ${borderColor}50`
       }}
     >
       <h4
@@ -45,7 +51,7 @@ function TransactionSummary({
           <span
             style={{
               fontWeight: '600',
-              color: type === 'BUY' ? '#10b981' : '#ef4444'
+              color: type === 'BUY' ? categoryColor : '#ef4444'
             }}
           >
             {type === 'BUY' ? '📈 Achat' : '📉 Vente'}
@@ -77,7 +83,7 @@ function TransactionSummary({
         )}
         <div
           style={{
-            borderTop: '1px solid rgba(59, 130, 246, 0.3)',
+            borderTop: `1px solid ${borderColor}50`,
             marginTop: 'var(--spacing-xs)',
             paddingTop: 'var(--spacing-xs)',
             display: 'flex',
@@ -89,7 +95,7 @@ function TransactionSummary({
             style={{
               fontSize: '16px',
               fontWeight: '700',
-              color: type === 'BUY' ? '#10b981' : '#ef4444'
+              color: type === 'BUY' ? categoryColor : '#ef4444'
             }}
           >
             {total.toFixed(2)} €

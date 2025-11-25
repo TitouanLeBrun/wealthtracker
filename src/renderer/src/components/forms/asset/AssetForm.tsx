@@ -32,6 +32,10 @@ function AssetForm({
     return <NoCategoriesWarning />
   }
 
+  // Trouver la catégorie sélectionnée pour obtenir sa couleur
+  const selectedCategory = categories.find((c) => c.id === Number(formData.categoryId))
+  const categoryColor = selectedCategory?.color || '#3b82f6'
+
   return (
     <div>
       {/* Message d'alerte si le ticker existe déjà */}
@@ -71,7 +75,7 @@ function AssetForm({
         </div>
 
         {/* Bouton Submit */}
-        <AssetSubmitButton disabled={tickerExists} />
+        <AssetSubmitButton disabled={tickerExists} categoryColor={categoryColor} />
       </form>
     </div>
   )

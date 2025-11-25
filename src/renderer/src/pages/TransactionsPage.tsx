@@ -118,7 +118,7 @@ function TransactionsPage({
               background: assets.length === 0 ? 'var(--color-border)' : 'var(--color-primary)',
               color: 'white',
               border: 'none',
-              borderRadius: 'var(--border-radius)',
+              borderRadius: '12px',
               fontSize: '14px',
               fontWeight: '600',
               cursor: assets.length === 0 ? 'not-allowed' : 'pointer',
