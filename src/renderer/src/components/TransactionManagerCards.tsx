@@ -1,4 +1,5 @@
-import { Receipt, TrendingUp, TrendingDown, Calendar, DollarSign } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { ChevronLeft, ChevronRight, Calendar, Filter } from 'lucide-react'
 import type { Transaction } from '../types'
 
 interface TransactionManagerCardsProps {
@@ -6,229 +7,217 @@ interface TransactionManagerCardsProps {
   loading?: boolean
 }
 
+const ITEMS_PER_PAGE = 5
+
 function TransactionManagerCards({
   transactions,
   loading = false
 }: TransactionManagerCardsProps): React.JSX.Element {
-  // Calculer les statistiques
-  const stats = transactions.reduce(
-    (acc, transaction) => {
-      const total = transaction.quantity * transaction.price + transaction.fees
-      if (transaction.type === 'BUY') {
-        acc.totalBuys += total
-        acc.buyCount++
-      } else {
-        acc.totalSells += total
-        acc.sellCount++
-      }
-      return acc
-    },
-    { totalBuys: 0, totalSells: 0, buyCount: 0, sellCount: 0 }
-  )
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [dateFilter, setDateFilter] = useState<string>('')
 
-  const balance = stats.totalSells - stats.totalBuys
+  // Extraire les catégories uniques
+  const categories = useMemo(() => {
+    const categorySet = new Set(
+      transactions.filter((t) => t.asset?.category).map((t) => t.asset!.category!.name)
+    )
+    return Array.from(categorySet)
+  }, [transactions])
+
+  // Filtrer les transactions
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((transaction) => {
+      // Filtre par catégorie
+      if (selectedCategory !== 'all') {
+        if (transaction.asset?.category?.name !== selectedCategory) {
+          return false
+        }
+      }
+
+      // Filtre par date
+      if (dateFilter) {
+        const transactionDate = new Date(transaction.date).toISOString().split('T')[0]
+        if (transactionDate !== dateFilter) {
+          return false
+        }
+      }
+
+      return true
+    })
+  }, [transactions, selectedCategory, dateFilter])
+
+  // Pagination
+  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const currentTransactions = filteredTransactions.slice(startIndex, endIndex)
+
+  // Réinitialiser la page quand les filtres changent
+  const handleFilterChange = (category: string, date: string): void => {
+    setSelectedCategory(category)
+    setDateFilter(date)
+    setCurrentPage(1)
+  }
 
   if (loading) {
     return (
-      <div style={{ padding: 'var(--spacing-lg)' }}>
-        <div
-          style={{
-            height: '120px',
-            background: 'var(--color-card-bg)',
-            borderRadius: 'var(--border-radius)',
-            animation: 'pulse 1.5s ease-in-out infinite'
-          }}
-        />
+      <div style={{ padding: 'var(--spacing-lg)', textAlign: 'center' }}>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Chargement...</p>
+      </div>
+    )
+  }
+
+  if (transactions.length === 0) {
+    return (
+      <div
+        style={{
+          textAlign: 'center',
+          padding: 'var(--spacing-xxl)',
+          color: 'var(--color-text-secondary)'
+        }}
+      >
+        <p style={{ margin: 0, fontSize: '16px' }}>Aucune transaction enregistrée</p>
+        <p style={{ margin: 'var(--spacing-sm) 0 0', fontSize: '14px' }}>
+          Créez votre première transaction pour commencer
+        </p>
       </div>
     )
   }
 
   return (
     <div>
-      {/* Statistiques Cards */}
+      {/* Filtres */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          background: 'var(--color-card-bg)',
+          padding: 'var(--spacing-md)',
+          borderRadius: 'var(--border-radius)',
+          marginBottom: 'var(--spacing-lg)',
+          display: 'flex',
           gap: 'var(--spacing-md)',
-          marginBottom: 'var(--spacing-xl)'
+          flexWrap: 'wrap',
+          alignItems: 'center'
         }}
       >
-        {/* Card Total Achats */}
-        <div
-          className="animate-scaleIn"
-          style={{
-            background: 'var(--color-card-bg)',
-            borderRadius: 'var(--border-radius)',
-            padding: 'var(--spacing-lg)',
-            border: '2px solid #ef4444',
-            transition: 'all 0.2s ease',
-            cursor: 'default'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-4px)'
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(239, 68, 68, 0.3)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = 'none'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                background: 'rgba(239, 68, 68, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TrendingDown size={24} color="#ef4444" />
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                Achats ({stats.buyCount})
-              </div>
-              <div style={{ fontSize: '20px', fontWeight: '700', color: '#ef4444' }}>
-                {stats.totalBuys.toFixed(2)} €
-              </div>
-            </div>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
+          <Filter size={18} color="var(--color-primary)" />
+          <span style={{ fontWeight: '600', fontSize: '14px' }}>Filtres:</span>
         </div>
 
-        {/* Card Total Ventes */}
-        <div
-          className="animate-scaleIn"
-          style={{
-            background: 'var(--color-card-bg)',
-            borderRadius: 'var(--border-radius)',
-            padding: 'var(--spacing-lg)',
-            border: '2px solid #10b981',
-            transition: 'all 0.2s ease',
-            cursor: 'default',
-            animationDelay: '0.1s'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-4px)'
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(16, 185, 129, 0.3)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = 'none'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                background: 'rgba(16, 185, 129, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TrendingUp size={24} color="#10b981" />
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                Ventes ({stats.sellCount})
-              </div>
-              <div style={{ fontSize: '20px', fontWeight: '700', color: '#10b981' }}>
-                {stats.totalSells.toFixed(2)} €
-              </div>
-            </div>
-          </div>
+        {/* Filtre par catégorie */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
+          <label
+            htmlFor="category-filter"
+            style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}
+          >
+            Catégorie:
+          </label>
+          <select
+            id="category-filter"
+            value={selectedCategory}
+            onChange={(e) => handleFilterChange(e.target.value, dateFilter)}
+            style={{
+              padding: '8px 12px',
+              background: 'var(--color-input-bg)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--border-radius)',
+              color: 'var(--color-text-primary)',
+              fontSize: '14px',
+              cursor: 'pointer'
+            }}
+          >
+            <option value="all">Toutes</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Card Bilan */}
+        {/* Filtre par date */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
+          <label
+            htmlFor="date-filter"
+            style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}
+          >
+            <Calendar size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+            Date:
+          </label>
+          <input
+            id="date-filter"
+            type="date"
+            value={dateFilter}
+            onChange={(e) => handleFilterChange(selectedCategory, e.target.value)}
+            style={{
+              padding: '8px 12px',
+              background: 'var(--color-input-bg)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--border-radius)',
+              color: 'var(--color-text-primary)',
+              fontSize: '14px'
+            }}
+          />
+        </div>
+
+        {/* Reset filters */}
+        {(selectedCategory !== 'all' || dateFilter) && (
+          <button
+            onClick={() => {
+              setSelectedCategory('all')
+              setDateFilter('')
+              setCurrentPage(1)
+            }}
+            style={{
+              padding: '8px 16px',
+              background: 'var(--color-border)',
+              border: 'none',
+              borderRadius: 'var(--border-radius)',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--color-primary)'
+              e.currentTarget.style.color = 'white'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'var(--color-border)'
+              e.currentTarget.style.color = 'inherit'
+            }}
+          >
+            Réinitialiser
+          </button>
+        )}
+
+        {/* Résultats */}
         <div
-          className="animate-scaleIn"
           style={{
-            background: 'var(--color-card-bg)',
-            borderRadius: 'var(--border-radius)',
-            padding: 'var(--spacing-lg)',
-            border: `2px solid ${balance >= 0 ? '#10b981' : '#ef4444'}`,
-            transition: 'all 0.2s ease',
-            cursor: 'default',
-            animationDelay: '0.2s'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-4px)'
-            const color = balance >= 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'
-            e.currentTarget.style.boxShadow = `0 12px 32px ${color}`
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = 'none'
+            marginLeft: 'auto',
+            fontSize: '14px',
+            color: 'var(--color-text-secondary)'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                background: `${balance >= 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <DollarSign size={24} color={balance >= 0 ? '#10b981' : '#ef4444'} />
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Bilan</div>
-              <div
-                style={{
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  color: balance >= 0 ? '#10b981' : '#ef4444'
-                }}
-              >
-                {balance >= 0 ? '+' : ''}
-                {balance.toFixed(2)} €
-              </div>
-            </div>
-          </div>
+          {filteredTransactions.length} transaction(s) trouvée(s)
         </div>
       </div>
 
-      {/* Liste des Transactions */}
-      <div style={{ marginTop: 'var(--spacing-xl)' }}>
-        <h3
+      {/* Liste des transactions */}
+      {filteredTransactions.length === 0 ? (
+        <div
           style={{
-            fontSize: '18px',
-            fontWeight: '600',
-            marginBottom: 'var(--spacing-md)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--spacing-sm)'
+            textAlign: 'center',
+            padding: 'var(--spacing-xl)',
+            color: 'var(--color-text-secondary)',
+            background: 'var(--color-card-bg)',
+            borderRadius: 'var(--border-radius)'
           }}
         >
-          <Receipt size={20} />
-          Historique des Transactions ({transactions.length})
-        </h3>
-
-        {transactions.length === 0 ? (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: 'var(--spacing-xxl)',
-              color: 'var(--color-text-secondary)'
-            }}
-          >
-            <Receipt size={48} style={{ opacity: 0.3, margin: '0 auto var(--spacing-md)' }} />
-            <p style={{ margin: 0, fontSize: '16px' }}>Aucune transaction enregistrée</p>
-            <p style={{ margin: 'var(--spacing-sm) 0 0', fontSize: '14px' }}>
-              Créez votre première transaction pour commencer
-            </p>
-          </div>
-        ) : (
+          <p style={{ margin: 0 }}>Aucune transaction ne correspond aux filtres sélectionnés</p>
+        </div>
+      ) : (
+        <>
           <div
             style={{
               display: 'flex',
@@ -236,25 +225,23 @@ function TransactionManagerCards({
               gap: 'var(--spacing-md)'
             }}
           >
-            {transactions.map((transaction, index) => {
-              const total = transaction.quantity * transaction.price + transaction.fees
+            {currentTransactions.map((transaction) => {
+              const total = transaction.quantity * transaction.pricePerUnit + transaction.fee
               const isBuy = transaction.type === 'BUY'
 
               return (
                 <div
                   key={transaction.id}
-                  className="animate-scaleIn"
                   style={{
                     background: 'var(--color-card-bg)',
                     borderRadius: 'var(--border-radius)',
                     padding: 'var(--spacing-lg)',
                     borderLeft: `4px solid ${isBuy ? '#ef4444' : '#10b981'}`,
-                    transition: 'all 0.2s ease',
-                    animationDelay: `${index * 0.05}s`
+                    transition: 'all 0.2s ease'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateX(4px)'
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)'
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateX(0)'
@@ -273,13 +260,15 @@ function TransactionManagerCards({
                     {/* Infos principales */}
                     <div style={{ flex: '1', minWidth: '200px' }}>
                       <div
-                        style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 'var(--spacing-sm)',
+                          marginBottom: 'var(--spacing-xs)'
+                        }}
                       >
                         <span
                           style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
                             padding: '4px 12px',
                             borderRadius: '12px',
                             fontSize: '12px',
@@ -287,41 +276,49 @@ function TransactionManagerCards({
                             background: isBuy
                               ? 'rgba(239, 68, 68, 0.15)'
                               : 'rgba(16, 185, 129, 0.15)',
-                            color: isBuy ? '#ef4444' : '#10b981',
-                            border: `1px solid ${isBuy ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
+                            color: isBuy ? '#ef4444' : '#10b981'
                           }}
                         >
                           {isBuy ? 'ACHAT' : 'VENTE'}
                         </span>
-                        <span
-                          style={{
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            color: 'var(--color-text-primary)'
-                          }}
-                        >
-                          {transaction.asset.ticker}
+                        <span style={{ fontSize: '16px', fontWeight: '600' }}>
+                          {transaction.asset?.ticker}
                         </span>
                       </div>
                       <div
                         style={{
-                          marginTop: 'var(--spacing-sm)',
                           fontSize: '14px',
-                          color: 'var(--color-text-secondary)'
+                          color: 'var(--color-text-secondary)',
+                          marginBottom: 'var(--spacing-xs)'
                         }}
                       >
-                        {transaction.asset.name}
+                        {transaction.asset?.name}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--color-text-secondary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 'var(--spacing-xs)'
+                        }}
+                      >
+                        <span
+                          style={{
+                            padding: '2px 8px',
+                            background: transaction.asset?.category?.color || '#4CAF50',
+                            color: 'white',
+                            borderRadius: '8px',
+                            fontSize: '11px'
+                          }}
+                        >
+                          {transaction.asset?.category?.name}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Détails quantité/prix */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: 'var(--spacing-lg)',
-                        flexWrap: 'wrap'
-                      }}
-                    >
+                    {/* Détails */}
+                    <div style={{ display: 'flex', gap: 'var(--spacing-lg)', flexWrap: 'wrap' }}>
                       <div>
                         <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
                           Quantité
@@ -335,19 +332,17 @@ function TransactionManagerCards({
                           Prix unitaire
                         </div>
                         <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                          {transaction.price.toFixed(2)} €
+                          {transaction.pricePerUnit.toFixed(2)} €
                         </div>
                       </div>
-                      {transaction.fees > 0 && (
-                        <div>
-                          <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                            Frais
-                          </div>
-                          <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                            {transaction.fees.toFixed(2)} €
-                          </div>
+                      <div>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                          Frais
                         </div>
-                      )}
+                        <div style={{ fontSize: '16px', fontWeight: '600' }}>
+                          {transaction.fee.toFixed(2)} €
+                        </div>
+                      </div>
                       <div>
                         <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
                           Total
@@ -367,20 +362,18 @@ function TransactionManagerCards({
                     {/* Date */}
                     <div
                       style={{
+                        fontSize: '12px',
+                        color: 'var(--color-text-secondary)',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 'var(--spacing-xs)',
-                        fontSize: '12px',
-                        color: 'var(--color-text-secondary)'
+                        gap: 'var(--spacing-xs)'
                       }}
                     >
                       <Calendar size={14} />
-                      {new Date(transaction.createdAt).toLocaleDateString('fr-FR', {
+                      {new Date(transaction.date).toLocaleDateString('fr-FR', {
                         year: 'numeric',
                         month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                        day: 'numeric'
                       })}
                     </div>
                   </div>
@@ -388,8 +381,112 @@ function TransactionManagerCards({
               )
             })}
           </div>
-        )}
-      </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div
+              style={{
+                marginTop: 'var(--spacing-lg)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 'var(--spacing-md)'
+              }}
+            >
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                style={{
+                  padding: '8px 12px',
+                  background: currentPage === 1 ? 'var(--color-border)' : 'var(--color-primary)',
+                  color: currentPage === 1 ? 'var(--color-text-secondary)' : 'white',
+                  border: 'none',
+                  borderRadius: 'var(--border-radius)',
+                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--spacing-xs)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <ChevronLeft size={16} />
+                Précédent
+              </button>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 'var(--spacing-xs)',
+                  alignItems: 'center'
+                }}
+              >
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    style={{
+                      padding: '8px 12px',
+                      background: page === currentPage ? 'var(--color-primary)' : 'transparent',
+                      color: page === currentPage ? 'white' : 'var(--color-text-primary)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--border-radius)',
+                      cursor: 'pointer',
+                      fontWeight: page === currentPage ? '700' : '400',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (page !== currentPage) {
+                        e.currentTarget.style.background = 'var(--color-card-bg)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (page !== currentPage) {
+                        e.currentTarget.style.background = 'transparent'
+                      }
+                    }}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                style={{
+                  padding: '8px 12px',
+                  background:
+                    currentPage === totalPages ? 'var(--color-border)' : 'var(--color-primary)',
+                  color: currentPage === totalPages ? 'var(--color-text-secondary)' : 'white',
+                  border: 'none',
+                  borderRadius: 'var(--border-radius)',
+                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--spacing-xs)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Suivant
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+
+          {/* Info pagination */}
+          <div
+            style={{
+              marginTop: 'var(--spacing-md)',
+              textAlign: 'center',
+              fontSize: '14px',
+              color: 'var(--color-text-secondary)'
+            }}
+          >
+            Affichage de {startIndex + 1} à {Math.min(endIndex, filteredTransactions.length)} sur{' '}
+            {filteredTransactions.length} transaction(s)
+          </div>
+        </>
+      )}
     </div>
   )
 }
