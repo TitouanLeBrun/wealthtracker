@@ -1,6 +1,6 @@
 # 💰 WealthTracker
 
-[![Lint Check](https://github.com/YOUR_USERNAME/wealthtracker/actions/workflows/lint.yml/badge.svg)](https://github.com/YOUR_USERNAME/wealthtracker/actions/workflows/lint.yml)
+[![Lint Check](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/lint.yml/badge.svg)](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/lint.yml)
 ![Version](https://img.shields.io/badge/version-0.5.0-blue)
 ![Status](https://img.shields.io/badge/status-active--development-orange)
 
@@ -412,7 +412,7 @@ import AssetForm from '../components/forms/asset/AssetForm'
 
 ```bash
 # 1. Cloner le repository
-git clone https://github.com/YOUR_USERNAME/wealthtracker.git
+git clone https://github.com/TitouanLeBrun/wealthtracker.git
 cd wealthtracker
 
 # 2. Installer les dépendances
