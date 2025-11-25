@@ -18,6 +18,7 @@ function AssetForm({ onSubmit, onError }: AssetFormProps): React.JSX.Element {
   // Charger les catégories au montage
   useEffect(() => {
     loadCategories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadCategories = async (): Promise<void> => {
@@ -129,9 +130,7 @@ function AssetForm({ onSubmit, onError }: AssetFormProps): React.JSX.Element {
                 type="text"
                 id="asset-ticker"
                 value={formData.ticker}
-                onChange={(e) =>
-                  setFormData({ ...formData, ticker: e.target.value.toUpperCase() })
-                }
+                onChange={(e) => setFormData({ ...formData, ticker: e.target.value.toUpperCase() })}
                 placeholder="Ex: AAPL, BTC, SPY"
                 style={{
                   width: '100%',
@@ -182,9 +181,7 @@ function AssetForm({ onSubmit, onError }: AssetFormProps): React.JSX.Element {
               <select
                 id="asset-category"
                 value={formData.categoryId}
-                onChange={(e) =>
-                  setFormData({ ...formData, categoryId: parseInt(e.target.value) })
-                }
+                onChange={(e) => setFormData({ ...formData, categoryId: parseInt(e.target.value) })}
                 style={{
                   width: '100%',
                   padding: '10px',

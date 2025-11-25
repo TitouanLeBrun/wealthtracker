@@ -88,8 +88,7 @@ function CategoryForm({ onSubmit, onError }: CategoryFormProps): React.JSX.Eleme
                     width: '50px',
                     height: '50px',
                     backgroundColor: color.value,
-                    border:
-                      formData.color === color.value ? '3px solid #333' : '2px solid #ddd',
+                    border: formData.color === color.value ? '3px solid #333' : '2px solid #ddd',
                     borderRadius: '8px',
                     cursor: 'pointer',
                     transition: 'all 0.2s'

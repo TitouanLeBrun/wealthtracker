@@ -105,7 +105,7 @@ function TransactionForm({ onSubmit, onError }: TransactionFormProps): React.JSX
             borderRadius: '4px'
           }}
         >
-          ⚠️ Aucun actif disponible. Veuillez d'abord créer des actifs dans la section
+          ⚠️ Aucun actif disponible. Veuillez d&apos;abord créer des actifs dans la section
           Configuration.
         </p>
       </section>
@@ -171,7 +171,7 @@ function TransactionForm({ onSubmit, onError }: TransactionFormProps): React.JSX
               required
             />
           </label>
-          <small style={{ color: '#666' }}>Nombre d'unités achetées/vendues</small>
+          <small style={{ color: '#666' }}>Nombre d&apos;unités achetées/vendues</small>
         </div>
 
         {/* Prix unitaire */}

@@ -15,67 +15,111 @@ function App(): React.JSX.Element {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg)' }}>
       {/* Navigation */}
       <nav
         style={{
-          backgroundColor: '#fff',
-          borderBottom: '2px solid #ddd',
+          borderBottom: '1px solid var(--color-border)',
           padding: '0',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          boxShadow: 'var(--shadow-sm)',
           position: 'sticky',
           top: 0,
-          zIndex: 100
+          zIndex: 100,
+          backdropFilter: 'blur(10px)',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)'
         }}
       >
         <div
-          style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center' }}
+          style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 var(--spacing-lg)'
+          }}
         >
-          {/* Logo */}
-          <div style={{ padding: '15px 20px', fontWeight: 'bold', fontSize: '20px' }}>
-            💰 WealthTracker <span style={{ color: '#2196F3' }}>v0.2</span>
+          {/* Logo avec gradient */}
+          <div
+            style={{
+              padding: 'var(--spacing-md) 0',
+              fontWeight: 'bold',
+              fontSize: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--spacing-sm)'
+            }}
+          >
+            <span style={{ fontSize: '28px' }}>💰</span>
+            <span className="text-gradient">WealthTracker</span>
+            <span
+              style={{
+                fontSize: '12px',
+                padding: '2px 8px',
+                backgroundColor: 'var(--color-primary-light)',
+                color: 'var(--color-primary-dark)',
+                borderRadius: 'var(--radius-full)',
+                fontWeight: '600'
+              }}
+            >
+              v0.2
+            </span>
           </div>
 
-          {/* Menu */}
-          <div style={{ display: 'flex', marginLeft: 'auto' }}>
+          {/* Menu Navigation */}
+          <div style={{ display: 'flex', marginLeft: 'auto', gap: 'var(--spacing-xs)' }}>
             <button
               onClick={() => setActivePage('transactions')}
               style={{
-                padding: '18px 30px',
-                backgroundColor: activePage === 'transactions' ? '#2196F3' : 'transparent',
-                color: activePage === 'transactions' ? 'white' : '#666',
+                padding: '12px 24px',
+                backgroundColor:
+                  activePage === 'transactions' ? 'var(--color-primary)' : 'transparent',
+                color: activePage === 'transactions' ? 'white' : 'var(--color-text-secondary)',
                 border: 'none',
-                borderBottom: activePage === 'transactions' ? '3px solid #2196F3' : 'none',
+                borderRadius: 'var(--radius-md)',
                 cursor: 'pointer',
-                fontWeight: activePage === 'transactions' ? 'bold' : 'normal',
+                fontWeight: activePage === 'transactions' ? '600' : '500',
                 fontSize: '15px',
-                transition: 'all 0.3s'
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-sm)'
               }}
             >
-              📊 Transactions
+              <span>📊</span>
+              <span>Transactions</span>
             </button>
             <button
               onClick={() => setActivePage('settings')}
               style={{
-                padding: '18px 30px',
-                backgroundColor: activePage === 'settings' ? '#4CAF50' : 'transparent',
-                color: activePage === 'settings' ? 'white' : '#666',
+                padding: '12px 24px',
+                backgroundColor: activePage === 'settings' ? 'var(--color-success)' : 'transparent',
+                color: activePage === 'settings' ? 'white' : 'var(--color-text-secondary)',
                 border: 'none',
-                borderBottom: activePage === 'settings' ? '3px solid #4CAF50' : 'none',
+                borderRadius: 'var(--radius-md)',
                 cursor: 'pointer',
-                fontWeight: activePage === 'settings' ? 'bold' : 'normal',
+                fontWeight: activePage === 'settings' ? '600' : '500',
                 fontSize: '15px',
-                transition: 'all 0.3s'
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-sm)'
               }}
             >
-              ⚙️ Configuration
+              <span>⚙️</span>
+              <span>Configuration</span>
             </button>
           </div>
         </div>
       </nav>
 
       {/* Contenu principal */}
-      <main style={{ padding: '30px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <main
+        className="animate-fadeIn"
+        style={{
+          padding: 'var(--spacing-xl) var(--spacing-lg)',
+          maxWidth: '1200px',
+          margin: '0 auto',
+          minHeight: 'calc(100vh - 200px)'
+        }}
+      >
         {/* Notification visuelle */}
         {message && <Notification type={message.type} message={message.text} />}
 
@@ -95,18 +139,24 @@ function App(): React.JSX.Element {
         )}
       </main>
 
-      {/* Footer */}
+      {/* Footer moderne */}
       <footer
         style={{
           textAlign: 'center',
-          padding: '20px',
-          color: '#999',
+          padding: 'var(--spacing-xl) var(--spacing-lg)',
+          color: 'var(--color-text-secondary)',
           fontSize: '14px',
-          borderTop: '1px solid #ddd',
-          marginTop: '50px'
+          borderTop: '1px solid var(--color-border)',
+          marginTop: 'var(--spacing-xl)',
+          backgroundColor: 'var(--color-surface)'
         }}
       >
-        WealthTracker v0.2 - Gestion professionnelle de portefeuille financier
+        <div style={{ marginBottom: 'var(--spacing-sm)' }}>
+          <strong>WealthTracker v0.2</strong> - Gestion professionnelle de portefeuille financier
+        </div>
+        <div style={{ fontSize: '12px', color: 'var(--color-text-disabled)' }}>
+          Made with ❤️ using Electron + React + Prisma
+        </div>
       </footer>
     </div>
   )
