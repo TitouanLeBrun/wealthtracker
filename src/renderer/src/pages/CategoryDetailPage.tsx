@@ -20,6 +20,7 @@ interface CategoryDetailPageProps {
   categoryId: number
   categoryValues: CategoryValue[]
   onBack: () => void
+  onNavigateToAsset: (assetId: number) => void
   onSuccess: (message: string) => void
   onError: (message: string) => void
 }
@@ -28,6 +29,7 @@ function CategoryDetailPage({
   categoryId,
   categoryValues,
   onBack,
+  onNavigateToAsset,
   onSuccess,
   onError
 }: CategoryDetailPageProps): React.JSX.Element {
@@ -182,6 +184,7 @@ function CategoryDetailPage({
         category={category}
         sortedAssets={sortedAssets}
         onAddAsset={() => setShowAssetModal(true)}
+        onAssetClick={onNavigateToAsset}
       />
 
       {/* Historique des transactions */}

@@ -5,12 +5,14 @@ interface CategoryAssetsListProps {
   category: Category
   sortedAssets: AssetValue[]
   onAddAsset: () => void
+  onAssetClick: (assetId: number) => void
 }
 
 function CategoryAssetsList({
   category,
   sortedAssets,
-  onAddAsset
+  onAddAsset,
+  onAssetClick
 }: CategoryAssetsListProps): React.JSX.Element {
   return (
     <div style={{ marginBottom: 'var(--spacing-xl)' }}>
@@ -107,7 +109,26 @@ function CategoryAssetsList({
                   </div>
                 )}
                 <div style={{ marginBottom: 'var(--spacing-sm)' }}>
-                  <div style={{ fontSize: '18px', fontWeight: '600' }}>{assetValue.ticker}</div>
+                  <div
+                    onClick={() => onAssetClick(assetValue.assetId)}
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      color: category.color,
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.textDecoration = 'underline'
+                      e.currentTarget.style.filter = 'brightness(1.2)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.textDecoration = 'none'
+                      e.currentTarget.style.filter = 'brightness(1)'
+                    }}
+                  >
+                    {assetValue.ticker}
+                  </div>
                   <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
                     {assetValue.name}
                   </div>

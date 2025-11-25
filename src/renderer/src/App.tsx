@@ -3,14 +3,16 @@ import DashboardPage from './pages/DashboardPage'
 import TransactionsPage from './pages/TransactionsPage'
 import SettingsPage from './pages/SettingsPage'
 import CategoryDetailPage from './pages/CategoryDetailPage'
+import AssetDetailPage from './pages/AssetDetailPage'
 import Notification from './components/common/Notification'
 import type { NotificationMessage, CategoryValue } from './types'
 
 function App(): React.JSX.Element {
   const [activePage, setActivePage] = useState<
-    'dashboard' | 'transactions' | 'settings' | 'category'
+    'dashboard' | 'transactions' | 'settings' | 'category' | 'asset'
   >('dashboard')
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+  const [selectedAssetId, setSelectedAssetId] = useState<number | null>(null)
   const [categoryValues, setCategoryValues] = useState<CategoryValue[]>([])
   const [message, setMessage] = useState<NotificationMessage | null>(null)
 
@@ -27,10 +29,26 @@ function App(): React.JSX.Element {
     setActivePage('category')
   }
 
+  // Navigation vers un actif
+  const navigateToAsset = (assetId: number): void => {
+    setSelectedAssetId(assetId)
+    setActivePage('asset')
+  }
+
   // Retour à la page settings
   const navigateToSettings = (): void => {
     setActivePage('settings')
     setSelectedCategoryId(null)
+  }
+
+  // Retour à la page category depuis asset
+  const navigateBackToCategory = (): void => {
+    if (selectedCategoryId) {
+      setActivePage('category')
+      setSelectedAssetId(null)
+    } else {
+      navigateToSettings()
+    }
   }
 
   return (
@@ -190,6 +208,16 @@ function App(): React.JSX.Element {
             categoryId={selectedCategoryId}
             categoryValues={categoryValues}
             onBack={navigateToSettings}
+            onNavigateToAsset={navigateToAsset}
+            onSuccess={(msg) => showMessage('success', msg)}
+            onError={(msg) => showMessage('error', msg)}
+          />
+        )}
+
+        {activePage === 'asset' && selectedAssetId && (
+          <AssetDetailPage
+            assetId={selectedAssetId}
+            onBack={navigateBackToCategory}
             onSuccess={(msg) => showMessage('success', msg)}
             onError={(msg) => showMessage('error', msg)}
           />

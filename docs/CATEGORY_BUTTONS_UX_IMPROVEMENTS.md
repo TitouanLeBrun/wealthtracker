@@ -21,6 +21,7 @@ Amélioration de l'expérience utilisateur des boutons dans la page de détail d
 ### 1. **Bouton Retour** (CategoryHeader)
 
 #### 🔴 Avant
+
 ```tsx
 {
   background: 'var(--color-border)',  // Gris générique
@@ -32,6 +33,7 @@ Amélioration de l'expérience utilisateur des boutons dans la page de détail d
 ```
 
 #### ✅ Après
+
 ```tsx
 {
   background: 'white',                     // Fond blanc propre
@@ -51,6 +53,7 @@ onMouseEnter: {
 ```
 
 **Avantages** :
+
 - ✅ Design plus professionnel et épuré
 - ✅ Ombrage indique clairement qu'il s'agit d'un bouton cliquable
 - ✅ Ne se confond pas avec les boutons d'action primaires
@@ -61,6 +64,7 @@ onMouseEnter: {
 ### 2. **Bouton "Ajouter un Actif"** (CategoryAssetsList)
 
 #### 🔴 Avant
+
 ```tsx
 {
   background: 'var(--color-primary)',  // Bleu standard
@@ -71,6 +75,7 @@ onMouseEnter: {
 ```
 
 #### ✅ Après
+
 ```tsx
 {
   background: category.color,              // 🎨 Couleur de la catégorie !
@@ -88,6 +93,7 @@ onMouseEnter: {
 ```
 
 **Avantages** :
+
 - ✅ **Cohérence visuelle** : le bouton adopte la couleur de la catégorie
 - ✅ **Identité forte** : chaque catégorie a ses propres boutons colorés
 - ✅ **Ombrage dynamique** : s'adapte à la couleur de la catégorie
@@ -98,6 +104,7 @@ onMouseEnter: {
 ### 3. **Bouton "Ajouter une Transaction"** (CategoryTransactionsSection)
 
 #### 🔴 Avant
+
 ```tsx
 {
   background: '#10b981',  // Vert fixe
@@ -108,6 +115,7 @@ onMouseEnter: {
 ```
 
 #### ✅ Après
+
 ```tsx
 {
   background: category.color,              // 🎨 Couleur de la catégorie !
@@ -120,6 +128,7 @@ onMouseEnter: {
 ```
 
 **Avantages** :
+
 - ✅ **Uniformité totale** : même style que le bouton "Ajouter un Actif"
 - ✅ **Élimination de l'incohérence** : plus de vert générique
 - ✅ **Expérience cohérente** pour l'utilisateur
@@ -156,12 +165,14 @@ onMouseEnter: {
 ## 📁 Fichiers Modifiés
 
 ### 1. `CategoryHeader.tsx`
+
 ```diff
 + Bouton Retour avec fond blanc et ombrage
 + Transition smooth et feedback visuel au hover
 ```
 
 ### 2. `CategoryAssetsList.tsx`
+
 ```diff
 + Utilisation de category.color pour le bouton
 + Ombrage dynamique basé sur la couleur
@@ -169,6 +180,7 @@ onMouseEnter: {
 ```
 
 ### 3. `CategoryTransactionsSection.tsx`
+
 ```diff
 + Ajout de la prop category: Category
 + Utilisation de category.color pour le bouton
@@ -176,6 +188,7 @@ onMouseEnter: {
 ```
 
 ### 4. `CategoryDetailPage.tsx`
+
 ```diff
 + Passage de la prop category à CategoryTransactionsSection
 ```
@@ -185,28 +198,31 @@ onMouseEnter: {
 ## 🎭 Exemples Visuels
 
 ### Catégorie "Actions" (Bleu #3b82f6)
+
 ```
 [← Retour]  ──────────  [📋 Actions]  ──────────  [+ Ajouter un Actif]
   (blanc)                                              (bleu #3b82f6)
-                                         
+
                                                      [+ Ajouter une Transaction]
                                                            (bleu #3b82f6)
 ```
 
 ### Catégorie "Crypto" (Orange #f59e0b)
+
 ```
 [← Retour]  ──────────  [📋 Crypto]  ──────────  [+ Ajouter un Actif]
   (blanc)                                             (orange #f59e0b)
-                                         
+
                                                      [+ Ajouter une Transaction]
                                                           (orange #f59e0b)
 ```
 
 ### Catégorie "Immobilier" (Vert #10b981)
+
 ```
 [← Retour]  ──────────  [📋 Immobilier]  ──────  [+ Ajouter un Actif]
   (blanc)                                             (vert #10b981)
-                                         
+
                                                      [+ Ajouter une Transaction]
                                                           (vert #10b981)
 ```
@@ -216,19 +232,23 @@ onMouseEnter: {
 ## ✅ Bénéfices UX
 
 ### Hiérarchie Visuelle
+
 - **Bouton Retour** : Design discret, action secondaire
 - **Boutons d'Action** : Couleur vive de la catégorie, actions primaires
 
 ### Cohérence
+
 - Tous les boutons d'action partagent le même style
 - La couleur de la catégorie crée une identité visuelle forte
 
 ### Feedback Utilisateur
+
 - Ombrage indique qu'un élément est cliquable
 - Animations au survol confirment l'interaction
 - Translation verticale simule un bouton physique
 
 ### Accessibilité
+
 - Contraste élevé entre texte blanc et fond coloré
 - Bordures et ombrages bien définis
 - Tailles de boutons généreuses (padding 10px 20px)
@@ -247,22 +267,27 @@ onMouseEnter: {
 ## 📝 Notes Techniques
 
 ### Pourquoi `category.color` ?
+
 - ✅ Utilise la couleur déjà définie dans la base de données
 - ✅ Cohérence avec le cercle coloré et les graphiques
 - ✅ Pas de code couleur en dur
 
 ### Ombrage Dynamique
+
 ```tsx
 boxShadow: `0 2px 8px ${category.color}40`
-         //  ↑ offset  ↑ blur  ↑ couleur + opacité
+//  ↑ offset  ↑ blur  ↑ couleur + opacité
 ```
+
 - Le suffixe `40` ajoute 25% d'opacité (40 en hex = 64 en décimal)
 - Le suffixe `60` ajoute 37.5% d'opacité pour le hover
 
 ### Filter Brightness
+
 ```tsx
-filter: 'brightness(1.1)'  // +10% de luminosité au hover
+filter: 'brightness(1.1)' // +10% de luminosité au hover
 ```
+
 - Crée un effet de "glow" au survol
 - Plus subtil qu'un changement de couleur brut
 
