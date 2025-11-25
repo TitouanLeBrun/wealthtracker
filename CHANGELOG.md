@@ -188,16 +188,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Comparison
 
-| Feature | v0.1 | v0.2 | v0.3 |
-|---------|------|------|------|
-| Transactions | ✅ Basic | ✅ Full | ✅ Full |
-| Categories | ❌ | ✅ | ✅ Enhanced |
-| Assets | ❌ | ✅ | ✅ Enhanced |
-| Price Updates | ❌ | ❌ | ✅ Instant |
-| Forms | Inline | Inline | Modals ✨ |
-| Display | List | Tabs | Cards ✨ |
-| Icons | None | Emojis | lucide-react ✨ |
-| Design | Basic | Modern | Revolutionary ✨ |
+| Feature       | v0.1     | v0.2    | v0.3             |
+| ------------- | -------- | ------- | ---------------- |
+| Transactions  | ✅ Basic | ✅ Full | ✅ Full          |
+| Categories    | ❌       | ✅      | ✅ Enhanced      |
+| Assets        | ❌       | ✅      | ✅ Enhanced      |
+| Price Updates | ❌       | ❌      | ✅ Instant       |
+| Forms         | Inline   | Inline  | Modals ✨        |
+| Display       | List     | Tabs    | Cards ✨         |
+| Icons         | None     | Emojis  | lucide-react ✨  |
+| Design        | Basic    | Modern  | Revolutionary ✨ |
 
 ---
 

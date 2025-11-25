@@ -68,23 +68,27 @@ npx prisma db seed
 ## 🎯 Guide d'Utilisation Rapide
 
 ### 1️⃣ Créer des Catégories
+
 1. Aller dans **Configuration** (icône engrenage)
 2. Cliquer sur **+ Ajouter une catégorie**
 3. Remplir le nom et choisir une couleur
 4. **Créer** → La catégorie apparaît en card
 
 ### 2️⃣ Ajouter des Actifs
+
 1. Dans **Configuration**, cliquer sur **+ Ajouter un actif**
 2. Remplir : Nom, Ticker (ex: BTC), Prix, Catégorie
 3. **Créer** → L'actif est ajouté
 
 ### 3️⃣ Mettre à Jour les Prix (Price Ticker)
+
 1. Dans **Transactions**, voir le **Price Ticker** en haut
 2. **Cliquer** sur l'actif à modifier
 3. **Entrer** le nouveau prix
 4. **Enter** ou ✅ → Prix mis à jour instantanément
 
 ### 4️⃣ Enregistrer une Transaction
+
 1. Dans **Transactions**, remplir le formulaire
 2. Type : BUY ou SELL
 3. Sélectionner l'actif, quantité, prix
@@ -189,6 +193,7 @@ wealthtracker/
 ## 🐛 Dépannage
 
 ### L'app ne démarre pas
+
 ```bash
 npx prisma generate
 rm -rf node_modules package-lock.json
@@ -196,12 +201,14 @@ npm install
 ```
 
 ### Erreurs de build
+
 ```bash
 npm run lint
 npm run format
 ```
 
 ### Base corrompue
+
 ```bash
 rm prisma/dev.db
 npx prisma migrate reset
