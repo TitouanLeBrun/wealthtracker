@@ -5,6 +5,7 @@
 ### 1. Configuration du datasource
 
 **❌ Prisma 6 (ne fonctionne plus) :**
+
 ```typescript
 const prisma = new PrismaClient({
   datasources: {
@@ -16,6 +17,7 @@ const prisma = new PrismaClient({
 ```
 
 **✅ Prisma 7 (nouvelle syntaxe) :**
+
 ```typescript
 // La configuration se fait via prisma.config.ts et variables d'environnement
 const prisma = new PrismaClient({
@@ -48,10 +50,12 @@ export default defineConfig({
 **Problème** : Nous avons besoin de changer le chemin de la DB selon l'environnement (dev/prod).
 
 **Solution temporaire actuelle** :
+
 - En développement : utiliser `DATABASE_URL="file:./dev.db"` dans `.env`
 - En production : créer/copier le fichier `.db` dans `app.getPath('userData')`
 
 **Note** : Pour Prisma 7, la gestion dynamique du chemin en production nécessite :
+
 1. Soit modifier la variable d'environnement `DATABASE_URL` avant de créer le client
 2. Soit utiliser un adaptateur custom (feature avancée)
 
@@ -64,6 +68,7 @@ import { PrismaClient } from '@prisma/client'
 ```
 
 Mais assurez-vous d'avoir généré le client :
+
 ```powershell
 npx prisma generate
 ```
@@ -71,17 +76,21 @@ npx prisma generate
 ### 5. Problèmes connus
 
 #### Seed script
+
 Le script `prisma/seed.ts` peut avoir des problèmes avec Prisma 7 lors de l'exécution via `npx prisma db seed`.
 
 **Workaround** : Utiliser directement `npm run db:seed` qui utilise `tsx`.
 
 #### TypeScript errors
+
 Si vous voyez l'erreur :
+
 ```
 Module '"@prisma/client"' has no exported member 'PrismaClient'
 ```
 
 **Solution** :
+
 1. Regénérer le client : `npx prisma generate`
 2. Redémarrer le serveur TypeScript (VS Code : Cmd/Ctrl + Shift + P → "Restart TS Server")
 
@@ -94,11 +103,13 @@ Module '"@prisma/client"' has no exported member 'PrismaClient'
 ## 🔧 Configuration actuelle du projet
 
 ### Fichiers de configuration Prisma
+
 - `prisma/schema.prisma` - Schéma de la base de données
 - `prisma.config.ts` - Configuration Prisma 7
 - `.env` - Variables d'environnement (DATABASE_URL)
 
 ### Workflow
+
 1. Modifier le schéma → `prisma/schema.prisma`
 2. Créer la migration → `npx prisma migrate dev --name nom_migration`
 3. Générer le client → `npx prisma generate` (fait automatiquement par migrate)

@@ -1,104 +1,190 @@
-# 📋 Récapitulatif de l'Installation - WealthTracker v0.1
+# 📋 WealthTracker v0.1 - État Final
 
-## ✅ Étapes complétées
+## ✅ Walking Skeleton Complété
 
-### 1. ✅ Vérification des prérequis
+### Infrastructure ✅
 
-- Node.js: v24.11.1 ✓
-- npm: 11.6.2 ✓
+- **Electron 38** + **React 19** + **TypeScript** configuré
+- **Vite 7** comme build tool
+- **Prisma 6.19.0** + **SQLite** (base de données locale)
+- **TailwindCSS 4** avec PostCSS
+- **ESLint** + **Prettier** (0 erreurs, 0 warnings)
 
-### 2. ✅ Initialisation du projet Electron + React
+### Base de Données ✅
 
-- Projet créé avec `@quick-start/electron` (template react-ts)
-- Structure Electron + Vite + React + TypeScript en place
+- Modèle `Transaction` avec : id, label, amount, date, createdAt
+- Migration initiale appliquée
+- Script de seed fonctionnel (5 transactions de test)
+- Client Prisma avec gestion dynamique du chemin DB (dev/prod)
 
-### 3. ✅ Installation et configuration de Prisma
+### Backend (Main Process) ✅
 
-- Prisma CLI installé (v7.0.0)
-- Prisma Client installé
-- Base de données SQLite initialisée (`prisma/dev.db`)
-- Schéma Prisma configuré avec le modèle `Transaction`
-- Migration initiale créée et appliquée
+- **IPC Handlers** :
+  - `transaction:getAll` - Récupération de toutes les transactions
+  - `transaction:create` - Création d'une transaction
+- Helper `getPrismaClient()` avec gestion de la fermeture propre
 
-### 4. ✅ Configuration Electron pour Prisma
+### Bridge (Preload) ✅
 
-- Helper `getPrismaClient()` créé dans `src/main/database/client.ts`
-- Handlers IPC configurés dans `src/main/index.ts`:
-  - `transaction:getAll` - Récupère toutes les transactions
-  - `transaction:create` - Crée une nouvelle transaction
-- Preload script configuré pour exposer l'API au renderer
-- Types TypeScript définis pour l'API (`src/preload/index.d.ts`)
+- API exposée via `contextBridge`
+- Types TypeScript définis (`Transaction`, API)
+- Auto-complétion VSCode fonctionnelle
 
-### 5. ✅ Installation de TailwindCSS
+### Frontend (Renderer) ✅
 
-- TailwindCSS v4 installé
-- Plugin PostCSS `@tailwindcss/postcss` installé
-- Configuration PostCSS créée (`postcss.config.js`)
-- Configuration Tailwind créée (`tailwind.config.js`)
-- Directives Tailwind ajoutées à `main.css`
+- **Interface utilisateur complète** dans `App.tsx` :
+  - ✅ Formulaire d'ajout (label, amount, date)
+  - ✅ Liste des transactions avec formatage
+  - ✅ Système de notifications visuelles (remplace les `alert()`)
+  - ✅ État de chargement
+  - ✅ Validation des champs
 
-### 6. ✅ Script de seed (optionnel)
-
-- Fichier `prisma/seed.ts` créé
-- Script `npm run db:seed` configuré dans `package.json`
-- ⚠️ Note: Le seed a des problèmes avec Prisma v7, mais la DB est fonctionnelle
-
-### 7. ✅ Configuration Git et GitHub Actions
+### Git & CI/CD ✅
 
 - Repository Git initialisé
-- `.gitignore` amélioré (exclusion .db, .env, etc.)
-- Workflow GitHub Actions créé (`.github/workflows/lint.yml`)
-- Vérification automatique ESLint + TypeScript à chaque push
-- README.md complet avec badges et documentation
-- Premier commit créé : "🎉 Initial commit - WealthTracker v0.1 Walking Skeleton"
-- Guide GitHub Setup créé (`docs/GITHUB_SETUP.md`)
+- `.gitignore` optimisé
+- **GitHub Actions workflow** (`.github/workflows/lint.yml`)
+- Vérification ESLint à chaque push
+- Documentation complète
 
-## 📁 Structure actuelle du projet
+## 📁 Structure Finale
 
 ```
 wealthtracker/
+├── .github/workflows/lint.yml    ✅ CI/CD GitHub Actions
 ├── prisma/
-│   ├── schema.prisma        ✅ Modèle Transaction défini
-│   ├── dev.db              ✅ Base de données créée
-│   ├── seed.ts             ✅ Script de seed
-│   └── migrations/         ✅ Migration initiale appliquée
+│   ├── schema.prisma            ✅ Modèle Transaction
+│   ├── dev.db                   ✅ Base SQLite
+│   ├── seed.ts                  ✅ 5 transactions de test
+│   └── migrations/              ✅ Migration init
 ├── src/
 │   ├── main/
-│   │   ├── index.ts        ✅ Handlers IPC configurés
-│   │   └── database/
-│   │       └── client.ts   ✅ Client Prisma configuré
+│   │   ├── index.ts            ✅ IPC handlers
+│   │   └── database/client.ts  ✅ Prisma client
 │   ├── preload/
-│   │   ├── index.ts        ✅ API exposée au renderer
-│   │   └── index.d.ts      ✅ Types TypeScript définis
+│   │   ├── index.ts            ✅ contextBridge API
+│   │   └── index.d.ts          ✅ Types TypeScript
 │   └── renderer/
-│       ├── src/
-│       │   ├── App.tsx     ⏳ À modifier (prochaine étape)
-│       │   └── assets/
-│       │       └── main.css ✅ Tailwind configuré
-│       └── index.html
+│       └── src/
+│           ├── App.tsx         ✅ Interface complète
+│           └── assets/
+│               ├── main.css    ✅ Styles + animation
+│               └── base.css
 ├── docs/
-│   ├── SPECS_V0.1.md       ✅ Spécifications
-│   ├── INSTALL_GUIDE.md    ✅ Guide d'installation
-│   └── PROGRESS.md         ✅ Ce fichier
-├── .env                    ✅ Variables d'environnement
-├── package.json            ✅ Scripts configurés
-├── postcss.config.js       ✅ PostCSS avec Tailwind v4
-├── tailwind.config.js      ✅ Configuration Tailwind
-└── prisma.config.ts        ✅ Configuration Prisma v7
-
+│   ├── SPECS_V0.1.md           ✅ Spécifications
+│   ├── INSTALL_GUIDE.md        ✅ Guide installation
+│   ├── GITHUB_SETUP.md         ✅ Guide GitHub
+│   └── PROGRESS.md             ✅ Ce fichier
+├── .env                        ✅ DATABASE_URL
+├── .gitignore                  ✅ Optimisé
+└── package.json                ✅ Scripts configurés
 ```
 
-## 🎯 Prochaines étapes (Phase de développement)
+## 🚀 Commandes Disponibles
 
-Maintenant que l'infrastructure est en place, nous devons créer les composants React :
+```bash
+# Développement
+npm run dev                  # Lance l'app en mode dev
 
-### 1. Créer `TransactionList.tsx`
+# Base de données
+npm run db:migrate          # Créer/appliquer migrations
+npm run db:seed             # Peupler avec données de test
+npm run db:studio           # Ouvrir Prisma Studio
 
-- Composant pour afficher la liste des transactions
-- Appelle `window.api.getAllTransactions()`
-- Affiche les colonnes: Label, Montant, Date
+# Qualité de code
+npm run lint                # Vérifier ESLint
+npm run format              # Formater avec Prettier
+npm run typecheck           # Vérifier les types TS
 
-### 2. Créer `TransactionForm.tsx`
+# Build
+npm run build               # Build production
+npm run build:win           # Build Windows
+npm run build:mac           # Build macOS
+npm run build:linux         # Build Linux
+```
+
+## 🎯 Fonctionnalités Actuelles
+
+### ✅ Créer une transaction
+
+1. Remplir le formulaire (label, montant, date)
+2. Cliquer sur "Ajouter la transaction"
+3. → Notification de succès visuelle
+4. → Formulaire réinitialisé
+5. → Liste mise à jour automatiquement
+
+### ✅ Lire les transactions
+
+- Chargement automatique au démarrage
+- Affichage formaté (montant avec couleur +/-)
+- Date formatée en français
+- Compteur total
+
+### ✅ Notifications visuelles
+
+- Messages de succès (vert) et d'erreur (rouge)
+- Animation d'apparition fluide
+- Disparition automatique après 3 secondes
+- Ne bloque pas le focus des inputs
+
+## 📊 Choix Techniques
+
+### Prisma 6 vs Prisma 7
+
+- **Décision** : Downgrade vers Prisma 6.19.0
+- **Raison** : Prisma 7 nécessite `datasources` config qui cause des problèmes
+- **Avantage** : Configuration plus simple, workflow CI/CD sans DATABASE_URL
+
+### Gestion du chemin DB
+
+```typescript
+// Détection auto dev/prod
+const dbPath = isDev
+  ? path.join(__dirname, '../../prisma/dev.db')
+  : path.join(app.getPath('userData'), 'wealthtracker.db')
+```
+
+### Notifications UI
+
+- **Avant** : `alert()` bloquant le focus
+- **Après** : Composant React avec état et timeout
+- **Amélioration** : UX fluide sans interruption
+
+## 🔄 Points d'Amélioration Futurs (v0.2+)
+
+- [ ] Suppression de transactions
+- [ ] Édition de transactions
+- [ ] Filtres et recherche
+- [ ] Export CSV/PDF
+- [ ] Graphiques et statistiques
+- [ ] Catégories de transactions
+- [ ] Multi-comptes
+- [ ] Backup/restore automatique
+
+## ✅ Checklist Finale
+
+- [x] Code sans erreurs ESLint
+- [x] Code sans warnings TypeScript
+- [x] Base de données fonctionnelle
+- [x] IPC communication testée
+- [x] Interface utilisateur réactive
+- [x] Notifications UX améliorées
+- [x] Documentation complète
+- [x] CI/CD GitHub Actions
+- [x] Fichiers inutiles supprimés
+- [x] Styles nettoyés
+- [x] Prêt pour le déploiement GitHub
+
+## 📝 Notes de Version
+
+### v0.1 - Walking Skeleton (25 novembre 2025)
+
+- ✅ Architecture Electron + React + TypeScript
+- ✅ Base de données SQLite avec Prisma
+- ✅ CRUD partiel : Create + Read
+- ✅ Interface utilisateur basique
+- ✅ CI/CD GitHub Actions
+- ✅ Documentation complète
 
 - Formulaire pour ajouter une transaction
 - Champs: label, amount, date
