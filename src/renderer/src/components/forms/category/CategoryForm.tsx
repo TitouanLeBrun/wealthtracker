@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import type { CategoryFormData } from '../../types'
+import type { CategoryFormData } from '../../../types'
 
 interface CategoryFormProps {
   onSubmit: (data: CategoryFormData) => Promise<void>

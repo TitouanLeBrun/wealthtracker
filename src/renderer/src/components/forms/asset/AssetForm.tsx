@@ -1,5 +1,5 @@
-import type { AssetFormData } from '../../types'
-import { useAssetForm } from '../../hooks/useAssetForm'
+import type { AssetFormData } from '../../../types'
+import { useAssetForm } from '../../../hooks/useAssetForm'
 import AssetNameField from './AssetNameField'
 import AssetTickerField from './AssetTickerField'
 import AssetPriceField from './AssetPriceField'

@@ -1,5 +1,5 @@
 import { Lock } from 'lucide-react'
-import type { Asset, Category } from '../../types'
+import type { Asset, Category } from '../../../types'
 
 interface CategoryAssetSelectorProps {
   categories: Category[]

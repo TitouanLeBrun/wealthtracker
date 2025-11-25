@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { TrendingUp, Plus } from 'lucide-react'
 import Modal from '../components/common/Modal'
-import TransactionForm from '../components/forms/TransactionForm'
+import TransactionForm from '../components/forms/transaction/TransactionForm'
 import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
 import type { Transaction, Asset } from '../types'
 
