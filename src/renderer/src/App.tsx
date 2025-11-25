@@ -185,6 +185,7 @@ function App(): React.JSX.Element {
           <DashboardPage
             onSuccess={(msg) => showMessage('success', msg)}
             onError={(msg) => showMessage('error', msg)}
+            onNavigateToAsset={navigateToAsset}
           />
         )}
 
@@ -192,6 +193,7 @@ function App(): React.JSX.Element {
           <TransactionsPage
             onSuccess={(msg) => showMessage('success', msg)}
             onError={(msg) => showMessage('error', msg)}
+            onNavigateToAsset={navigateToAsset}
           />
         )}
 

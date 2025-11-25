@@ -4,11 +4,13 @@ import type { Transaction } from '../../types'
 interface TransactionListProps {
   transactions: Transaction[]
   onDeleteTransaction?: (transaction: Transaction) => void
+  onAssetClick?: (assetId: number) => void
 }
 
 function TransactionList({
   transactions,
-  onDeleteTransaction
+  onDeleteTransaction,
+  onAssetClick
 }: TransactionListProps): React.JSX.Element {
   if (transactions.length === 0) {
     return (
@@ -39,6 +41,7 @@ function TransactionList({
           key={transaction.id}
           transaction={transaction}
           onDelete={onDeleteTransaction ? () => onDeleteTransaction(transaction) : undefined}
+          onAssetClick={onAssetClick}
         />
       ))}
     </div>

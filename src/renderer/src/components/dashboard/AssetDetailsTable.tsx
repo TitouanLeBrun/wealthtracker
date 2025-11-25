@@ -8,6 +8,7 @@ import {
 
 interface AssetDetailsTableProps {
   assets: AssetMetrics[]
+  onAssetClick?: (assetId: number) => void
 }
 
 type SortKey =
@@ -19,7 +20,7 @@ type SortKey =
   | 'realizedPnL'
 type SortDirection = 'asc' | 'desc'
 
-function AssetDetailsTable({ assets }: AssetDetailsTableProps): React.JSX.Element {
+function AssetDetailsTable({ assets, onAssetClick }: AssetDetailsTableProps): React.JSX.Element {
   const [sortKey, setSortKey] = useState<SortKey>('currentValue')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
@@ -299,11 +300,22 @@ function AssetDetailsTable({ assets }: AssetDetailsTableProps): React.JSX.Elemen
             {/* Actif */}
             <div>
               <div
+                onClick={() => onAssetClick?.(asset.asset.id)}
                 style={{
                   fontSize: '15px',
                   fontWeight: '600',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: '4px'
+                  color: onAssetClick ? 'var(--color-primary)' : 'var(--color-text-primary)',
+                  marginBottom: '4px',
+                  cursor: onAssetClick ? 'pointer' : 'default',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (onAssetClick) {
+                    e.currentTarget.style.textDecoration = 'underline'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.textDecoration = 'none'
                 }}
               >
                 {asset.ticker}

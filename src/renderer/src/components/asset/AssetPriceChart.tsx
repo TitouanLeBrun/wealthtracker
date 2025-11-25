@@ -61,7 +61,7 @@ function AssetPriceChart({
 
     // Créer la série de ligne
     const lineSeries = chart.addSeries(LineSeries)
-    
+
     // Appliquer les options de style
     lineSeries.applyOptions({
       color: categoryColor,

@@ -9,6 +9,7 @@ interface TransactionManagerCardsProps {
   transactions: Transaction[]
   loading?: boolean
   onDelete?: (transactionId: number) => Promise<void>
+  onAssetClick?: (assetId: number) => void
 }
 
 const ITEMS_PER_PAGE = 5
@@ -16,7 +17,8 @@ const ITEMS_PER_PAGE = 5
 function TransactionManagerCards({
   transactions,
   loading = false,
-  onDelete
+  onDelete,
+  onAssetClick
 }: TransactionManagerCardsProps): React.JSX.Element {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -112,6 +114,7 @@ function TransactionManagerCards({
       <TransactionList
         transactions={currentTransactions}
         onDeleteTransaction={onDelete ? (transaction) => setDeleteConfirm(transaction) : undefined}
+        onAssetClick={onAssetClick}
       />
 
       {/* Pagination */}

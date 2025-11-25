@@ -4,9 +4,14 @@ import type { Transaction } from '../../types'
 interface TransactionCardProps {
   transaction: Transaction
   onDelete?: () => void
+  onAssetClick?: (assetId: number) => void
 }
 
-function TransactionCard({ transaction, onDelete }: TransactionCardProps): React.JSX.Element {
+function TransactionCard({
+  transaction,
+  onDelete,
+  onAssetClick
+}: TransactionCardProps): React.JSX.Element {
   const total = transaction.quantity * transaction.pricePerUnit + transaction.fee
   const isBuy = transaction.type === 'BUY'
 
@@ -57,10 +62,22 @@ function TransactionCard({ transaction, onDelete }: TransactionCardProps): React
         {/* Col 2: Asset (Ticker + Nom + Catégorie) */}
         <div style={{ minWidth: '0' }}>
           <div
+            onClick={() => transaction.asset && onAssetClick?.(transaction.asset.id)}
             style={{
               fontSize: '16px',
               fontWeight: '600',
-              marginBottom: '4px'
+              marginBottom: '4px',
+              cursor: onAssetClick ? 'pointer' : 'default',
+              color: onAssetClick ? 'var(--color-primary)' : 'var(--color-text-primary)',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              if (onAssetClick) {
+                e.currentTarget.style.textDecoration = 'underline'
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.textDecoration = 'none'
             }}
           >
             {transaction.asset?.ticker}

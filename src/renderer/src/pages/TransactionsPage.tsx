@@ -8,9 +8,14 @@ import type { Transaction, Asset } from '../types'
 interface TransactionsPageProps {
   onSuccess: (message: string) => void
   onError: (message: string) => void
+  onNavigateToAsset?: (assetId: number) => void
 }
 
-function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.JSX.Element {
+function TransactionsPage({
+  onSuccess,
+  onError,
+  onNavigateToAsset
+}: TransactionsPageProps): React.JSX.Element {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [assets, setAssets] = useState<Asset[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)
@@ -148,6 +153,7 @@ function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.
         transactions={transactions}
         loading={loading}
         onDelete={handleDeleteTransaction}
+        onAssetClick={onNavigateToAsset}
       />
 
       {/* Modale de création de transaction */}

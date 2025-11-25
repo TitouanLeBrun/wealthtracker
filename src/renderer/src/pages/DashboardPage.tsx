@@ -10,9 +10,14 @@ import type { PortfolioMetrics } from '../utils/calculations/enhancedPortfolioCa
 interface DashboardPageProps {
   onSuccess: (message: string) => void
   onError: (message: string) => void
+  onNavigateToAsset?: (assetId: number) => void
 }
 
-function DashboardPage({ onSuccess, onError }: DashboardPageProps): React.JSX.Element {
+function DashboardPage({
+  onSuccess,
+  onError,
+  onNavigateToAsset
+}: DashboardPageProps): React.JSX.Element {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [assets, setAssets] = useState<Asset[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)
@@ -146,7 +151,7 @@ function DashboardPage({ onSuccess, onError }: DashboardPageProps): React.JSX.El
 
           {/* Tableau détaillé */}
           <div>
-            <AssetDetailsTable assets={portfolioMetrics.assets} />
+            <AssetDetailsTable assets={portfolioMetrics.assets} onAssetClick={onNavigateToAsset} />
           </div>
         </>
       )}
