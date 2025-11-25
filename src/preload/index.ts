@@ -5,8 +5,24 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   // Transactions API
   getAllTransactions: () => ipcRenderer.invoke('transaction:getAll'),
-  createTransaction: (data: { label: string; amount: number; date: Date }) =>
-    ipcRenderer.invoke('transaction:create', data)
+  createTransaction: (data: {
+    assetId: number
+    type: 'BUY' | 'SELL'
+    quantity: number
+    pricePerUnit: number
+    fee: number
+    date: Date
+  }) => ipcRenderer.invoke('transaction:create', data),
+
+  // Categories API
+  getAllCategories: () => ipcRenderer.invoke('category:getAll'),
+  createCategory: (data: { name: string; color: string }) =>
+    ipcRenderer.invoke('category:create', data),
+
+  // Assets API
+  getAllAssets: () => ipcRenderer.invoke('asset:getAll'),
+  createAsset: (data: { name: string; ticker: string; currentPrice: number; categoryId: number }) =>
+    ipcRenderer.invoke('asset:create', data)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -43,9 +43,9 @@ function App(): React.JSX.Element {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>💰 WealthTracker v0.1</h1>
-      <p>Suivi de vos transactions d&apos;investissement</p>
+    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <h1>💰 WealthTracker v0.2</h1>
+      <p>Suivi professionnel de vos actifs financiers</p>
 
       {/* Notification visuelle */}
       {message && <Notification type={message.type} message={message.text} />}

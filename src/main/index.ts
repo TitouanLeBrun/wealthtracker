@@ -54,10 +54,18 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   // Handlers IPC pour les transactions
+  // ==================== TRANSACTIONS ====================
   ipcMain.handle('transaction:getAll', async () => {
     try {
       const prisma = getPrismaClient()
       return await prisma.transaction.findMany({
+        include: {
+          asset: {
+            include: {
+              category: true
+            }
+          }
+        },
         orderBy: { date: 'desc' }
       })
     } catch (error) {
@@ -71,8 +79,11 @@ app.whenReady().then(() => {
     async (
       _,
       data: {
-        label: string
-        amount: number
+        assetId: number
+        type: 'BUY' | 'SELL'
+        quantity: number
+        pricePerUnit: number
+        fee: number
         date: Date
       }
     ) => {
@@ -80,13 +91,90 @@ app.whenReady().then(() => {
         const prisma = getPrismaClient()
         return await prisma.transaction.create({
           data: {
-            label: data.label,
-            amount: data.amount,
+            assetId: data.assetId,
+            type: data.type,
+            quantity: data.quantity,
+            pricePerUnit: data.pricePerUnit,
+            fee: data.fee || 0,
             date: new Date(data.date)
+          },
+          include: {
+            asset: {
+              include: {
+                category: true
+              }
+            }
           }
         })
       } catch (error) {
         console.error('[IPC] Error creating transaction:', error)
+        throw error
+      }
+    }
+  )
+
+  // ==================== CATEGORIES ====================
+  ipcMain.handle('category:getAll', async () => {
+    try {
+      const prisma = getPrismaClient()
+      return await prisma.category.findMany({
+        orderBy: { name: 'asc' }
+      })
+    } catch (error) {
+      console.error('[IPC] Error fetching categories:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle('category:create', async (_, data: { name: string; color: string }) => {
+    try {
+      const prisma = getPrismaClient()
+      return await prisma.category.create({
+        data: {
+          name: data.name,
+          color: data.color
+        }
+      })
+    } catch (error) {
+      console.error('[IPC] Error creating category:', error)
+      throw error
+    }
+  })
+
+  // ==================== ASSETS ====================
+  ipcMain.handle('asset:getAll', async () => {
+    try {
+      const prisma = getPrismaClient()
+      return await prisma.asset.findMany({
+        include: {
+          category: true
+        },
+        orderBy: { ticker: 'asc' }
+      })
+    } catch (error) {
+      console.error('[IPC] Error fetching assets:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(
+    'asset:create',
+    async (_, data: { name: string; ticker: string; currentPrice: number; categoryId: number }) => {
+      try {
+        const prisma = getPrismaClient()
+        return await prisma.asset.create({
+          data: {
+            name: data.name,
+            ticker: data.ticker,
+            currentPrice: data.currentPrice,
+            categoryId: data.categoryId
+          },
+          include: {
+            category: true
+          }
+        })
+      } catch (error) {
+        console.error('[IPC] Error creating asset:', error)
         throw error
       }
     }
