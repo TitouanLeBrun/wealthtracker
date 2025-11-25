@@ -10,6 +10,8 @@ interface TransactionManagerCardsProps {
   loading?: boolean
   onDelete?: (transactionId: number) => Promise<void>
   onAssetClick?: (assetId: number) => void
+  preselectedCategoryId?: number
+  hideCategoryFilter?: boolean
 }
 
 const ITEMS_PER_PAGE = 5
@@ -18,10 +20,12 @@ function TransactionManagerCards({
   transactions,
   loading = false,
   onDelete,
-  onAssetClick
+  onAssetClick,
+  preselectedCategoryId,
+  hideCategoryFilter = false
 }: TransactionManagerCardsProps): React.JSX.Element {
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [dateFilter, setDateFilter] = useState<string>('')
   const [deleteConfirm, setDeleteConfirm] = useState<Transaction | null>(null)
 
@@ -36,10 +40,17 @@ function TransactionManagerCards({
   // Filtrer les transactions
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
-      // Filtre par catégorie
-      if (selectedCategory !== 'all') {
-        if (transaction.asset?.category?.name !== selectedCategory) {
+      // Si une catégorie est présélectionnée, ignorer le filtre manuel
+      if (preselectedCategoryId) {
+        if (transaction.asset?.categoryId !== preselectedCategoryId) {
           return false
+        }
+      } else {
+        // Sinon, utiliser le filtre de catégorie manuel (pour TransactionsPage)
+        if (categoryFilter !== 'all') {
+          if (transaction.asset?.category?.name !== categoryFilter) {
+            return false
+          }
         }
       }
 
@@ -53,7 +64,7 @@ function TransactionManagerCards({
 
       return true
     })
-  }, [transactions, selectedCategory, dateFilter])
+  }, [transactions, categoryFilter, dateFilter, preselectedCategoryId])
 
   // Pagination
   const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE)
@@ -62,8 +73,12 @@ function TransactionManagerCards({
   const currentTransactions = filteredTransactions.slice(startIndex, endIndex)
 
   // Réinitialiser la page quand les filtres changent
-  const handleFilterChange = (category: string, date: string): void => {
-    setSelectedCategory(category)
+  const handleCategoryChange = (category: string): void => {
+    setCategoryFilter(category)
+    setCurrentPage(1)
+  }
+
+  const handleDateChange = (date: string): void => {
     setDateFilter(date)
     setCurrentPage(1)
   }
@@ -97,17 +112,18 @@ function TransactionManagerCards({
     <div>
       {/* Filtres */}
       <TransactionFilters
-        selectedCategory={selectedCategory}
+        selectedCategory={categoryFilter}
         dateFilter={dateFilter}
         categories={categories}
         resultCount={filteredTransactions.length}
-        onCategoryChange={(category) => handleFilterChange(category, dateFilter)}
-        onDateChange={(date) => handleFilterChange(selectedCategory, date)}
+        onCategoryChange={handleCategoryChange}
+        onDateChange={handleDateChange}
         onReset={() => {
-          setSelectedCategory('all')
+          setCategoryFilter('all')
           setDateFilter('')
           setCurrentPage(1)
         }}
+        hideCategoryFilter={hideCategoryFilter}
       />
 
       {/* Liste des transactions */}

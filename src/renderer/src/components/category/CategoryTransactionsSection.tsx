@@ -64,6 +64,8 @@ function CategoryTransactionsSection({
         transactions={transactions}
         loading={false}
         onDelete={onDeleteTransaction}
+        preselectedCategoryId={category.id}
+        hideCategoryFilter={true}
       />
     </div>
   )

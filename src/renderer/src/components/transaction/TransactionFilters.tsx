@@ -8,6 +8,7 @@ interface TransactionFiltersProps {
   onCategoryChange: (category: string) => void
   onDateChange: (date: string) => void
   onReset: () => void
+  hideCategoryFilter?: boolean
 }
 
 function TransactionFilters({
@@ -17,7 +18,8 @@ function TransactionFilters({
   resultCount,
   onCategoryChange,
   onDateChange,
-  onReset
+  onReset,
+  hideCategoryFilter = false
 }: TransactionFiltersProps): React.JSX.Element {
   const hasActiveFilters = selectedCategory !== 'all' || dateFilter
 
@@ -40,35 +42,37 @@ function TransactionFilters({
       </div>
 
       {/* Filtre par catégorie */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
-        <label
-          htmlFor="category-filter"
-          style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}
-        >
-          Catégorie:
-        </label>
-        <select
-          id="category-filter"
-          value={selectedCategory}
-          onChange={(e) => onCategoryChange(e.target.value)}
-          style={{
-            padding: '8px 12px',
-            background: 'var(--color-input-bg)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--border-radius)',
-            color: 'var(--color-text-primary)',
-            fontSize: '14px',
-            cursor: 'pointer'
-          }}
-        >
-          <option value="all">Toutes</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-      </div>
+      {!hideCategoryFilter && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
+          <label
+            htmlFor="category-filter"
+            style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}
+          >
+            Catégorie:
+          </label>
+          <select
+            id="category-filter"
+            value={selectedCategory}
+            onChange={(e) => onCategoryChange(e.target.value)}
+            style={{
+              padding: '8px 12px',
+              background: 'var(--color-input-bg)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--border-radius)',
+              color: 'var(--color-text-primary)',
+              fontSize: '14px',
+              cursor: 'pointer'
+            }}
+          >
+            <option value="all">Toutes</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Filtre par date */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
