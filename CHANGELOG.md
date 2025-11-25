@@ -5,6 +5,82 @@ All notable changes to WealthTracker will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-11-25
+
+### 🚀 Dashboard Feature - Portfolio Performance Tracking
+
+#### Added
+
+- **DashboardPage**: Complete portfolio overview page
+  - Real-time portfolio metrics display
+  - Automatic Price Ticker integration
+  - Responsive design with modern animations
+  - Empty state handling for new users
+
+- **PortfolioKPI Component**: Three animated KPI cards with gradients
+  - **Card 1**: Total Portfolio Value (violet gradient) with asset count
+  - **Card 2**: Total Invested Amount (pink gradient) with average buy price
+  - **Card 3**: Unrealized P&L (dynamic green/red gradient) with percentage
+  - Hover animations with translateY effect
+  - Professional Bloomberg Terminal-inspired design
+
+- **AssetPerformanceList Component**: Detailed asset breakdown
+  - Collapsible accordion interface
+  - 6-column data grid: Asset, Quantity, Avg Price, Market Price, Value, P&L
+  - Category-colored left border
+  - Hover animations with translateX effect
+  - Automatic sorting by value (descending)
+  - Closed positions filtering (quantity = 0)
+
+- **Portfolio Calculations**: Core business logic for metrics
+  - `calculateNetQuantities()`: Net position tracking (buys - sells)
+  - `calculateAverageBuyPrice()`: Weighted average with fees included
+  - `calculateAssetPerformance()`: Individual asset metrics
+  - `calculatePortfolioMetrics()`: Aggregated portfolio metrics
+  - Formula: `PMA = (Σ(qty × price) + Σ(fees)) / Σ(qty)`
+
+- **New TypeScript Types**:
+  - `AssetPerformance`: 12 properties (ticker, name, quantities, prices, P&L)
+  - `PortfolioMetrics`: 6 properties (totals, aggregated P&L, asset list)
+
+- **Navigation Enhancement**:
+  - New "📈 Dashboard" tab in main navigation
+  - Dashboard set as default landing page
+  - Smooth page transitions with fade-in animations
+
+#### Changed
+
+- **PriceTicker Location**: Moved from TransactionsPage to DashboardPage
+  - Centralized price management on Dashboard
+  - Cleaner TransactionsPage focused on transaction history
+  - Removed `handlePriceUpdate` from TransactionsPage
+
+- **Version Number**: Updated from v0.3.1 to v0.4.0
+  - Header navigation badge
+  - Footer version display
+
+#### Removed
+
+- **TransactionsPage**: PriceTicker component and price update logic
+- **AssetManagerCards**: Unused `TrendingUp` icon import
+- **SettingsPage**: Unused `AssetManagerCards` import
+
+#### Technical
+
+- **Build**: All TypeScript checks passing
+- **Code Quality**: Prettier formatting applied
+- **Performance**: Optimized calculations with Map data structures
+- **Responsive**: Grid-based layout with `auto-fit minmax(280px, 1fr)`
+- **Animations**: Consistent 0.2s ease transitions across components
+
+#### Documentation
+
+- **New**: `docs/V0.4_DASHBOARD.md` - Complete feature documentation
+  - Formulas and calculation examples
+  - Architecture overview
+  - Design system specifications
+  - Usage instructions
+
 ## [0.3.0] - 2024-12-29
 
 ### 🎨 UX Revolution - Major UI/UX Redesign

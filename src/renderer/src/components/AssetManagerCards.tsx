@@ -1,4 +1,4 @@
-import { Plus, Folder, TrendingUp } from 'lucide-react'
+import { Plus, Folder } from 'lucide-react'
 import type { Category, Asset } from '../types'
 
 interface AssetManagerCardsProps {
@@ -11,8 +11,7 @@ interface AssetManagerCardsProps {
 function AssetManagerCards({
   categories,
   assets,
-  onAddCategory,
-  onAddAsset
+  onAddCategory
 }: AssetManagerCardsProps): React.JSX.Element {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xl)' }}>

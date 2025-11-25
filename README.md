@@ -1,16 +1,25 @@
 # 💰 WealthTracker
 
 [![Lint Check](https://github.com/YOUR_USERNAME/wealthtracker/actions/workflows/lint.yml/badge.svg)](https://github.com/YOUR_USERNAME/wealthtracker/actions/workflows/lint.yml)
-![Version](https://img.shields.io/badge/version-0.3-blue)
+![Version](https://img.shields.io/badge/version-0.4.0-blue)
 ![Status](https://img.shields.io/badge/status-production--ready-green)
 
 > **Application desktop moderne de gestion de portefeuille financier**
 
 ## 📋 Description
 
-WealthTracker est une application desktop élégante pour gérer vos investissements financiers avec une interface utilisateur révolutionnaire.
+WealthTracker est une application desktop élégante pour gérer vos investissements financiers avec une interface utilisateur révolutionnaire et un dashboard professionnel.
 
-### ✨ Nouveautés v0.3 - UX Revolution
+### ✨ Nouveautés v0.4.0 - Dashboard Feature
+
+- 📈 **Dashboard Complet** : Vue d'ensemble de votre portefeuille avec métriques en temps réel
+- 📊 **KPI Cards Animées** : Valeur totale, Montant investi, Plus/Moins-value latente
+- 💹 **Calcul PMA Automatique** : Prix Moyen d'Achat avec frais inclus
+- 📑 **Analyse Détaillée** : Performance par actif avec accordion collapsible
+- 🎨 **Design Bloomberg** : Gradients professionnels et animations fluides
+- 🔄 **Price Ticker Centralisé** : Déplacé sur Dashboard pour un accès rapide
+
+### Fonctionnalités v0.3 - UX Revolution
 
 - 🎨 **Price Ticker Bloomberg-style** : Barre de prix en temps réel avec édition inline
 - 🪟 **Modales élégantes** : Formulaires contextuels au lieu de zones fixes
@@ -21,10 +30,12 @@ WealthTracker est une application desktop élégante pour gérer vos investissem
 
 ### Fonctionnalités Complètes
 
+- ✅ **Dashboard** : Vue d'ensemble avec calculs de performance automatiques
 - ✅ **Catégories** : Créer et organiser par couleur (Actions, Crypto, Immobilier, etc.)
 - ✅ **Actifs** : Gérer vos investissements avec ticker, prix, catégorie
 - ✅ **Transactions** : Historique BUY/SELL avec statistiques en temps réel
-- ✅ **Price Ticker** : Mise à jour rapide des prix depuis la page Transactions
+- ✅ **Price Ticker** : Mise à jour rapide des prix depuis le Dashboard
+- ✅ **Métriques Avancées** : PMA, PnL, Performance %, Valeur totale
 - ✅ **Design moderne** : Dark theme, glassmorphism, animations
 - ✅ **Stockage local** : Base SQLite avec Prisma ORM
 

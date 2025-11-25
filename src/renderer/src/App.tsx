@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DashboardPage from './pages/DashboardPage'
 import TransactionsPage from './pages/TransactionsPage'
 import SettingsPage from './pages/SettingsPage'
 import CategoryDetailPage from './pages/CategoryDetailPage'
@@ -6,9 +7,9 @@ import Notification from './components/Notification'
 import type { NotificationMessage, CategoryValue } from './types'
 
 function App(): React.JSX.Element {
-  const [activePage, setActivePage] = useState<'transactions' | 'settings' | 'category'>(
-    'transactions'
-  )
+  const [activePage, setActivePage] = useState<
+    'dashboard' | 'transactions' | 'settings' | 'category'
+  >('dashboard')
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [categoryValues, setCategoryValues] = useState<CategoryValue[]>([])
   const [message, setMessage] = useState<NotificationMessage | null>(null)
@@ -79,12 +80,32 @@ function App(): React.JSX.Element {
                 fontWeight: '600'
               }}
             >
-              v0.3.1
+              v0.4.0
             </span>
           </div>
 
           {/* Menu Navigation */}
           <div style={{ display: 'flex', marginLeft: 'auto', gap: 'var(--spacing-xs)' }}>
+            <button
+              onClick={() => setActivePage('dashboard')}
+              style={{
+                padding: '12px 24px',
+                backgroundColor:
+                  activePage === 'dashboard' ? 'var(--color-primary)' : 'transparent',
+                color: activePage === 'dashboard' ? 'white' : 'var(--color-text-secondary)',
+                border: 'none',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                fontWeight: activePage === 'dashboard' ? '600' : '500',
+                fontSize: '15px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-sm)'
+              }}
+            >
+              <span>📈</span>
+              <span>Dashboard</span>
+            </button>
             <button
               onClick={() => setActivePage('transactions')}
               style={{
@@ -142,6 +163,13 @@ function App(): React.JSX.Element {
         {message && <Notification type={message.type} message={message.text} />}
 
         {/* Pages */}
+        {activePage === 'dashboard' && (
+          <DashboardPage
+            onSuccess={(msg) => showMessage('success', msg)}
+            onError={(msg) => showMessage('error', msg)}
+          />
+        )}
+
         {activePage === 'transactions' && (
           <TransactionsPage
             onSuccess={(msg) => showMessage('success', msg)}
@@ -181,7 +209,7 @@ function App(): React.JSX.Element {
         }}
       >
         <div style={{ marginBottom: 'var(--spacing-sm)' }}>
-          <strong>WealthTracker v0.3.1</strong> - Gestion professionnelle de portefeuille financier
+          <strong>WealthTracker v0.4.0</strong> - Gestion professionnelle de portefeuille financier
         </div>
         <div style={{ fontSize: '12px', color: 'var(--color-text-disabled)' }}>
           Made with ❤️ using Electron + React + Prisma

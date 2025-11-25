@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { TrendingUp, Plus } from 'lucide-react'
 import Modal from '../components/Modal'
-import PriceTicker from '../components/PriceTicker'
 import TransactionForm from '../components/TransactionForm'
 import TransactionManagerCards from '../components/TransactionManagerCards'
 import type { Transaction, Asset } from '../types'
@@ -74,17 +73,6 @@ function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.
     onSuccess('Transaction ajoutée avec succès !')
   }
 
-  const handlePriceUpdate = async (assetId: number, newPrice: number): Promise<void> => {
-    try {
-      await window.api.updateAssetPrice({ assetId, newPrice })
-      await loadAssets()
-      onSuccess(`Prix mis à jour : ${newPrice.toFixed(2)} €`)
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour du prix:', error)
-      onError('Erreur lors de la mise à jour du prix')
-    }
-  }
-
   const loading = loadingTransactions || loadingAssets
 
   return (
@@ -143,17 +131,6 @@ function TransactionsPage({ onSuccess, onError }: TransactionsPageProps): React.
           Gérez vos achats et ventes d&apos;actifs financiers
         </p>
       </div>
-
-      {/* Price Ticker - Barre de prix Bloomberg-style */}
-      {!loadingAssets && <PriceTicker assets={assets} onPriceUpdate={handlePriceUpdate} />}
-
-      <hr
-        style={{
-          margin: 'var(--spacing-xl) 0',
-          border: 'none',
-          borderTop: '1px solid var(--color-border)'
-        }}
-      />
 
       {/* Affichage des transactions avec statistiques */}
       <TransactionManagerCards transactions={transactions} loading={loading} />

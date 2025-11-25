@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Settings2 } from 'lucide-react'
 import Modal from '../components/Modal'
-import AssetManagerCards from '../components/AssetManagerCards'
 import CategoryForm from '../components/CategoryForm'
 import AssetForm from '../components/AssetForm'
 import CategoryPieChart from '../components/CategoryPieChart'

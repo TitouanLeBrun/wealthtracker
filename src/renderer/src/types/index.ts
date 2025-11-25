@@ -80,3 +80,29 @@ export interface CategoryValue {
   assetCount: number // Nombre d'actifs avec quantité > 0
   assets: AssetValue[] // Détails par actif
 }
+
+// Types pour la performance d'un actif (Dashboard)
+export interface AssetPerformance {
+  assetId: number
+  ticker: string
+  name: string
+  categoryName: string
+  categoryColor: string
+  netQuantity: number // Quantité nette possédée
+  currentPrice: number // Prix du marché actuel
+  averageBuyPrice: number // PMA (Prix Moyen Pondéré d'Achat avec frais)
+  currentValue: number // Valeur actuelle (prix × quantité)
+  investedValue: number // Valeur investie (PMA × quantité)
+  unrealizedPnL: number // Plus/Moins-Value latente (€)
+  unrealizedPnLPercent: number // Plus/Moins-Value latente (%)
+}
+
+// Types pour les métriques globales du portefeuille (Dashboard)
+export interface PortfolioMetrics {
+  totalValue: number // Valeur totale actuelle du portefeuille
+  totalInvested: number // Montant total investi
+  unrealizedPnL: number // Plus/Moins-Value latente globale (€)
+  unrealizedPnLPercent: number // Plus/Moins-Value latente globale (%)
+  assetCount: number // Nombre d'actifs en position ouverte
+  assets: AssetPerformance[] // Détails par actif
+}
