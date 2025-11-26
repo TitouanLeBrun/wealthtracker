@@ -42,40 +42,56 @@ function ProjectionInsights({ objective }: ProjectionInsightsProps): React.JSX.E
       <TrajectoryStatusCard status={metrics.trajectoryStatus} />
 
       <div className="space-y-3">
-        {/* Patrimoine actuel vs théorique (petit format) */}
+        {/* Patrimoine actuel (avec comparaison théorique si objectif commencé) */}
         <div className="rounded-lg bg-gray-50 px-3 py-2">
-          <div className="flex items-baseline justify-between">
+          {/* Si objectif vient de démarrer (< 1 mois), afficher uniquement patrimoine actuel */}
+          {metrics.theoreticalWealth < 10 ? (
             <div>
-              <p className="text-xs text-gray-600">Patrimoine actuel</p>
+              <p className="text-xs text-gray-600">Patrimoine de départ</p>
               <p className="text-base font-semibold text-blue-600">
                 {formatEuros(metrics.currentWealth)}
               </p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-gray-600">Théorique attendu</p>
-              <p className="text-base font-semibold text-gray-700">
-                {formatEuros(metrics.theoreticalWealth)}
+              <p className="mt-1 text-xs text-gray-500">
+                Objectif récemment démarré - construction de la trajectoire en cours
               </p>
             </div>
-          </div>
-          <div className="mt-1 flex items-center justify-end gap-2 text-xs">
-            <span
-              className={`font-medium ${
-                metrics.wealthDelta >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {metrics.wealthDelta >= 0 ? '+' : ''}
-              {formatEuros(metrics.wealthDelta)}
-            </span>
-            <span
-              className={`font-medium ${
-                metrics.wealthDeltaPercent >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              ({metrics.wealthDeltaPercent >= 0 ? '+' : ''}
-              {metrics.wealthDeltaPercent.toFixed(1)}%)
-            </span>
-          </div>
+          ) : (
+            <>
+              {/* Si objectif en cours, afficher patrimoine actuel vs théorique */}
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <p className="text-xs text-gray-600">Patrimoine actuel</p>
+                  <p className="text-base font-semibold text-blue-600">
+                    {formatEuros(metrics.currentWealth)}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-600">Théorique attendu</p>
+                  <p className="text-base font-semibold text-gray-700">
+                    {formatEuros(metrics.theoreticalWealth)}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-1 flex items-center justify-end gap-2 text-xs">
+                <span
+                  className={`font-medium ${
+                    metrics.wealthDelta >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {metrics.wealthDelta >= 0 ? '+' : ''}
+                  {formatEuros(metrics.wealthDelta)}
+                </span>
+                <span
+                  className={`font-medium ${
+                    metrics.wealthDeltaPercent >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  ({metrics.wealthDeltaPercent >= 0 ? '+' : ''}
+                  {metrics.wealthDeltaPercent.toFixed(1)}%)
+                </span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Reste à atteindre (petit format) */}
@@ -119,93 +135,120 @@ function ProjectionInsights({ objective }: ProjectionInsightsProps): React.JSX.E
             {/* Requis actuellement */}
             <div>
               <p className="text-xs text-gray-600">Investissement requis maintenant</p>
-              <p className="text-lg font-semibold text-purple-900">
-                {formatEuros(metrics.requiredMonthlyInvestment)}
-                <span className="text-xs font-normal text-gray-500">/mois</span>
-              </p>
+              {metrics.requiredMonthlyInvestment === 0 ? (
+                <p className="text-lg font-semibold text-green-600">
+                  Objectif atteint !
+                  <span className="ml-2 text-xs font-normal text-gray-500">
+                    Plus besoin d&apos;investir
+                  </span>
+                </p>
+              ) : (
+                <p className="text-lg font-semibold text-purple-900">
+                  {formatEuros(metrics.requiredMonthlyInvestment)}
+                  <span className="text-xs font-normal text-gray-500">/mois</span>
+                </p>
+              )}
             </div>
 
             {/* Delta Historique vs Requis */}
             <div className="border-t border-purple-200 pt-2">
               <p className="text-xs text-gray-600">Historique vs Requis</p>
-              <div className="flex items-baseline gap-2">
-                <span
-                  className={`text-base font-bold ${
-                    metrics.historicalVsRequired > 0 ? 'text-red-600' : 'text-green-600'
-                  }`}
-                >
-                  {metrics.historicalVsRequired >= 0 ? '+' : ''}
-                  {formatEuros(metrics.historicalVsRequired)}
-                  <span className="text-xs font-normal">/mois</span>
-                </span>
-                <span
-                  className={`text-sm font-medium ${
-                    metrics.historicalVsRequiredPercent > 0 ? 'text-red-600' : 'text-green-600'
-                  }`}
-                >
-                  ({metrics.historicalVsRequiredPercent >= 0 ? '+' : ''}
-                  {metrics.historicalVsRequiredPercent.toFixed(1)}%)
-                </span>
-              </div>
-              {metrics.historicalVsRequired > 0 && (
-                <p className="mt-1 text-xs text-gray-600">
-                  Votre rythme historique est{' '}
-                  <span className="font-semibold text-red-600">insuffisant</span>. Augmentez vos
-                  investissements de{' '}
-                  <span className="font-semibold text-red-600">
-                    {formatEuros(Math.abs(metrics.historicalVsRequired))}
-                  </span>
-                  /mois
+              {metrics.requiredMonthlyInvestment === 0 ? (
+                <p className="text-sm text-green-600">
+                  ✅ Objectif déjà atteint - Aucun investissement supplémentaire requis
                 </p>
-              )}
-              {metrics.historicalVsRequired <= 0 && (
-                <p className="mt-1 text-xs text-gray-600">
-                  Votre rythme historique est{' '}
-                  <span className="font-semibold text-green-600">compatible</span> avec
-                  l&apos;objectif
-                </p>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <span
+                      className={`text-base font-bold ${
+                        metrics.historicalVsRequired > 0 ? 'text-red-600' : 'text-green-600'
+                      }`}
+                    >
+                      {metrics.historicalVsRequired >= 0 ? '+' : ''}
+                      {formatEuros(metrics.historicalVsRequired)}
+                      <span className="text-xs font-normal">/mois</span>
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${
+                        metrics.historicalVsRequiredPercent > 0 ? 'text-red-600' : 'text-green-600'
+                      }`}
+                    >
+                      ({metrics.historicalVsRequiredPercent >= 0 ? '+' : ''}
+                      {metrics.historicalVsRequiredPercent.toFixed(1)}%)
+                    </span>
+                  </div>
+                  {metrics.historicalVsRequired > 0 && (
+                    <p className="mt-1 text-xs text-gray-600">
+                      Votre rythme historique est{' '}
+                      <span className="font-semibold text-red-600">insuffisant</span>. Augmentez
+                      vos investissements de{' '}
+                      <span className="font-semibold text-red-600">
+                        {formatEuros(Math.abs(metrics.historicalVsRequired))}
+                      </span>
+                      /mois
+                    </p>
+                  )}
+                  {metrics.historicalVsRequired <= 0 && (
+                    <p className="mt-1 text-xs text-gray-600">
+                      Votre rythme historique est{' '}
+                      <span className="font-semibold text-green-600">compatible</span> avec
+                      l&apos;objectif
+                    </p>
+                  )}
+                </>
               )}
             </div>
 
             {/* Delta Théorique vs Requis */}
             <div className="border-t border-purple-200 pt-2">
               <p className="text-xs text-gray-600">Théorique vs Requis</p>
-              <div className="flex items-baseline gap-2">
-                <span
-                  className={`text-base font-bold ${
-                    metrics.monthlyInvestmentDelta >= 0 ? 'text-red-600' : 'text-green-600'
-                  }`}
-                >
-                  {metrics.monthlyInvestmentDelta >= 0 ? '+' : ''}
-                  {formatEuros(metrics.monthlyInvestmentDelta)}
-                  <span className="text-xs font-normal">/mois</span>
-                </span>
-                <span
-                  className={`text-sm font-medium ${
-                    metrics.monthlyInvestmentDeltaPercent >= 0 ? 'text-red-600' : 'text-green-600'
-                  }`}
-                >
-                  ({metrics.monthlyInvestmentDeltaPercent >= 0 ? '+' : ''}
-                  {metrics.monthlyInvestmentDeltaPercent.toFixed(1)}%)
-                </span>
-              </div>
-              {metrics.monthlyInvestmentDelta > 0 && (
-                <p className="mt-1 text-xs text-gray-600">
-                  Vous devez investir{' '}
-                  <span className="font-semibold text-red-600">
-                    {formatEuros(metrics.monthlyInvestmentDelta)}
-                  </span>{' '}
-                  de plus par mois par rapport au plan initial
+              {metrics.requiredMonthlyInvestment === 0 ? (
+                <p className="text-sm text-green-600">
+                  🎉 Félicitations ! Vous avez dépassé votre objectif
                 </p>
-              )}
-              {metrics.monthlyInvestmentDelta < 0 && (
-                <p className="mt-1 text-xs text-gray-600">
-                  Vous pouvez investir{' '}
-                  <span className="font-semibold text-green-600">
-                    {formatEuros(Math.abs(metrics.monthlyInvestmentDelta))}
-                  </span>{' '}
-                  de moins par mois par rapport au plan initial
-                </p>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <span
+                      className={`text-base font-bold ${
+                        metrics.monthlyInvestmentDelta >= 0 ? 'text-red-600' : 'text-green-600'
+                      }`}
+                    >
+                      {metrics.monthlyInvestmentDelta >= 0 ? '+' : ''}
+                      {formatEuros(metrics.monthlyInvestmentDelta)}
+                      <span className="text-xs font-normal">/mois</span>
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${
+                        metrics.monthlyInvestmentDeltaPercent >= 0
+                          ? 'text-red-600'
+                          : 'text-green-600'
+                      }`}
+                    >
+                      ({metrics.monthlyInvestmentDeltaPercent >= 0 ? '+' : ''}
+                      {metrics.monthlyInvestmentDeltaPercent.toFixed(1)}%)
+                    </span>
+                  </div>
+                  {metrics.monthlyInvestmentDelta > 0 && (
+                    <p className="mt-1 text-xs text-gray-600">
+                      Vous devez investir{' '}
+                      <span className="font-semibold text-red-600">
+                        {formatEuros(metrics.monthlyInvestmentDelta)}
+                      </span>{' '}
+                      de plus par mois par rapport au plan initial
+                    </p>
+                  )}
+                  {metrics.monthlyInvestmentDelta < 0 && (
+                    <p className="mt-1 text-xs text-gray-600">
+                      Vous pouvez investir{' '}
+                      <span className="font-semibold text-green-600">
+                        {formatEuros(Math.abs(metrics.monthlyInvestmentDelta))}
+                      </span>{' '}
+                      de moins par mois par rapport au plan initial
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </div>

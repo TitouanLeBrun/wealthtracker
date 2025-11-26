@@ -31,6 +31,12 @@ function MonthlyInvestmentSimulator({
   const [currentWealth, setCurrentWealth] = useState(0)
   const [categories, setCategories] = useState<CategoryBreakdown[]>([])
   const [objectiveAlreadyReached, setObjectiveAlreadyReached] = useState(false)
+  const [objectiveStartInfo, setObjectiveStartInfo] = useState<{
+    type: 'recent' | 'custom' | 'first-transaction'
+    startDate: Date
+    yearsElapsed: number
+    yearsRemaining: number
+  } | null>(null)
 
   useEffect(() => {
     const loadSimulation = async (): Promise<void> => {
@@ -78,6 +84,24 @@ function MonthlyInvestmentSimulator({
         const now = new Date()
         const yearsElapsed = (now.getTime() - startDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
         const yearsRemaining = Math.max(0, objective.targetYears - yearsElapsed)
+
+        // Déterminer le type de début d'objectif
+        let startType: 'recent' | 'custom' | 'first-transaction' = 'first-transaction'
+
+        if (objective.startDate) {
+          const daysSinceStart =
+            (now.getTime() - new Date(objective.startDate).getTime()) / (24 * 60 * 60 * 1000)
+          startType = daysSinceStart < 30 ? 'recent' : 'custom'
+        } else if (allTransactions.length > 0) {
+          startType = 'first-transaction'
+        }
+
+        setObjectiveStartInfo({
+          type: startType,
+          startDate,
+          yearsElapsed,
+          yearsRemaining
+        })
 
         // Si le temps est écoulé ou presque écoulé
         if (yearsRemaining <= 0.1) {
@@ -162,9 +186,39 @@ function MonthlyInvestmentSimulator({
     <div>
       <h3 className="mb-4 text-lg font-semibold">💰 Simulation de Versements Mensuels</h3>
 
+      {/* Affichage du contexte de début d'objectif */}
+      {objectiveStartInfo && (
+        <div className="mb-4 rounded-lg bg-blue-50 p-3">
+          <p className="text-xs text-blue-800">
+            {objectiveStartInfo.type === 'recent' && (
+              <>
+                🆕 <span className="font-semibold">Objectif récent</span> - Démarré le{' '}
+                {objectiveStartInfo.startDate.toLocaleDateString('fr-FR')} (il y a{' '}
+                {Math.round(objectiveStartInfo.yearsElapsed * 12)} mois)
+              </>
+            )}
+            {objectiveStartInfo.type === 'custom' && (
+              <>
+                📅 <span className="font-semibold">Date personnalisée</span> - Objectif démarré le{' '}
+                {objectiveStartInfo.startDate.toLocaleDateString('fr-FR')} • Temps écoulé :{' '}
+                {objectiveStartInfo.yearsElapsed.toFixed(1)} ans • Temps restant :{' '}
+                {objectiveStartInfo.yearsRemaining.toFixed(1)} ans
+              </>
+            )}
+            {objectiveStartInfo.type === 'first-transaction' && (
+              <>
+                🔄 <span className="font-semibold">Basé sur votre historique</span> - Première
+                transaction le {objectiveStartInfo.startDate.toLocaleDateString('fr-FR')} • Temps
+                restant : {objectiveStartInfo.yearsRemaining.toFixed(1)} ans
+              </>
+            )}
+          </p>
+        </div>
+      )}
+
       {/* Cas 1 : Objectif déjà atteignable */}
       {objectiveAlreadyReached ? (
-        <div className="rounded-lg bg-gradient-to-br from-green-50 to-emerald-100 p-8">
+        <div className="rounded-lg bg-linear-to-br from-green-50 to-emerald-100 p-8">
           <div className="mb-4 text-center">
             <div className="mb-3 text-6xl">🎉</div>
             <h4 className="mb-2 text-2xl font-bold text-green-800">
@@ -217,19 +271,62 @@ function MonthlyInvestmentSimulator({
         <>
           {/* Cas 2 : Versements nécessaires */}
           {/* Résumé principal */}
-          <div className="mb-6 rounded-lg bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+          <div className="mb-6 rounded-lg bg-linear-to-br from-blue-50 to-purple-50 p-6">
             <div className="mb-2 text-sm text-gray-700">
-              Pour atteindre{' '}
-              <span className="font-bold text-blue-700">{formatEuros(objective.targetAmount)}</span>{' '}
-              en <span className="font-bold text-purple-700">{objective.targetYears} ans</span> avec
-              un taux de <span className="font-bold text-green-700">{objective.interestRate}%</span>
+              {objectiveStartInfo?.type === 'recent' ? (
+                <>
+                  Objectif récemment démarré - Pour atteindre{' '}
+                  <span className="font-bold text-blue-700">
+                    {formatEuros(objective.targetAmount)}
+                  </span>{' '}
+                  en{' '}
+                  <span className="font-bold text-purple-700">
+                    {objectiveStartInfo.yearsRemaining.toFixed(1)} ans
+                  </span>{' '}
+                  (temps restant)
+                </>
+              ) : objectiveStartInfo?.type === 'custom' ? (
+                <>
+                  Date personnalisée - Temps restant :{' '}
+                  <span className="font-bold text-purple-700">
+                    {objectiveStartInfo.yearsRemaining.toFixed(1)} ans
+                  </span>{' '}
+                  pour atteindre{' '}
+                  <span className="font-bold text-blue-700">
+                    {formatEuros(objective.targetAmount)}
+                  </span>
+                </>
+              ) : (
+                <>
+                  Basé sur votre historique - Pour atteindre{' '}
+                  <span className="font-bold text-blue-700">
+                    {formatEuros(objective.targetAmount)}
+                  </span>{' '}
+                  en{' '}
+                  <span className="font-bold text-purple-700">
+                    {objectiveStartInfo?.yearsRemaining.toFixed(1)} ans
+                  </span>{' '}
+                  (temps restant)
+                </>
+              )}{' '}
+              avec un taux de{' '}
+              <span className="font-bold text-green-700">{objective.interestRate}%</span>
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-600">Versement mensuel recommandé</p>
               <p className="text-4xl font-bold text-blue-700">{formatEuros(monthlyPayment)}</p>
               <p className="mt-2 text-xs text-gray-500">
-                Total sur {objective.targetYears} ans :{' '}
-                {formatEuros(monthlyPayment * 12 * objective.targetYears)}
+                {objectiveStartInfo && objectiveStartInfo.yearsRemaining > 0 ? (
+                  <>
+                    Total sur {objectiveStartInfo.yearsRemaining.toFixed(1)} ans (temps restant) :{' '}
+                    {formatEuros(monthlyPayment * 12 * objectiveStartInfo.yearsRemaining)}
+                  </>
+                ) : (
+                  <>
+                    Total sur {objective.targetYears} ans :{' '}
+                    {formatEuros(monthlyPayment * 12 * objective.targetYears)}
+                  </>
+                )}
               </p>
             </div>
           </div>

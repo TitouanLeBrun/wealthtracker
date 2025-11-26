@@ -273,13 +273,18 @@ export function useProjectionInsights(objective: Objective | null): ProjectionMe
         const yearsRemaining = objective.targetYears - yearsElapsed
         let requiredMonthlyInvestment = 0
 
-        if (yearsRemaining > 0) {
+        // Si objectif déjà atteint, pas besoin d'investir davantage
+        if (currentWealth >= objective.targetAmount) {
+          requiredMonthlyInvestment = 0
+        } else if (yearsRemaining > 0) {
           requiredMonthlyInvestment = calculateMonthlyPayment(
             currentWealth,
             objective.targetAmount,
             objective.interestRate,
             yearsRemaining
           )
+          // S'assurer que le montant requis est toujours positif
+          requiredMonthlyInvestment = Math.max(0, requiredMonthlyInvestment)
         }
 
         // 7. Delta entre investissement théorique et requis
