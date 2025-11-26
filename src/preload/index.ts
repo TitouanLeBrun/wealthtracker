@@ -26,7 +26,16 @@ const api = {
     ipcRenderer.invoke('asset:create', data),
   updateAssetPrice: (data: { assetId: number; newPrice: number }) =>
     ipcRenderer.invoke('asset:updatePrice', data),
-  deleteAsset: (assetId: number) => ipcRenderer.invoke('asset:delete', assetId)
+  deleteAsset: (assetId: number) => ipcRenderer.invoke('asset:delete', assetId),
+
+  // Objectives API
+  getCurrentObjective: () => ipcRenderer.invoke('objective:getCurrent'),
+  createObjective: (data: { targetAmount: number; targetYears: number; interestRate: number }) =>
+    ipcRenderer.invoke('objective:create', data),
+  updateObjective: (
+    id: number,
+    data: { targetAmount: number; targetYears: number; interestRate: number }
+  ) => ipcRenderer.invoke('objective:update', id, data)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

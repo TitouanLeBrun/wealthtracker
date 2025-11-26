@@ -40,9 +40,23 @@ function CategoryDetailPage({
   }, [categories, allAssets, transactions])
 
   // Récupérer les valeurs calculées de cette catégorie
+  // Si la catégorie n'a pas d'actifs/transactions, categoryValue sera undefined
   const categoryValue = useMemo(() => {
-    return categoryValues.find((cv) => cv.categoryId === categoryId)
-  }, [categoryId, categoryValues])
+    const found = categoryValues.find((cv) => cv.categoryId === categoryId)
+    // Si pas trouvé, créer une structure vide pour la catégorie
+    if (!found && category) {
+      return {
+        categoryId: category.id,
+        categoryName: category.name,
+        color: category.color,
+        totalValue: 0,
+        percentage: 0,
+        assetCount: 0,
+        assets: []
+      }
+    }
+    return found
+  }, [categoryId, categoryValues, category])
 
   // Créer une liste complète des actifs (avec et sans transactions)
   const allCategoryAssets = useMemo(() => {
@@ -161,10 +175,19 @@ function CategoryDetailPage({
     }
   }
 
-  if (loading || !category || !categoryValue) {
+  if (loading || !category) {
     return (
       <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}>
         <p style={{ color: 'var(--color-text-secondary)' }}>Chargement...</p>
+      </div>
+    )
+  }
+
+  // categoryValue est maintenant garanti d'exister (soit trouvé, soit créé vide)
+  if (!categoryValue) {
+    return (
+      <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Erreur de chargement</p>
       </div>
     )
   }

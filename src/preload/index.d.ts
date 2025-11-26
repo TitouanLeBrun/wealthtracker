@@ -31,6 +31,16 @@ export interface Transaction {
   createdAt: Date
 }
 
+// Objective type (financial goal)
+export interface Objective {
+  id: number
+  targetAmount: number // Montant cible en € (ex: 300000)
+  targetYears: number // Durée en années (ex: 25)
+  interestRate: number // Taux d'intérêt annuel en % (ex: 8.0)
+  createdAt: Date
+  updatedAt: Date
+}
+
 // API type
 export interface API {
   // Transactions
@@ -59,6 +69,22 @@ export interface API {
   }) => Promise<Asset>
   updateAssetPrice: (data: { assetId: number; newPrice: number }) => Promise<Asset>
   deleteAsset: (assetId: number) => Promise<Asset>
+
+  // Objectives
+  getCurrentObjective: () => Promise<Objective | null>
+  createObjective: (data: {
+    targetAmount: number
+    targetYears: number
+    interestRate: number
+  }) => Promise<Objective>
+  updateObjective: (
+    id: number,
+    data: {
+      targetAmount: number
+      targetYears: number
+      interestRate: number
+    }
+  ) => Promise<Objective>
 }
 
 declare global {

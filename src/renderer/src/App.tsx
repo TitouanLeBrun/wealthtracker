@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import DashboardPage from './pages/DashboardPage'
 import TransactionsPage from './pages/TransactionsPage'
+import ProjectionPage from './pages/ProjectionPage'
 import SettingsPage from './pages/SettingsPage'
 import CategoryDetailPage from './pages/CategoryDetailPage'
 import AssetDetailPage from './pages/AssetDetailPage'
@@ -9,7 +10,7 @@ import type { NotificationMessage } from './types'
 
 function App(): React.JSX.Element {
   const [activePage, setActivePage] = useState<
-    'dashboard' | 'transactions' | 'settings' | 'category' | 'asset'
+    'dashboard' | 'transactions' | 'projection' | 'settings' | 'category' | 'asset'
   >('dashboard')
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [selectedAssetId, setSelectedAssetId] = useState<number | null>(null)
@@ -165,6 +166,28 @@ function App(): React.JSX.Element {
               <span className="nav-text">Transactions</span>
             </button>
             <button
+              onClick={() => setActivePage('projection')}
+              style={{
+                padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px)',
+                backgroundColor:
+                  activePage === 'projection' ? 'var(--color-accent)' : 'transparent',
+                color: activePage === 'projection' ? 'white' : 'var(--color-text-secondary)',
+                border: 'none',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                fontWeight: activePage === 'projection' ? '600' : '500',
+                fontSize: 'clamp(13px, 2.5vw, 15px)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-xs)',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <span>🎯</span>
+              <span className="nav-text">Projection</span>
+            </button>
+            <button
               onClick={() => setActivePage('settings')}
               style={{
                 padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px)',
@@ -218,6 +241,8 @@ function App(): React.JSX.Element {
             onNavigateToAsset={navigateToAsset}
           />
         )}
+
+        {activePage === 'projection' && <ProjectionPage />}
 
         {activePage === 'settings' && (
           <SettingsPage
