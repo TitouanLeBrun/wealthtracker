@@ -485,15 +485,27 @@ export function calculateRealityChartData(
 }
 
 /**
- * Génère la courbe objectif théorique (projection rétroactive complète)
+ * Génère la courbe objectif théorique basée UNIQUEMENT sur des versements mensuels
+ * Part de 0 et projette en utilisant seulement les versements réguliers (ignore le patrimoine actuel)
+ *
+ * @param dates - Dates pour lesquelles calculer la projection
+ * @param _currentWealth - Patrimoine actuel (non utilisé, gardé pour compatibilité API)
+ * @param objective - Paramètres de l'objectif
+ * @param _today - Date actuelle (non utilisé, gardé pour compatibilité API)
+ * @param startDate - Date de début (première transaction)
+ * @returns Tableau de points de la courbe objectif
  */
 export function calculateObjectiveChartData(
   dates: Date[],
-  currentWealth: number,
+  _currentWealth: number,
   objective: ObjectiveParams,
-  today: Date = new Date()
+  _today: Date = new Date(),
+  startDate?: Date
 ): ChartDataPoint[] {
   const data: ChartDataPoint[] = []
+
+  // Si pas de date de départ fournie, utiliser aujourd'hui
+  const projectionStart = startDate || _today
 
   // Paramètres
   const targetAmount = objective.targetAmount
@@ -501,37 +513,35 @@ export function calculateObjectiveChartData(
   const annualRate = objective.interestRate / 100
   const monthlyRate = annualRate / 12
 
-  // Calculer le versement mensuel nécessaire
+  // Calculer le versement mensuel nécessaire pour atteindre l'objectif
+  // IMPORTANT : On part de 0 (pas de capital initial), seulement des versements
   const totalMonths = targetYears * 12
-  const rateCompounded = Math.pow(1 + annualRate, targetYears)
 
+  // Formule : FV = PMT × [(1 + r)^n - 1] / r
+  // PMT = FV × r / [(1 + r)^n - 1]
   const monthlyPayment =
-    totalMonths > 0
-      ? (targetAmount - currentWealth * rateCompounded) *
-        (monthlyRate / (Math.pow(1 + monthlyRate, totalMonths) - 1))
-      : 0
+    totalMonths > 0 && monthlyRate > 0
+      ? (targetAmount * monthlyRate) / (Math.pow(1 + monthlyRate, totalMonths) - 1)
+      : targetAmount / totalMonths
 
   dates.forEach((date) => {
-    const monthsFromNow = getMonthsDifference(today, date)
+    const monthsFromStart = getMonthsDifference(projectionStart, date)
 
-    let value: number
-
-    if (date <= today) {
-      // Projection rétroactive (passé)
-      // Formule inversée : Capital_actuel / (1 + taux)^mois_écoulés
-      const monthsElapsed = Math.abs(monthsFromNow)
-      value = currentWealth / Math.pow(1 + monthlyRate, monthsElapsed)
-    } else {
-      // Projection future
-      const monthsAhead = monthsFromNow
-      value =
-        currentWealth * Math.pow(1 + monthlyRate, monthsAhead) +
-        monthlyPayment * ((Math.pow(1 + monthlyRate, monthsAhead) - 1) / monthlyRate)
+    if (monthsFromStart < 0) {
+      // Date antérieure au départ : pas de données
+      return
     }
+
+    // Projection : UNIQUEMENT les versements + intérêts composés
+    // FV = PMT × [(1 + r)^n - 1] / r
+    const value =
+      monthsFromStart > 0
+        ? (monthlyPayment * (Math.pow(1 + monthlyRate, monthsFromStart) - 1)) / monthlyRate
+        : 0
 
     data.push({
       time: formatDateForChart(date),
-      value: Math.max(0, value) // Éviter les valeurs négatives
+      value: Math.max(0, value)
     })
   })
 
@@ -540,60 +550,48 @@ export function calculateObjectiveChartData(
 
 /**
  * Calcule le capital investi théorique pour atteindre l'objectif
- * IMPORTANT: Cette fonction calcule le capital THÉORIQUE nécessaire pour atteindre
- * l'objectif avec les intérêts composés, pas le capital réellement investi.
+ * IMPORTANT: Calcule le capital cumulé basé uniquement sur les versements mensuels
  *
  * @param dates - Dates pour lesquelles calculer le capital
- * @param currentWealth - Patrimoine actuel
+ * @param _currentWealth - Patrimoine actuel (non utilisé, gardé pour compatibilité)
  * @param objective - Paramètres de l'objectif
- * @param today - Date actuelle
- * @returns Tableau de points représentant le capital théorique investi
+ * @param _today - Date actuelle (non utilisé, gardé pour compatibilité)
+ * @param startDate - Date de début des versements
+ * @returns Tableau de points représentant le capital investi cumulé
  */
 export function calculateInvestedCapitalData(
   dates: Date[],
-  currentWealth: number,
+  _currentWealth: number,
   objective: ObjectiveParams,
-  today: Date = new Date()
+  _today: Date = new Date(),
+  startDate?: Date
 ): ChartDataPoint[] {
   const data: ChartDataPoint[] = []
 
-  const annualRate = objective.interestRate / 100
-  const monthlyRate = annualRate / 12
+  // Si pas de date de départ fournie, utiliser aujourd'hui
+  const projectionStart = startDate || _today
+
   const targetAmount = objective.targetAmount
   const targetYears = objective.targetYears
+  const annualRate = objective.interestRate / 100
+  const monthlyRate = annualRate / 12
   const totalMonths = targetYears * 12
 
-  // Calculer le versement mensuel théorique nécessaire
-  const rateCompounded = Math.pow(1 + annualRate, targetYears)
+  // Calculer le versement mensuel théorique nécessaire (même formule que l'objectif)
   const monthlyPayment =
-    totalMonths > 0
-      ? (targetAmount - currentWealth * rateCompounded) *
-        (monthlyRate / (Math.pow(1 + monthlyRate, totalMonths) - 1))
-      : 0
+    totalMonths > 0 && monthlyRate > 0
+      ? (targetAmount * monthlyRate) / (Math.pow(1 + monthlyRate, totalMonths) - 1)
+      : targetAmount / totalMonths
 
   dates.forEach((date) => {
-    const monthsFromNow = getMonthsDifference(today, date)
+    const monthsFromStart = getMonthsDifference(projectionStart, date)
 
-    let capitalInvested: number
-
-    if (date <= today) {
-      // Passé : calculer le capital théorique qui aurait dû être investi
-      // Formule : Capital = Somme des versements passés (sans intérêts)
-      const monthsElapsed = Math.abs(monthsFromNow)
-
-      // Capital = versement mensuel × nombre de mois écoulés
-      // On part du patrimoine actuel et on remonte dans le temps
-      // en enlevant les intérêts accumulés
-      const theoreticalCapitalAtStart = currentWealth / Math.pow(1 + monthlyRate, monthsElapsed)
-
-      // Capital investi = capital de départ + versements jusqu'à cette date
-      const monthsFromStart = monthsElapsed
-      capitalInvested = theoreticalCapitalAtStart + monthlyPayment * monthsFromStart
-    } else {
-      // Futur : capital actuel + versements futurs
-      const monthsAhead = monthsFromNow
-      capitalInvested = currentWealth + monthlyPayment * monthsAhead
+    if (monthsFromStart < 0) {
+      return
     }
+
+    // Capital investi = versement mensuel × nombre de mois écoulés
+    const capitalInvested = monthlyPayment * monthsFromStart
 
     data.push({
       time: formatDateForChart(date),

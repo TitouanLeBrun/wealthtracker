@@ -47,10 +47,6 @@ export function useProjectionChartData({
 
   // Calculer le patrimoine actuel
   const currentWealth = useMemo(() => {
-    console.log('💎 === CALCUL PATRIMOINE ACTUEL ===')
-    console.log('Assets:', assets)
-    console.log('Transactions:', transactions)
-
     const wealth = assets.reduce((sum, asset) => {
       const assetTransactions = transactions.filter((t) => t.assetId === asset.id)
       const netQuantity = assetTransactions.reduce((qty, t) => {
@@ -58,15 +54,8 @@ export function useProjectionChartData({
       }, 0)
       const assetValue = netQuantity * asset.currentPrice
 
-      console.log(
-        `Asset ${asset.id}: ${netQuantity} × ${asset.currentPrice}€ = ${assetValue.toFixed(2)}€`
-      )
-
       return sum + assetValue
     }, 0)
-
-    console.log('💰 PATRIMOINE ACTUEL TOTAL:', wealth.toFixed(2), '€')
-    console.log('---')
 
     return wealth
   }, [assets, transactions])
@@ -75,16 +64,8 @@ export function useProjectionChartData({
     const calculateData = async (): Promise<void> => {
       setLoading(true)
       try {
-        console.log('🚀 === GÉNÉRATION DONNÉES GRAPHIQUE ===')
-        console.log('Période:', timeRange)
-        console.log('Patrimoine actuel:', currentWealth)
-        console.log('Objectif:', objective)
-
         const config = TIME_RANGE_CONFIGS[timeRange]
         const today = new Date()
-
-        console.log('Config période:', config)
-        console.log("Aujourd'hui:", today)
 
         // Pour MAX, calculer les dates depuis la première transaction jusqu'à la fin de l'objectif
         let dates: Date[]
@@ -99,13 +80,9 @@ export function useProjectionChartData({
                 )
               : today
 
-          // Date de fin = aujourd'hui + années de l'objectif
-          const endDate = new Date(today)
+          // Date de fin = première transaction + années de l'objectif
+          const endDate = new Date(firstTransactionDate)
           endDate.setFullYear(endDate.getFullYear() + objective.targetYears)
-
-          console.log('📅 MODE MAX:')
-          console.log('  Première transaction:', formatDateForChart(firstTransactionDate))
-          console.log('  Fin objectif:', formatDateForChart(endDate))
 
           // Générer les dates mensuelles
           dates = []
@@ -134,14 +111,24 @@ export function useProjectionChartData({
           dates = generateTimeRangeDates(config, today)
         }
 
-        console.log('Dates générées:', dates.length)
+        // Trouver la première transaction pour commencer la courbe objectif
+        const firstTransactionDate =
+          transactions.length > 0
+            ? transactions.reduce(
+                (earliest, t) => (t.date < earliest ? t.date : earliest),
+                transactions[0].date
+              )
+            : today
 
         // Calculer les 2 courbes
         const realityData = calculateRealityChartData(dates, assets, transactions, today)
-        const objectiveData = calculateObjectiveChartData(dates, currentWealth, objective, today)
-
-        console.log('📊 Données réalité:', realityData.length, 'points')
-        console.log('📊 Données objectif:', objectiveData.length, 'points')
+        const objectiveData = calculateObjectiveChartData(
+          dates,
+          currentWealth,
+          objective,
+          today,
+          firstTransactionDate
+        )
 
         // Formater la date du jour
         const todayMarker = formatDateForChart(today)

@@ -102,8 +102,20 @@ export function useInvestmentBreakdownData({
         }
 
         // Calculer les 3 courbes : Objectif → Capital → Intérêts
-        const objectiveData = calculateObjectiveChartData(dates, currentWealth, objective, today)
-        const capitalData = calculateInvestedCapitalData(dates, currentWealth, objective, today)
+        const objectiveData = calculateObjectiveChartData(
+          dates,
+          currentWealth,
+          objective,
+          today,
+          today // Commencer aujourd'hui pour le graphique Capital/Intérêts
+        )
+        const capitalData = calculateInvestedCapitalData(
+          dates,
+          currentWealth,
+          objective,
+          today,
+          today // Commencer aujourd'hui
+        )
         const interestData = calculateInterestEarnedData(dates, objectiveData, capitalData)
 
         const todayMarker = formatDateForChart(today)
