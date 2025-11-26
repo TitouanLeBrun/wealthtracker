@@ -24,6 +24,7 @@ interface Objective {
   targetAmount: number
   targetYears: number
   interestRate: number
+  startDate: Date | null
 }
 
 interface UseProjectionChartDataProps {
@@ -80,11 +81,16 @@ export function useProjectionChartData({
                 )
               : today
 
-          // Date de fin = première transaction + années de l'objectif
-          const endDate = new Date(firstTransactionDate)
+          // Utiliser startDate de l'objectif ou la première transaction par défaut
+          const objectiveStartDate = objective.startDate
+            ? new Date(objective.startDate)
+            : firstTransactionDate
+
+          // Date de fin = date de début de l'objectif + années de l'objectif
+          const endDate = new Date(objectiveStartDate)
           endDate.setFullYear(endDate.getFullYear() + objective.targetYears)
 
-          // Générer les dates mensuelles
+          // Générer les dates mensuelles depuis la PREMIÈRE TRANSACTION (pour l'historique réel)
           dates = []
           const current = new Date(
             firstTransactionDate.getFullYear(),
@@ -109,9 +115,7 @@ export function useProjectionChartData({
         } else {
           // Générer les dates normalement
           dates = generateTimeRangeDates(config, today)
-        }
-
-        // Trouver la première transaction pour commencer la courbe objectif
+        } // Trouver la première transaction pour commencer la courbe objectif
         const firstTransactionDate =
           transactions.length > 0
             ? transactions.reduce(
@@ -120,6 +124,11 @@ export function useProjectionChartData({
               )
             : today
 
+        // Utiliser startDate de l'objectif ou la première transaction par défaut
+        const objectiveStartDate = objective.startDate
+          ? new Date(objective.startDate)
+          : firstTransactionDate
+
         // Calculer les 2 courbes
         const realityData = calculateRealityChartData(dates, assets, transactions, today)
         const objectiveData = calculateObjectiveChartData(
@@ -127,7 +136,7 @@ export function useProjectionChartData({
           currentWealth,
           objective,
           today,
-          firstTransactionDate
+          objectiveStartDate
         )
 
         // Formater la date du jour

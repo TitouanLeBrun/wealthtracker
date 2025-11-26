@@ -27,6 +27,7 @@ interface Objective {
   targetAmount: number
   targetYears: number
   interestRate: number
+  startDate: Date | null
 }
 
 interface UseInvestmentBreakdownDataProps {

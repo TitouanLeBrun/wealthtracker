@@ -38,10 +38,11 @@ model Transaction {
 }
 
 model Objective {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   targetAmount Float
   targetYears  Int
   interestRate Float
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  startDate    DateTime? // Date de début de l'objectif (null = première transaction)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

@@ -7,6 +7,7 @@ export interface Objective {
   targetAmount: number
   targetYears: number
   interestRate: number
+  startDate: Date | null // Date de début de l'objectif (null = première transaction)
   createdAt: Date
   updatedAt: Date
 }

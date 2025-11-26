@@ -51,6 +51,7 @@ export default function ProjectionPage(): React.JSX.Element {
     targetAmount: number
     targetYears: number
     interestRate: number
+    startDate?: Date | null
   }): Promise<void> => {
     try {
       if (objective) {

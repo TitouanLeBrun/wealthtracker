@@ -259,6 +259,7 @@ app.whenReady().then(() => {
         targetAmount: number
         targetYears: number
         interestRate: number
+        startDate?: Date | null
       }
     ) => {
       try {
@@ -267,7 +268,8 @@ app.whenReady().then(() => {
           data: {
             targetAmount: data.targetAmount,
             targetYears: data.targetYears,
-            interestRate: data.interestRate
+            interestRate: data.interestRate,
+            startDate: data.startDate ? new Date(data.startDate) : null
           }
         })
       } catch (error) {
@@ -282,7 +284,12 @@ app.whenReady().then(() => {
     async (
       _,
       id: number,
-      data: { targetAmount: number; targetYears: number; interestRate: number }
+      data: {
+        targetAmount: number
+        targetYears: number
+        interestRate: number
+        startDate?: Date | null
+      }
     ) => {
       try {
         const prisma = await getPrismaClient()
@@ -291,7 +298,8 @@ app.whenReady().then(() => {
           data: {
             targetAmount: data.targetAmount,
             targetYears: data.targetYears,
-            interestRate: data.interestRate
+            interestRate: data.interestRate,
+            startDate: data.startDate ? new Date(data.startDate) : null
           }
         })
       } catch (error) {

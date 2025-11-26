@@ -37,6 +37,7 @@ export interface Objective {
   targetAmount: number // Montant cible en € (ex: 300000)
   targetYears: number // Durée en années (ex: 25)
   interestRate: number // Taux d'intérêt annuel en % (ex: 8.0)
+  startDate: Date | null // Date de début de l'objectif (null = première transaction)
   createdAt: Date
   updatedAt: Date
 }
@@ -76,6 +77,7 @@ export interface API {
     targetAmount: number
     targetYears: number
     interestRate: number
+    startDate?: Date | null
   }) => Promise<Objective>
   updateObjective: (
     id: number,
@@ -83,6 +85,7 @@ export interface API {
       targetAmount: number
       targetYears: number
       interestRate: number
+      startDate?: Date | null
     }
   ) => Promise<Objective>
 }

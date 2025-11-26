@@ -35,6 +35,24 @@ export interface ProjectionChartData {
 }
 
 /**
+ * Mode de sélection de la date de début
+ */
+export type StartDateMode = 'first-transaction' | 'today' | 'custom'
+
+/**
+ * Objectif financier avec date de début personnalisable
+ */
+export interface Objective {
+  id: number
+  targetAmount: number
+  targetYears: number
+  interestRate: number
+  startDate: Date | null // null = première transaction
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
  * Configuration des périodes de temps
  */
 export const TIME_RANGE_CONFIGS: Record<TimeRange, TimeRangeConfig> = {
