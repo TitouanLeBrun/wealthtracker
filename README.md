@@ -18,6 +18,7 @@
 - [Guide d'Utilisation](#-guide-dutilisation)
 - [Stack Technique](#-stack-technique)
 - [Développement](#️-développement)
+- [Documentation Technique](#-documentation-technique)
 - [Roadmap](#️-roadmap)
 
 ---
@@ -810,24 +811,47 @@ npm run build:win
 
 ---
 
-## 📝 License
+## 📚 Documentation Technique
 
-Ce projet est sous licence **MIT**.
+### 📖 Documentation Complète
+
+Pour une documentation détaillée sur l'architecture, les modules et le développement, consultez :
+
+**[📘 Documentation Technique Complète](./docs/README.md)**
+
+### 📄 Documentation Spécifique
+
+- **[FEATURE_ASSETS_WITHOUT_POSITION.md](./docs/FEATURE_ASSETS_WITHOUT_POSITION.md)** : Gestion des actifs sans position
+- **[FIX_CATEGORY_LOADING.md](./docs/FIX_CATEGORY_LOADING.md)** : Correction du chargement infini des catégories
+- **[SETTINGS_PAGE_IMPROVEMENTS.md](./docs/SETTINGS_PAGE_IMPROVEMENTS.md)** : Améliorations de la page Paramètres
 
 ---
 
-## 📚 Documentation Complémentaire
+## 🗺️ Roadmap
 
-Voir le dossier [docs/](./docs/) pour plus de détails :
+### 🎯 Version 1.0 (Objectif : Q1 2025)
+- [ ] **Module Projection Financière** ✅ (En cours - 90%)
+  - [x] Graphique double courbe (réalité vs objectif)
+  - [x] Calculs de projection exponentielle
+  - [x] Simulateur de versements mensuels
+  - [ ] Tests et optimisations
+- [ ] **Recommandations Personnalisées**
+  - [ ] Calcul montant mensuel pour atteindre objectif
+  - [ ] Scénarios multiples (pessimiste/réaliste/optimiste)
+  - [ ] Prise en compte de l'inflation
 
-- **[BUILD_GUIDE.md](./docs/BUILD_GUIDE.md)** : Guide complet pour créer l'exécutable Windows
-- **[BUILD_CONFIG_SUMMARY.md](./docs/BUILD_CONFIG_SUMMARY.md)** : Résumé de la configuration de build
-- **[ASSET_WITHOUT_POSITION_FEATURE.md](./docs/ASSET_WITHOUT_POSITION_FEATURE.md)** : Gestion des actifs sans position
-- **[CATEGORY_PAGE_IMPROVEMENTS.md](./docs/CATEGORY_PAGE_IMPROVEMENTS.md)** : Améliorations de la page Catégories
-- **[CATEGORY_PAGE_REFACTORING.md](./docs/CATEGORY_PAGE_REFACTORING.md)** : Refactoring de CategoryDetailPage
-- **[FEATURE_CATEGORY_PIE_CHART.md](./docs/FEATURE_CATEGORY_PIE_CHART.md)** : Implémentation du graphique camembert
-- **[TRANSACTION_COMPONENTS.md](./docs/TRANSACTION_COMPONENTS.md)** : Architecture des composants Transaction
-- **[V0.4_DASHBOARD.md](./docs/V0.4_DASHBOARD.md)** : Guide complet du Dashboard
+### 🚀 Version 1.1 (À définir)
+- [ ] Import automatique via APIs (CoinGecko, Yahoo Finance)
+- [ ] Export de données (CSV, PDF)
+- [ ] Notifications et alertes
+- [ ] Mode clair/sombre
+- [ ] Multi-devises
+
+---
+
+## 📝 License
+
+Ce projet est sous licence **MIT**.
 
 ---
 

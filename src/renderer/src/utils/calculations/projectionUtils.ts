@@ -166,3 +166,150 @@ export function calculateCurrentWealth(
 export function calculateTotalFees(transactions: Array<{ fee: number }>): number {
   return transactions.reduce((sum, t) => sum + t.fee, 0)
 }
+
+/**
+ * Obtient la date de la première transaction
+ */
+export function getFirstTransactionDate(transactions: Array<{ date: Date }>): Date | null {
+  if (transactions.length === 0) return null
+
+  return transactions.reduce((earliest, t) => {
+    return t.date < earliest ? t.date : earliest
+  }, transactions[0].date)
+}
+
+/**
+ * Génère un tableau de dates mensuelles entre deux dates
+ */
+export function generateMonthlyDates(startDate: Date, endDate: Date): Date[] {
+  const dates: Date[] = []
+  const current = new Date(startDate)
+  current.setDate(1) // Premier jour du mois
+  current.setHours(0, 0, 0, 0)
+
+  const end = new Date(endDate)
+  end.setDate(1)
+  end.setHours(0, 0, 0, 0)
+
+  while (current <= end) {
+    dates.push(new Date(current))
+    current.setMonth(current.getMonth() + 1)
+  }
+
+  return dates
+}
+
+/**
+ * Calcule le patrimoine historique mois par mois
+ * Utilise le prix actuel pour valoriser les positions passées
+ */
+export function calculateHistoricalWealth(
+  assets: Array<{
+    id: number
+    currentPrice: number
+  }>,
+  transactions: Array<{
+    assetId: number
+    type: 'BUY' | 'SELL'
+    quantity: number
+    date: Date
+  }>,
+  startDate: Date,
+  endDate: Date = new Date()
+): Array<{ date: Date; value: number }> {
+  const monthlyDates = generateMonthlyDates(startDate, endDate)
+  const wealthHistory: Array<{ date: Date; value: number }> = []
+
+  monthlyDates.forEach((monthDate) => {
+    // Filtrer les transactions jusqu'à ce mois (inclus)
+    const transactionsUpToMonth = transactions.filter((t) => t.date <= monthDate)
+
+    // Calculer la quantité nette de chaque actif à cette date
+    const assetQuantities = new Map<number, number>()
+
+    transactionsUpToMonth.forEach((t) => {
+      const currentQty = assetQuantities.get(t.assetId) || 0
+      if (t.type === 'BUY') {
+        assetQuantities.set(t.assetId, currentQty + t.quantity)
+      } else if (t.type === 'SELL') {
+        assetQuantities.set(t.assetId, currentQty - t.quantity)
+      }
+    })
+
+    // Calculer la valeur totale du patrimoine à cette date
+    let totalWealth = 0
+    assetQuantities.forEach((quantity, assetId) => {
+      const asset = assets.find((a) => a.id === assetId)
+      if (asset && quantity > 0) {
+        totalWealth += quantity * asset.currentPrice
+      }
+    })
+
+    wealthHistory.push({
+      date: new Date(monthDate),
+      value: totalWealth
+    })
+  })
+
+  return wealthHistory
+}
+
+/**
+ * Calcule la projection d'objectif avec versements mensuels
+ * Génère une courbe exponentielle de la date de départ jusqu'à l'objectif
+ */
+export function calculateObjectiveProjection(
+  currentWealth: number,
+  objective: ObjectiveParams,
+  startDate: Date
+): Array<{ date: Date; value: number }> {
+  const points: Array<{ date: Date; value: number }> = []
+  const now = new Date()
+  const r = objective.interestRate / 100
+  const monthlyRate = r / 12
+  const totalMonths = objective.targetYears * 12
+
+  // Calculer le versement mensuel nécessaire
+  const monthlyPayment = calculateMonthlyPayment(
+    currentWealth,
+    objective.targetAmount,
+    objective.interestRate,
+    objective.targetYears
+  )
+
+  // Calculer combien de mois se sont écoulés depuis le début
+  const monthsElapsed = Math.floor(
+    (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44)
+  )
+
+  // Générer les points mensuels
+  for (let month = 0; month <= totalMonths; month++) {
+    const pointDate = new Date(startDate)
+    pointDate.setMonth(pointDate.getMonth() + month)
+
+    let value: number
+
+    if (month <= monthsElapsed) {
+      // Projection passée/actuelle : interpoler vers le patrimoine actuel
+      const progressRatio = monthsElapsed > 0 ? month / monthsElapsed : 0
+      value = progressRatio * currentWealth
+    } else {
+      // Projection future : formule exponentielle avec versements
+      const monthsFromNow = month - monthsElapsed
+      const fvPresent = currentWealth * Math.pow(1 + monthlyRate, monthsFromNow)
+      const fvPayments =
+        monthsFromNow > 0
+          ? (monthlyPayment * (Math.pow(1 + monthlyRate, monthsFromNow) - 1)) / monthlyRate
+          : 0
+
+      value = fvPresent + fvPayments
+    }
+
+    points.push({
+      date: pointDate,
+      value: Math.max(0, value)
+    })
+  }
+
+  return points
+}
