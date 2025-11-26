@@ -111,15 +111,11 @@ export default function ProjectionPage(): React.JSX.Element {
 
       {/* Section 2.5 : Graphique Capital vs Intérêts */}
       <section className="mb-6">
-        <h2 className="mb-4 text-xl font-semibold">💹 Répartition Capital Investi vs Intérêts</h2>
-        <div className="rounded-lg bg-white p-6 shadow-md">
-          <InvestmentBreakdownChart objective={objective} />
-        </div>
+        <InvestmentBreakdownChart objective={objective} />
       </section>
 
       {/* Section 3 : Simulation Versements */}
       <section className="mb-6">
-        <h2 className="mb-4 text-xl font-semibold">💰 Simulation de Versements</h2>
         <div className="rounded-lg bg-white p-6 shadow-md">
           <MonthlyInvestmentSimulator objective={objective} />
         </div>
