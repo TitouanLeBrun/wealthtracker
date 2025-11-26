@@ -11,17 +11,15 @@
    - utilities.css : Classes utilitaires
    ============================================ */
 
-/* ⚠️ IMPORTANT: Tous les @import doivent être AVANT @tailwind */
+/* ⚠️ IMPORTANT: @import doit être en premier */
 
-/* Imports des modules CSS */
+/* Tailwind CSS v4 - Import unique */
+@import 'tailwindcss';
+
+/* Imports des modules CSS personnalisés */
 @import './base.css';
 @import './variables.css';
 @import './animations.css';
 @import './components.css';
 @import './responsive.css';
 @import './utilities.css';
-
-/* Tailwind CSS */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;

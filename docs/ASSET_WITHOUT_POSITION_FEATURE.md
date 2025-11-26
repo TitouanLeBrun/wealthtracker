@@ -20,6 +20,7 @@ Cette fonctionnalité permet de gérer intelligemment les actifs qui n'ont plus 
 ### 1. Page Settings - Accordion des actifs sans position
 
 #### Interface utilisateur
+
 - **Accordion repliable** avec icône 🗑️ et compteur d'actifs
 - **Message positif** si tous les actifs ont une position active
 - **Liste des actifs** avec :
@@ -33,6 +34,7 @@ Cette fonctionnalité permet de gérer intelligemment les actifs qui n'ont plus 
     - Grisé et désactivé si historique existe
 
 #### Confirmation de suppression
+
 - **Modal de confirmation** avant suppression
 - Message clair avec nom de l'actif en surbrillance
 - Avertissement "irréversible"
@@ -50,6 +52,7 @@ Cette fonctionnalité permet de gérer intelligemment les actifs qui n'ont plus 
 ### Fichiers créés
 
 #### 1. `src/renderer/src/utils/calculations/assetPositionUtils.ts`
+
 Utilitaires de calcul des positions :
 
 ```typescript
@@ -73,15 +76,18 @@ export function canDeleteAsset(assetId: number, transactions: Transaction[]): bo
 ```
 
 #### 2. `src/renderer/src/components/asset/AssetWithoutPositionAccordion.tsx`
+
 Composant React pour l'accordion dans Settings :
 
 **Props** :
+
 - `assets: Asset[]` - Liste complète des actifs
 - `transactions: Transaction[]` - Liste complète des transactions
 - `onAssetDeleted: () => void` - Callback après suppression réussie
 - `onError: (message: string) => void` - Callback en cas d'erreur
 
 **État interne** :
+
 - `isOpen` - État ouvert/fermé de l'accordion
 - `deleteDialogOpen` - État du modal de confirmation
 - `assetToDelete` - Actif en cours de suppression
@@ -90,6 +96,7 @@ Composant React pour l'accordion dans Settings :
 ### Fichiers modifiés
 
 #### 3. `src/main/index.ts`
+
 Ajout du handler IPC pour la suppression :
 
 ```typescript
@@ -97,13 +104,13 @@ ipcMain.handle('asset:delete', async (_, assetId: number) => {
   const transactionCount = await prisma.transaction.count({
     where: { assetId }
   })
-  
+
   if (transactionCount > 0) {
     throw new Error(
       `Impossible de supprimer cet actif : ${transactionCount} transaction(s) associée(s)`
     )
   }
-  
+
   return await prisma.asset.delete({
     where: { id: assetId }
   })
@@ -111,11 +118,13 @@ ipcMain.handle('asset:delete', async (_, assetId: number) => {
 ```
 
 **Sécurité** :
+
 - ✅ Validation backend : vérification du nombre de transactions
 - ✅ Erreur explicite si transactions existantes
 - ✅ Suppression uniquement si 0 transaction
 
 #### 4. `src/preload/index.ts` & `src/preload/index.d.ts`
+
 Ajout de la méthode `deleteAsset` :
 
 ```typescript
@@ -123,19 +132,23 @@ deleteAsset: (assetId: number) => ipcRenderer.invoke('asset:delete', assetId)
 ```
 
 #### 5. `src/renderer/src/components/common/ConfirmDialog.tsx`
+
 Améliorations pour supporter les actions destructives :
 
 **Nouvelles props** :
+
 - `message: string | React.ReactNode` - Support du JSX dans le message
 - `isDestructive?: boolean` - Bouton rouge si action destructive
 - `disabled?: boolean` - Désactivation du bouton de confirmation
 
 **Styling adaptatif** :
+
 - Bouton rouge (#ef4444) si `isDestructive={true}`
 - Bouton bleu (--color-primary) par défaut
 - État désactivé avec opacité réduite
 
 #### 6. `src/renderer/src/pages/SettingsPage.tsx`
+
 Intégration de l'accordion après le camembert :
 
 ```tsx
@@ -151,17 +164,20 @@ Intégration de l'accordion après le camembert :
 ```
 
 **Gestion du rafraîchissement** :
+
 - Rechargement automatique après suppression
 - Toast de succès "Actif supprimé avec succès !"
 
 #### 7. `src/renderer/src/components/category/CategoryAssetsList.tsx`
+
 Filtrage des actifs affichés :
 
 ```tsx
-const assetsWithPosition = sortedAssets.filter(asset => asset.netQuantity > 0)
+const assetsWithPosition = sortedAssets.filter((asset) => asset.netQuantity > 0)
 ```
 
 **Message si vide** :
+
 ```
 ℹ️ Aucun actif en position dans cette catégorie.
 Toutes les positions ont été soldées ou aucun actif créé.
@@ -169,22 +185,24 @@ Toutes les positions ont été soldées ou aucun actif créé.
 
 ## 📊 Définitions validées
 
-| Terme | Définition |
-|-------|-----------|
-| **Position en cours** | Quantité totale possédée > 0 (achats - ventes) |
-| **Sans position** | Quantité totale = 0 (position soldée ou jamais achetée) |
-| **Supprimable** | Actif avec 0 transaction (aucun historique) |
-| **Non supprimable** | Actif avec ≥1 transaction (historique à préserver) |
+| Terme                 | Définition                                              |
+| --------------------- | ------------------------------------------------------- |
+| **Position en cours** | Quantité totale possédée > 0 (achats - ventes)          |
+| **Sans position**     | Quantité totale = 0 (position soldée ou jamais achetée) |
+| **Supprimable**       | Actif avec 0 transaction (aucun historique)             |
+| **Non supprimable**   | Actif avec ≥1 transaction (historique à préserver)      |
 
 ## 🎨 UX/UI Design
 
 ### Couleurs sémantiques
+
 - 🟢 **Vert (#10b981)** : Actif supprimable (aucune transaction)
 - 🟠 **Orange (#f59e0b)** : Position soldée (transactions existantes)
 - 🔴 **Rouge (#ef4444)** : Action destructive (suppression)
 - 🔵 **Bleu (--color-primary)** : Actions normales
 
 ### Feedback utilisateur
+
 - ✅ **Toast de succès** après suppression
 - ❌ **Toast d'erreur** en cas d'échec
 - ⏳ **État de chargement** pendant suppression
@@ -194,11 +212,13 @@ Toutes les positions ont été soldées ou aucun actif créé.
 ## 🔒 Sécurité et validations
 
 ### Validation frontend
+
 - Vérification locale du nombre de transactions
 - Désactivation UI si historique existe
 - Confirmation utilisateur requise
 
 ### Validation backend
+
 - Double vérification du nombre de transactions
 - Erreur explicite si tentative de suppression invalide
 - Protection contre les suppressions accidentelles
@@ -269,7 +289,7 @@ Toutes les positions ont été soldées ou aucun actif créé.
 - Backend : `src/main/index.ts`
 - Preload : `src/preload/index.ts`, `src/preload/index.d.ts`
 - Utilitaires : `src/renderer/src/utils/calculations/assetPositionUtils.ts`
-- Composants : 
+- Composants :
   - `src/renderer/src/components/asset/AssetWithoutPositionAccordion.tsx`
   - `src/renderer/src/components/common/ConfirmDialog.tsx`
   - `src/renderer/src/components/category/CategoryAssetsList.tsx`
