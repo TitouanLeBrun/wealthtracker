@@ -170,7 +170,7 @@ function App(): React.JSX.Element {
               style={{
                 padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px)',
                 backgroundColor:
-                  activePage === 'projection' ? 'var(--color-accent)' : 'transparent',
+                  activePage === 'projection' ? 'var(--color-primary)' : 'transparent',
                 color: activePage === 'projection' ? 'white' : 'var(--color-text-secondary)',
                 border: 'none',
                 borderRadius: 'var(--radius-md)',

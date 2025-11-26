@@ -76,23 +76,20 @@ export default function ProjectionPage(): React.JSX.Element {
   }
 
   return (
-    <div className="projection-page h-full overflow-auto">
+    <div className="projection-page h-full overflow-auto p-6">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="mb-2 text-3xl font-bold">🎯 Projection Financière</h1>
         <p className="text-gray-600">Définissez votre objectif et visualisez votre progression</p>
       </div>
 
       {/* Section 1 : Configuration de l'objectif */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-xl font-semibold">📝 Configuration de l&apos;Objectif</h2>
-        <div className="rounded-lg bg-white p-6 shadow-md">
-          {objective && <ObjectiveForm objective={objective} onUpdate={handleObjectiveUpdate} />}
-        </div>
+      <section className="mb-6">
+        {objective && <ObjectiveForm objective={objective} onUpdate={handleObjectiveUpdate} />}
       </section>
 
       {/* Section 2 : Graphique & Insights */}
-      <section className="mb-8">
+      <section className="mb-6">
         <h2 className="mb-4 text-xl font-semibold">📈 Progression vs Objectif</h2>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Graphique (2/3) */}
@@ -112,7 +109,7 @@ export default function ProjectionPage(): React.JSX.Element {
       </section>
 
       {/* Section 3 : Simulation Versements */}
-      <section className="mb-8">
+      <section className="mb-6">
         <h2 className="mb-4 text-xl font-semibold">💰 Simulation de Versements</h2>
         <div className="rounded-lg bg-white p-6 shadow-md">
           <MonthlyInvestmentSimulator objective={objective} />
