@@ -34,18 +34,62 @@ export interface ProjectionMetrics {
   requiredMonthlyInvestment: number
   monthlyInvestmentDelta: number
   monthlyInvestmentDeltaPercent: number
+  historicalMonthlyInvestment: number // Montant moyen investi par mois historiquement
+  historicalVsRequired: number // Delta entre historique et requis
+  historicalVsRequiredPercent: number // Delta en %
   trajectoryStatus: TrajectoryStatus
 }
 
 /**
  * Détermine le statut de la trajectoire en comparant le patrimoine actuel
- * avec le patrimoine théorique attendu
+ * avec le patrimoine théorique attendu ET le rythme d'investissement historique
  */
 function determineTrajectoryStatus(
   currentWealth: number,
   theoreticalWealth: number,
-  deltaPercent: number
+  deltaPercent: number,
+  historicalMonthlyInvestment: number,
+  requiredMonthlyInvestment: number,
+  yearsElapsed: number
 ): TrajectoryStatus {
+  // CAS SPÉCIAL : Objectif démarre "aujourd'hui" mais patrimoine existant
+  // Si l'objectif vient de démarrer (< 1 mois) mais qu'il y a un patrimoine existant
+  const isRecentStart = yearsElapsed < 0.1 // Moins de ~1 mois
+  const hasExistingWealth = currentWealth > 0
+
+  if (isRecentStart && hasExistingWealth) {
+    // Analyser le rythme historique vs requis
+    const historicalVsRequiredPercent =
+      requiredMonthlyInvestment > 0
+        ? ((historicalMonthlyInvestment - requiredMonthlyInvestment) / requiredMonthlyInvestment) *
+          100
+        : 0
+
+    // Si le rythme historique est insuffisant pour l'objectif
+    if (historicalVsRequiredPercent < -20) {
+      return {
+        level: 'warning',
+        icon: '⚡',
+        title: 'Patrimoine existant, rythme insuffisant',
+        description: `Vous avez déjà ${currentWealth.toFixed(0)}€, mais votre rythme d'investissement historique (${historicalMonthlyInvestment.toFixed(0)}€/mois) est insuffisant pour atteindre cet objectif. Il faudra investir ${requiredMonthlyInvestment.toFixed(0)}€/mois.`,
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-50 border-orange-200'
+      }
+    }
+
+    // Si le rythme historique est suffisant
+    return {
+      level: 'good',
+      icon: '💪',
+      title: 'Bon départ avec patrimoine existant',
+      description: `Vous partez avec ${currentWealth.toFixed(0)}€ déjà constitués. Votre rythme d'investissement historique (${historicalMonthlyInvestment.toFixed(0)}€/mois) est compatible avec cet objectif.`,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50 border-blue-200'
+    }
+  }
+
+  // LOGIQUE NORMALE : Objectif en cours depuis un certain temps
+
   // Objectif déjà atteint
   if (currentWealth >= theoreticalWealth * 1.5) {
     return {
@@ -164,7 +208,9 @@ export function useProjectionInsights(objective: Objective | null): ProjectionMe
             }
           })
           currentWealth += quantity * asset.currentPrice
-        }) // 2. Calculer le temps écoulé depuis le début
+        })
+
+        // 2. Calculer le temps écoulé depuis le début
         const startDate = objective.startDate
           ? new Date(objective.startDate)
           : new Date(
@@ -176,6 +222,26 @@ export function useProjectionInsights(objective: Objective | null): ProjectionMe
 
         const now = new Date()
         const yearsElapsed = (now.getTime() - startDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+
+        // 2b. Calculer l'investissement mensuel historique moyen
+        // Somme totale investie (achats uniquement)
+        const totalInvested = allTransactions
+          .filter((t) => t.type === 'BUY')
+          .reduce((sum, t) => sum + t.quantity * t.pricePerUnit + t.fee, 0)
+
+        // Calculer le nombre de mois depuis la première transaction
+        const firstTransactionDate = new Date(
+          allTransactions.reduce(
+            (earliest, t) => (t.date < earliest ? t.date : earliest),
+            allTransactions[0].date
+          )
+        )
+        const monthsElapsed = Math.max(
+          1,
+          (now.getTime() - firstTransactionDate.getTime()) / (30.44 * 24 * 60 * 60 * 1000)
+        )
+
+        const historicalMonthlyInvestment = totalInvested / monthsElapsed
 
         // 3. Calculer le patrimoine théorique attendu à ce jour
         // PMT théorique initial (ce qui devait être investi chaque mois)
@@ -223,11 +289,21 @@ export function useProjectionInsights(objective: Objective | null): ProjectionMe
             ? (monthlyInvestmentDelta / theoreticalMonthlyInvestment) * 100
             : 0
 
+        // 7b. Delta entre investissement historique et requis
+        const historicalVsRequired = requiredMonthlyInvestment - historicalMonthlyInvestment
+        const historicalVsRequiredPercent =
+          historicalMonthlyInvestment > 0
+            ? (historicalVsRequired / historicalMonthlyInvestment) * 100
+            : 0
+
         // 8. Déterminer le statut de la trajectoire
         const trajectoryStatus = determineTrajectoryStatus(
           currentWealth,
           theoreticalWealth,
-          wealthDeltaPercent
+          wealthDeltaPercent,
+          historicalMonthlyInvestment,
+          requiredMonthlyInvestment,
+          yearsElapsed
         )
 
         setMetrics({
@@ -241,6 +317,9 @@ export function useProjectionInsights(objective: Objective | null): ProjectionMe
           requiredMonthlyInvestment,
           monthlyInvestmentDelta,
           monthlyInvestmentDeltaPercent,
+          historicalMonthlyInvestment,
+          historicalVsRequired,
+          historicalVsRequiredPercent,
           trajectoryStatus
         })
       } catch (error) {

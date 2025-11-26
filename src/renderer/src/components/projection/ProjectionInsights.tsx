@@ -98,6 +98,15 @@ function ProjectionInsights({ objective }: ProjectionInsightsProps): React.JSX.E
           <p className="mb-3 text-sm font-medium text-purple-900">💰 Investissements Mensuels</p>
 
           <div className="space-y-3">
+            {/* Historique */}
+            <div>
+              <p className="text-xs text-gray-600">Investissement historique moyen</p>
+              <p className="text-lg font-semibold text-blue-700">
+                {formatEuros(metrics.historicalMonthlyInvestment)}
+                <span className="text-xs font-normal text-gray-500">/mois</span>
+              </p>
+            </div>
+
             {/* Théorique */}
             <div>
               <p className="text-xs text-gray-600">Investissement théorique initial</p>
@@ -116,9 +125,51 @@ function ProjectionInsights({ objective }: ProjectionInsightsProps): React.JSX.E
               </p>
             </div>
 
-            {/* Delta */}
+            {/* Delta Historique vs Requis */}
             <div className="border-t border-purple-200 pt-2">
-              <p className="text-xs text-gray-600">Différence</p>
+              <p className="text-xs text-gray-600">Historique vs Requis</p>
+              <div className="flex items-baseline gap-2">
+                <span
+                  className={`text-base font-bold ${
+                    metrics.historicalVsRequired > 0 ? 'text-red-600' : 'text-green-600'
+                  }`}
+                >
+                  {metrics.historicalVsRequired >= 0 ? '+' : ''}
+                  {formatEuros(metrics.historicalVsRequired)}
+                  <span className="text-xs font-normal">/mois</span>
+                </span>
+                <span
+                  className={`text-sm font-medium ${
+                    metrics.historicalVsRequiredPercent > 0 ? 'text-red-600' : 'text-green-600'
+                  }`}
+                >
+                  ({metrics.historicalVsRequiredPercent >= 0 ? '+' : ''}
+                  {metrics.historicalVsRequiredPercent.toFixed(1)}%)
+                </span>
+              </div>
+              {metrics.historicalVsRequired > 0 && (
+                <p className="mt-1 text-xs text-gray-600">
+                  Votre rythme historique est{' '}
+                  <span className="font-semibold text-red-600">insuffisant</span>. Augmentez vos
+                  investissements de{' '}
+                  <span className="font-semibold text-red-600">
+                    {formatEuros(Math.abs(metrics.historicalVsRequired))}
+                  </span>
+                  /mois
+                </p>
+              )}
+              {metrics.historicalVsRequired <= 0 && (
+                <p className="mt-1 text-xs text-gray-600">
+                  Votre rythme historique est{' '}
+                  <span className="font-semibold text-green-600">compatible</span> avec
+                  l&apos;objectif
+                </p>
+              )}
+            </div>
+
+            {/* Delta Théorique vs Requis */}
+            <div className="border-t border-purple-200 pt-2">
+              <p className="text-xs text-gray-600">Théorique vs Requis</p>
               <div className="flex items-baseline gap-2">
                 <span
                   className={`text-base font-bold ${
@@ -144,7 +195,7 @@ function ProjectionInsights({ objective }: ProjectionInsightsProps): React.JSX.E
                   <span className="font-semibold text-red-600">
                     {formatEuros(metrics.monthlyInvestmentDelta)}
                   </span>{' '}
-                  de plus par mois pour rattraper la trajectoire
+                  de plus par mois par rapport au plan initial
                 </p>
               )}
               {metrics.monthlyInvestmentDelta < 0 && (
@@ -153,7 +204,7 @@ function ProjectionInsights({ objective }: ProjectionInsightsProps): React.JSX.E
                   <span className="font-semibold text-green-600">
                     {formatEuros(Math.abs(metrics.monthlyInvestmentDelta))}
                   </span>{' '}
-                  de moins par mois tout en restant sur la trajectoire
+                  de moins par mois par rapport au plan initial
                 </p>
               )}
             </div>
