@@ -25,7 +25,7 @@ function getDatabasePath(): string {
  */
 async function applyMigrationsIfNeeded(dbPath: string, isDev: boolean): Promise<void> {
   const dbExists = fs.existsSync(dbPath)
-  
+
   if (isDev) {
     // En développement : toujours vérifier et appliquer les migrations manquantes
     try {
@@ -40,7 +40,7 @@ async function applyMigrationsIfNeeded(dbPath: string, isDev: boolean): Promise<
         cwd: process.cwd(),
         env: { ...process.env, DATABASE_URL: `file:${dbPath}` }
       })
-      
+
       // Vérifier s'il y avait des migrations en attente
       if (stdout.includes('No pending migrations')) {
         console.log('[Prisma] All migrations already applied')
@@ -48,13 +48,13 @@ async function applyMigrationsIfNeeded(dbPath: string, isDev: boolean): Promise<
         console.log('[Prisma] ✅ Migrations applied successfully')
         if (stdout) console.log(stdout)
       }
-      
+
       if (stderr && !stderr.includes('warn')) {
         console.warn('[Prisma] Migration warnings:', stderr)
       }
     } catch (error) {
       console.error('[Prisma] ❌ Failed to apply migrations:', error)
-      
+
       // Si c'est une erreur critique, on la propage
       if (!dbExists) {
         throw error

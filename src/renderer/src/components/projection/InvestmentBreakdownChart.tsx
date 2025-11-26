@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import TradingViewChart from './TradingViewChart'
 import TimeRangeSelector from './TimeRangeSelector'
-import { useProjectionChartData } from './hooks/useProjectionChartData'
+import { useInvestmentBreakdownData } from './hooks/useInvestmentBreakdownData'
 import type { TimeRange } from '@renderer/types/projection'
 
 interface Objective {
@@ -22,18 +22,20 @@ interface Transaction {
   assetId: number
   type: 'BUY' | 'SELL'
   quantity: number
+  pricePerUnit: number
+  fee: number
   date: Date
 }
 
-interface DualCurveChartProps {
+interface InvestmentBreakdownChartProps {
   objective: Objective | null
 }
 
 /**
- * Composant principal du graphique de projection avec TradingView
+ * Graphique de répartition Capital Investi vs Intérêts Reçus
  */
-function DualCurveChart({ objective }: DualCurveChartProps): React.JSX.Element {
-  const [timeRange, setTimeRange] = useState<TimeRange>('MAX') // Vue par défaut : MAX
+function InvestmentBreakdownChart({ objective }: InvestmentBreakdownChartProps): React.JSX.Element {
+  const [timeRange, setTimeRange] = useState<TimeRange>('MAX')
   const [assets, setAssets] = useState<Asset[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
@@ -47,7 +49,6 @@ function DualCurveChart({ objective }: DualCurveChartProps): React.JSX.Element {
           window.api.getAllTransactions()
         ])
 
-        // Convertir les dates
         const transactionsWithDates = transactionsData.map((t) => ({
           ...t,
           date: new Date(t.date)
@@ -55,7 +56,6 @@ function DualCurveChart({ objective }: DualCurveChartProps): React.JSX.Element {
 
         setAssets(assetsData)
         setTransactions(transactionsWithDates)
-        console.log('COUCOU', transactionsWithDates.length)
       } catch (error) {
         console.error('Erreur chargement données:', error)
       } finally {
@@ -67,7 +67,7 @@ function DualCurveChart({ objective }: DualCurveChartProps): React.JSX.Element {
   }, [])
 
   // Calculer les données du graphique
-  const chartData = useProjectionChartData({
+  const chartData = useInvestmentBreakdownData({
     timeRange,
     objective: objective || { targetAmount: 0, targetYears: 1, interestRate: 0 },
     assets,
@@ -100,18 +100,32 @@ function DualCurveChart({ objective }: DualCurveChartProps): React.JSX.Element {
 
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+      {/* Titre */}
+      <div className="border-b border-gray-200 bg-linear-to-r from-orange-50 to-green-50 px-4 py-3">
+        <h3 className="text-lg font-semibold text-gray-800">
+          📊 Répartition Capital Investi vs Intérêts
+        </h3>
+      </div>
+
       {/* Graphique */}
       <div className="p-4">
-        <TradingViewChart data={chartData} height={400} />
+        <TradingViewChart
+          data={chartData}
+          height={400}
+          realityColor="#f97316"
+          realityTitle="Capital Investi"
+          objectiveColor="#10b981"
+          objectiveTitle="Intérêts Reçus"
+          objectiveStyle="solid"
+        />
       </div>
 
       {/* Info */}
-      <div className="border-t border-gray-200 bg-blue-50 px-4 py-3">
-        <p className="text-xs text-blue-800">
-          💡 <span className="font-semibold">Info :</span> La courbe verte représente votre
-          patrimoine réel. La courbe bleue en pointillés montre la projection théorique nécessaire
-          pour atteindre votre objectif de {objective.targetAmount.toLocaleString()} € en{' '}
-          {objective.targetYears} ans.
+      <div className="border-t border-gray-200 bg-orange-50 px-4 py-3">
+        <p className="text-xs text-orange-800">
+          💡 <span className="font-semibold">Formule :</span> Capital Investi (orange) + Intérêts
+          Reçus (vert) = Objectif Théorique (courbe bleue du graphique principal). Les intérêts
+          calculés avec un taux de {objective.interestRate}% par an en capitalisation mensuelle.
         </p>
       </div>
 
@@ -121,4 +135,4 @@ function DualCurveChart({ objective }: DualCurveChartProps): React.JSX.Element {
   )
 }
 
-export default DualCurveChart
+export default InvestmentBreakdownChart

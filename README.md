@@ -830,6 +830,7 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
 ## 🗺️ Roadmap
 
 ### 🎯 Version 1.0 (Objectif : Q1 2025)
+
 - [ ] **Module Projection Financière** ✅ (En cours - 90%)
   - [x] Graphique double courbe (réalité vs objectif)
   - [x] Calculs de projection exponentielle
@@ -841,6 +842,7 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
   - [ ] Prise en compte de l'inflation
 
 ### 🚀 Version 1.1 (À définir)
+
 - [ ] Import automatique via APIs (CoinGecko, Yahoo Finance)
 - [ ] Export de données (CSV, PDF)
 - [ ] Notifications et alertes

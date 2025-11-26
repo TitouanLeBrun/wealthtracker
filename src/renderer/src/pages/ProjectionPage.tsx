@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import {
   ObjectiveForm,
   DualCurveChart,
+  InvestmentBreakdownChart,
   ProjectionInsights,
   MonthlyInvestmentSimulator,
   type Objective
@@ -105,6 +106,14 @@ export default function ProjectionPage(): React.JSX.Element {
               <ProjectionInsights objective={objective} />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Section 2.5 : Graphique Capital vs Intérêts */}
+      <section className="mb-6">
+        <h2 className="mb-4 text-xl font-semibold">💹 Répartition Capital Investi vs Intérêts</h2>
+        <div className="rounded-lg bg-white p-6 shadow-md">
+          <InvestmentBreakdownChart objective={objective} />
         </div>
       </section>
 

@@ -157,9 +157,7 @@ function CategoryAssetsList({
                       <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
                         Valeur totale
                       </div>
-                      <div
-                        style={{ fontSize: '16px', fontWeight: '700', color: category.color }}
-                      >
+                      <div style={{ fontSize: '16px', fontWeight: '700', color: category.color }}>
                         {assetValue.totalValue.toFixed(2)} €
                       </div>
                     </div>

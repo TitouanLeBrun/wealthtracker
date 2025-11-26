@@ -20,6 +20,7 @@
 ## 🎯 Vue d'ensemble
 
 WealthTracker est une application de bureau (Electron) permettant de :
+
 - Suivre un portefeuille multi-actifs (crypto, actions, ETF, etc.)
 - Visualiser la répartition par catégorie
 - Gérer les transactions (achats/ventes)
@@ -27,6 +28,7 @@ WealthTracker est une application de bureau (Electron) permettant de :
 - Analyser ses performances
 
 ### Technologies Principales
+
 ```
 Frontend:  React 18 + TypeScript + TailwindCSS + Recharts
 Backend:   Electron + Prisma ORM + SQLite
@@ -38,6 +40,7 @@ Build:     Vite + electron-builder
 ## 🏗️ Architecture du Projet
 
 ### Structure des Dossiers
+
 ```
 wealthtracker/
 ├── src/
@@ -63,6 +66,7 @@ wealthtracker/
 ```
 
 ### Modèle de Données
+
 ```prisma
 Category  ──┬─→ Asset ──→ Transaction
             │
@@ -74,12 +78,15 @@ Category  ──┬─→ Asset ──→ Transaction
 ## 📊 Module Projection Financière
 
 ### Vue d'ensemble
+
 Le module de projection permet de visualiser la progression du patrimoine et de calculer les versements nécessaires pour atteindre un objectif financier.
 
 ### Composants Principaux
 
 #### 1. **ProjectionPage.tsx**
+
 Page principale (110 lignes - refactorisée depuis 760 lignes)
+
 ```typescript
 <ProjectionPage>
   ├── <ObjectiveForm />           # Configuration de l'objectif
@@ -90,49 +97,56 @@ Page principale (110 lignes - refactorisée depuis 760 lignes)
 ```
 
 #### 2. **DualCurveChart.tsx**
+
 Graphique interactif avec Recharts
+
 - **Courbe verte** : Patrimoine historique réel (mois par mois)
 - **Courbe bleue pointillée** : Projection théorique exponentielle
 
 **Fonctionnement** :
+
 ```typescript
 useEffect(() => {
   // 1. Charger assets + transactions
   const assets = await getAllAssets()
   const transactions = await getAllTransactions()
-  
+
   // 2. Calculer patrimoine historique
   const historicalWealth = calculateHistoricalWealth(
-    assets, 
-    transactions, 
-    firstDate, 
+    assets,
+    transactions,
+    firstDate,
     today
   )
-  
+
   // 3. Générer projection future
   const projection = calculateObjectiveProjection(
-    currentWealth, 
-    objective, 
+    currentWealth,
+    objective,
     firstDate
   )
-  
+
   // 4. Afficher avec Recharts
-  <ProjectionChart 
-    realityData={historicalWealth} 
-    objectiveData={projection} 
+  <ProjectionChart
+    realityData={historicalWealth}
+    objectiveData={projection}
   />
 }, [objective])
 ```
 
 #### 3. **ProjectionChart.tsx**
+
 Composant de graphique Recharts (170 lignes)
+
 - Tooltip personnalisé avec valeurs formatées
 - Axes X (dates) et Y (euros) automatiques
 - Responsive
 - Légende interactive
 
 #### 4. **ProjectionInsights.tsx**
+
 Panneau de KPIs (153 lignes)
+
 - Patrimoine actuel
 - Objectif cible
 - Reste à atteindre (delta)
@@ -140,7 +154,9 @@ Panneau de KPIs (153 lignes)
 - Statut dynamique avec émojis
 
 #### 5. **MonthlyInvestmentSimulator.tsx**
+
 Simulateur de versements (240 lignes)
+
 - Calcul du versement mensuel optimal
 - Répartition par catégorie
 - Barres de progression colorées
@@ -148,7 +164,9 @@ Simulateur de versements (240 lignes)
 ### Fonctions de Calcul (projectionUtils.ts)
 
 #### **calculateHistoricalWealth()**
+
 Calcule le patrimoine mois par mois depuis la première transaction.
+
 ```typescript
 export function calculateHistoricalWealth(
   assets: Array<{ id: number; currentPrice: number }>,
@@ -159,13 +177,16 @@ export function calculateHistoricalWealth(
 ```
 
 **Logique** :
+
 1. Génère toutes les dates mensuelles
 2. Pour chaque mois : filtre transactions jusqu'à cette date
 3. Calcule quantité nette par actif
 4. Valorise avec le prix actuel (simplification MVP)
 
 #### **calculateObjectiveProjection()**
+
 Génère la courbe de projection théorique.
+
 ```typescript
 export function calculateObjectiveProjection(
   currentWealth: number,
@@ -175,14 +196,16 @@ export function calculateObjectiveProjection(
 ```
 
 **Formule exponentielle** :
+
 ```
-Valeur(M mois) = Capital × (1 + Taux/12)^M 
+Valeur(M mois) = Capital × (1 + Taux/12)^M
                  + Versement × [((1 + Taux/12)^M - 1) / (Taux/12)]
 ```
 
 **Versement mensuel** :
+
 ```
-Versement = (Objectif - Capital × (1 + Taux)^Durée) 
+Versement = (Objectif - Capital × (1 + Taux)^Durée)
             × (Taux/12) / [(1 + Taux/12)^(12×Durée) - 1]
 ```
 
@@ -191,17 +214,18 @@ Versement = (Objectif - Capital × (1 + Taux)^Durée)
 **Avant** : 1 fichier de 760 lignes  
 **Après** : 6 fichiers modulaires
 
-| Composant | Lignes | Responsabilité |
-|-----------|--------|----------------|
-| ProjectionPage.tsx | 110 | Orchestration |
-| ObjectiveForm.tsx | 80 | Configuration |
-| DualCurveChart.tsx | 120 | Orchestration graphique |
-| ProjectionChart.tsx | 170 | Rendu Recharts |
-| ProjectionInsights.tsx | 153 | KPIs |
-| MonthlyInvestmentSimulator.tsx | 240 | Simulation |
-| **Total** | **873** | **Modulaire** |
+| Composant                      | Lignes  | Responsabilité          |
+| ------------------------------ | ------- | ----------------------- |
+| ProjectionPage.tsx             | 110     | Orchestration           |
+| ObjectiveForm.tsx              | 80      | Configuration           |
+| DualCurveChart.tsx             | 120     | Orchestration graphique |
+| ProjectionChart.tsx            | 170     | Rendu Recharts          |
+| ProjectionInsights.tsx         | 153     | KPIs                    |
+| MonthlyInvestmentSimulator.tsx | 240     | Simulation              |
+| **Total**                      | **873** | **Modulaire**           |
 
 **Avantages** :
+
 - ✅ Maintenabilité ++
 - ✅ Tests unitaires facilités
 - ✅ Réutilisabilité des composants
@@ -214,33 +238,41 @@ Versement = (Objectif - Capital × (1 + Taux)^Durée)
 ### 1. Page Paramètres (SettingsPage.tsx)
 
 #### Boutons d'action (header)
+
 ```tsx
 <div className="flex gap-2">
   <button className="rounded-tr-2xl">Nouvelle Catégorie</button>
   <button className="rounded-tr-2xl">Nouvel Actif</button>
 </div>
 ```
+
 - Coins arrondis en haut à droite
 - Responsive : texte masqué sur mobile
 
 #### Section "Catégories sans actifs"
+
 Affiche les catégories vides avec navigation cliquable :
+
 ```tsx
-{categoriesWithoutAssets.map(category => (
-  <div 
-    onClick={() => navigate(`/category/${category.id}`)}
-    className="cursor-pointer hover:bg-opacity-80"
-  >
-    <FolderOpen /> {category.name}
-  </div>
-))}
+{
+  categoriesWithoutAssets.map((category) => (
+    <div
+      onClick={() => navigate(`/category/${category.id}`)}
+      className="cursor-pointer hover:bg-opacity-80"
+    >
+      <FolderOpen /> {category.name}
+    </div>
+  ))
+}
 ```
 
 ### 2. Page Détail Catégorie (CategoryDetailPage.tsx)
 
 #### Fix : Chargement infini
+
 **Problème** : `categoryValue` undefined pour catégories vides  
 **Solution** : Fallback avec structure vide
+
 ```typescript
 if (!found && category) {
   return {
@@ -258,29 +290,34 @@ if (!found && category) {
 ### 3. Liste des Actifs (CategoryAssetsList.tsx)
 
 #### Affichage des actifs sans position
+
 Deux sections distinctes :
 
 **Positions en cours** (quantité > 0)
+
 - Bordure colorée (couleur catégorie)
 - Opacité 100%
 - Affiche : Prix, Quantité, Valeur totale
 
 **Actifs sans position** (quantité = 0)
+
 - Bordure grise
 - Opacité 70%
 - Affiche : Prix, Statut "Aucune position"
 
 ```tsx
-const assetsWithPosition = sortedAssets.filter(a => a.netQuantity > 0)
-const assetsWithoutPosition = sortedAssets.filter(a => a.netQuantity === 0)
+const assetsWithPosition = sortedAssets.filter((a) => a.netQuantity > 0)
+const assetsWithoutPosition = sortedAssets.filter((a) => a.netQuantity === 0)
 ```
 
 ### 4. Migration Database
 
 #### Système de migration automatique
+
 Détecte et applique automatiquement les migrations au démarrage.
 
 **Fichier** : `src/main/database/client.ts`
+
 ```typescript
 async function applyMigrationsIfNeeded(dbPath: string) {
   if (!fs.existsSync(dbPath)) {
@@ -294,6 +331,7 @@ async function applyMigrationsIfNeeded(dbPath: string) {
 ```
 
 **Migrations existantes** :
+
 1. `20251125082402_init_v0_2_assets_structure` - Structure initiale
 2. `20251126130707_add_table_objective` - Table Objective
 
@@ -302,6 +340,7 @@ async function applyMigrationsIfNeeded(dbPath: string) {
 ## 🚀 Commandes Utiles
 
 ### Développement
+
 ```bash
 # Lancer en mode dev avec hot-reload
 npm run dev
@@ -315,6 +354,7 @@ npm run format
 ```
 
 ### Base de Données
+
 ```bash
 # Créer une nouvelle migration
 npx prisma migrate dev --name nom_migration
@@ -333,6 +373,7 @@ npx prisma migrate reset
 ```
 
 ### Build Production
+
 ```bash
 # Build complet (Windows)
 npm run build:win
@@ -342,6 +383,7 @@ npm run build
 ```
 
 ### Tests
+
 ```bash
 # Lancer les tests (quand configurés)
 npm test
@@ -352,6 +394,7 @@ npm test
 ## 📝 Bonnes Pratiques
 
 ### 1. Ajout d'une Nouvelle Page
+
 ```typescript
 // 1. Créer le fichier dans src/renderer/src/pages/
 // 2. Définir le composant
@@ -364,6 +407,7 @@ export default function MyPage(): React.JSX.Element {
 ```
 
 ### 2. Ajout d'une Fonction de Calcul
+
 ```typescript
 // Dans src/renderer/src/utils/calculations/projectionUtils.ts
 export function myCalculation(params: MyParams): number {
@@ -373,6 +417,7 @@ export function myCalculation(params: MyParams): number {
 ```
 
 ### 3. Ajout d'un Composant Modulaire
+
 ```typescript
 // Créer dossier src/renderer/src/components/mymodule/
 // - MyComponent.tsx
@@ -381,6 +426,7 @@ export function myCalculation(params: MyParams): number {
 ```
 
 ### 4. Modification du Schéma DB
+
 ```bash
 # 1. Modifier prisma/schema.prisma
 model NewTable {
@@ -400,12 +446,14 @@ npx prisma generate
 ## 🐛 Résolution de Problèmes
 
 ### Erreur : "Table does not exist"
+
 ```bash
 # Appliquer les migrations
 npx prisma migrate deploy
 ```
 
 ### Erreur TypeScript dans les composants
+
 ```bash
 # Vérifier les types
 npm run build
@@ -415,15 +463,18 @@ npx prisma generate
 ```
 
 ### Graphique ne s'affiche pas
+
 1. Vérifier que Recharts est installé : `npm list recharts`
 2. Vérifier la console navigateur (F12)
 3. Vérifier que les données sont présentes :
+
 ```typescript
 console.log('Reality data:', realityData)
 console.log('Objective data:', objectiveData)
 ```
 
 ### Application ne démarre pas
+
 ```bash
 # Nettoyer et réinstaller
 rm -rf node_modules package-lock.json
@@ -436,17 +487,20 @@ npm run dev
 ## 📊 Métriques du Projet
 
 ### Code
+
 - **Lignes de code** : ~8 000 lignes
 - **Composants React** : 35+
 - **Pages** : 6
 - **Fonctions de calcul** : 15+
 
 ### Performance
+
 - **Build time** : ~30 secondes
 - **Hot reload** : <2 secondes
 - **Taille app** : ~120 MB (packagée)
 
 ### Base de Données
+
 - **Tables** : 4 (Category, Asset, Transaction, Objective)
 - **Migrations** : 2
 - **Type** : SQLite (fichier local)
@@ -456,16 +510,19 @@ npm run dev
 ## 🔮 Roadmap
 
 ### Court terme
+
 - [ ] Tests unitaires avec Vitest
 - [ ] Historique des prix (API externe)
 - [ ] Export PDF des rapports
 
 ### Moyen terme
+
 - [ ] Multi-devises
 - [ ] Synchronisation cloud
 - [ ] Notifications push
 
 ### Long terme
+
 - [ ] Application mobile (React Native)
 - [ ] Machine Learning pour prédictions
 - [ ] Multi-utilisateurs
@@ -475,11 +532,13 @@ npm run dev
 ## 📞 Support
 
 ### Ressources
+
 - **Documentation Electron** : https://www.electronjs.org/docs
 - **Documentation Prisma** : https://www.prisma.io/docs
 - **Documentation Recharts** : https://recharts.org/en-US
 
 ### Logs de Debug
+
 ```typescript
 // Activer les logs Electron
 process.env.ELECTRON_ENABLE_LOGGING = 'true'
