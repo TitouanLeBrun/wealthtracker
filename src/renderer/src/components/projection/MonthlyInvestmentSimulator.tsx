@@ -6,6 +6,7 @@ interface Objective {
   targetAmount: number
   targetYears: number
   interestRate: number
+  startDate?: Date | null
   createdAt: Date
   updatedAt: Date
 }
@@ -62,9 +63,34 @@ function MonthlyInvestmentSimulator({
 
         setCurrentWealth(wealth)
 
+        // Calculer le temps écoulé depuis le début de l'objectif
+        const startDate = objective.startDate
+          ? new Date(objective.startDate)
+          : allTransactions.length > 0
+            ? new Date(
+                allTransactions.reduce(
+                  (earliest, t) => (t.date < earliest ? t.date : earliest),
+                  allTransactions[0].date
+                )
+              )
+            : new Date()
+
+        const now = new Date()
+        const yearsElapsed = (now.getTime() - startDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+        const yearsRemaining = Math.max(0, objective.targetYears - yearsElapsed)
+
+        // Si le temps est écoulé ou presque écoulé
+        if (yearsRemaining <= 0.1) {
+          // Moins de ~1 mois restant
+          setObjectiveAlreadyReached(wealth >= objective.targetAmount)
+          setMonthlyPayment(0)
+          setCategories([])
+          return
+        }
+
         // Calculer la valeur future du patrimoine actuel avec intérêts composés
         const annualRate = objective.interestRate / 100
-        const futureValueWithoutPayments = wealth * Math.pow(1 + annualRate, objective.targetYears)
+        const futureValueWithoutPayments = wealth * Math.pow(1 + annualRate, yearsRemaining)
 
         // Vérifier si l'objectif est déjà atteignable sans versements supplémentaires
         if (futureValueWithoutPayments >= objective.targetAmount) {
@@ -76,12 +102,12 @@ function MonthlyInvestmentSimulator({
 
         setObjectiveAlreadyReached(false)
 
-        // Calculer versement mensuel nécessaire
+        // ✅ CORRECTION : Calculer versement mensuel avec le temps RESTANT
         const payment = calculateMonthlyPayment(
           wealth,
           objective.targetAmount,
           objective.interestRate,
-          objective.targetYears
+          yearsRemaining // 🟢 Utilise le temps restant au lieu de targetYears
         )
         setMonthlyPayment(payment)
 
