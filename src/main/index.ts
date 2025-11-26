@@ -59,7 +59,7 @@ app.whenReady().then(() => {
   // ==================== TRANSACTIONS ====================
   ipcMain.handle('transaction:getAll', async () => {
     try {
-      const prisma = getPrismaClient()
+      const prisma = await getPrismaClient()
       return await prisma.transaction.findMany({
         include: {
           asset: {
@@ -90,7 +90,7 @@ app.whenReady().then(() => {
       }
     ) => {
       try {
-        const prisma = getPrismaClient()
+        const prisma = await getPrismaClient()
         return await prisma.transaction.create({
           data: {
             assetId: data.assetId,
@@ -118,7 +118,7 @@ app.whenReady().then(() => {
   // ✨ NOUVEAU : Suppression d'une transaction
   ipcMain.handle('transaction:delete', async (_, transactionId: number) => {
     try {
-      const prisma = getPrismaClient()
+      const prisma = await getPrismaClient()
       await prisma.transaction.delete({
         where: { id: transactionId }
       })
@@ -132,7 +132,7 @@ app.whenReady().then(() => {
   // ==================== CATEGORIES ====================
   ipcMain.handle('category:getAll', async () => {
     try {
-      const prisma = getPrismaClient()
+      const prisma = await getPrismaClient()
       return await prisma.category.findMany({
         orderBy: { name: 'asc' }
       })
@@ -144,7 +144,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle('category:create', async (_, data: { name: string; color: string }) => {
     try {
-      const prisma = getPrismaClient()
+      const prisma = await getPrismaClient()
       return await prisma.category.create({
         data: {
           name: data.name,
@@ -160,7 +160,7 @@ app.whenReady().then(() => {
   // ==================== ASSETS ====================
   ipcMain.handle('asset:getAll', async () => {
     try {
-      const prisma = getPrismaClient()
+      const prisma = await getPrismaClient()
       return await prisma.asset.findMany({
         include: {
           category: true
@@ -177,7 +177,7 @@ app.whenReady().then(() => {
     'asset:create',
     async (_, data: { name: string; ticker: string; currentPrice: number; categoryId: number }) => {
       try {
-        const prisma = getPrismaClient()
+        const prisma = await getPrismaClient()
         return await prisma.asset.create({
           data: {
             name: data.name,
@@ -199,7 +199,7 @@ app.whenReady().then(() => {
   // ✨ NOUVEAU : Mise à jour du prix d'un actif
   ipcMain.handle('asset:updatePrice', async (_, data: { assetId: number; newPrice: number }) => {
     try {
-      const prisma = getPrismaClient()
+      const prisma = await getPrismaClient()
       return await prisma.asset.update({
         where: { id: data.assetId },
         data: { currentPrice: data.newPrice },
@@ -214,7 +214,7 @@ app.whenReady().then(() => {
   // ✨ NOUVEAU : Suppression d'un actif (uniquement si aucune transaction)
   ipcMain.handle('asset:delete', async (_, assetId: number) => {
     try {
-      const prisma = getPrismaClient()
+      const prisma = await getPrismaClient()
 
       // Vérifier qu'il n'y a aucune transaction pour cet actif
       const transactionCount = await prisma.transaction.count({

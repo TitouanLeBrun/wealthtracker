@@ -1,6 +1,10 @@
 import { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
+import dotenv from 'dotenv'
+
+// Charger les variables d'environnement depuis .env
+dotenv.config()
 
 export default defineConfig({
   main: {

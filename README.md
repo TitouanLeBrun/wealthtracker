@@ -778,6 +778,38 @@ Les contributions sont les bienvenues ! Pour contribuer :
 
 ---
 
+## 📦 Build et Distribution
+
+### Créer un exécutable Windows
+
+**Méthode rapide** (Script PowerShell) :
+
+```powershell
+.\build-windows.ps1
+```
+
+**Méthode manuelle** :
+
+```bash
+# Installeur NSIS (recommandé)
+npm run build:win:installer
+
+# Version portable
+npm run build:win:portable
+
+# Les deux
+npm run build:win
+```
+
+**Résultat** : Les exécutables seront dans le dossier `dist/` :
+
+- `WealthTracker-1.0.0-Setup.exe` - Installeur
+- `WealthTracker-1.0.0-Portable.exe` - Version portable
+
+📖 **Documentation complète** : Voir [BUILD_GUIDE.md](./docs/BUILD_GUIDE.md)
+
+---
+
 ## 📝 License
 
 Ce projet est sous licence **MIT**.
@@ -788,6 +820,9 @@ Ce projet est sous licence **MIT**.
 
 Voir le dossier [docs/](./docs/) pour plus de détails :
 
+- **[BUILD_GUIDE.md](./docs/BUILD_GUIDE.md)** : Guide complet pour créer l'exécutable Windows
+- **[BUILD_CONFIG_SUMMARY.md](./docs/BUILD_CONFIG_SUMMARY.md)** : Résumé de la configuration de build
+- **[ASSET_WITHOUT_POSITION_FEATURE.md](./docs/ASSET_WITHOUT_POSITION_FEATURE.md)** : Gestion des actifs sans position
 - **[CATEGORY_PAGE_IMPROVEMENTS.md](./docs/CATEGORY_PAGE_IMPROVEMENTS.md)** : Améliorations de la page Catégories
 - **[CATEGORY_PAGE_REFACTORING.md](./docs/CATEGORY_PAGE_REFACTORING.md)** : Refactoring de CategoryDetailPage
 - **[FEATURE_CATEGORY_PIE_CHART.md](./docs/FEATURE_CATEGORY_PIE_CHART.md)** : Implémentation du graphique camembert
@@ -802,6 +837,7 @@ Voir le dossier [docs/](./docs/) pour plus de détails :
 - **Prisma** pour l'ORM moderne
 - **Lucide** pour les icônes élégantes
 - **React** pour l'interface utilisateur
+- **Recharts** pour les graphiques interactifs
 
 ---
 
