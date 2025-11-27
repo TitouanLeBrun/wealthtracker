@@ -834,20 +834,20 @@ export function AssetManagementSection({
                   }}
                   style={{
                     padding: '10px 20px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid var(--color-border)',
+                    background: '#f3f4f6',
+                    border: '1px solid #d1d5db',
                     borderRadius: 'var(--radius-md)',
-                    color: 'var(--color-text-primary)',
+                    color: '#374151',
                     cursor: 'pointer',
                     fontSize: '13px',
                     fontWeight: '600',
                     transition: 'all 0.2s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                    e.currentTarget.style.background = '#e5e7eb'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+                    e.currentTarget.style.background = '#f3f4f6'
                   }}
                 >
                   Annuler
