@@ -7,31 +7,26 @@ import {
 } from '@renderer/utils/calculations/projectionUtils'
 import { TIME_RANGE_CONFIGS } from '@renderer/types/projection'
 import type { TimeRange, ProjectionChartData } from '@renderer/types/projection'
+import type { Objective } from '../types'
 
-interface Asset {
+// Types partiels pour les calculs de projection
+interface ProjectionAsset {
   id: number
   currentPrice: number
 }
 
-interface Transaction {
+interface ProjectionTransaction {
   assetId: number
   type: 'BUY' | 'SELL'
   quantity: number
   date: Date
 }
 
-interface Objective {
-  targetAmount: number
-  targetYears: number
-  interestRate: number
-  startDate: Date | null
-}
-
 interface UseProjectionChartDataProps {
   timeRange: TimeRange
   objective: Objective
-  assets: Asset[]
-  transactions: Transaction[]
+  assets: ProjectionAsset[]
+  transactions: ProjectionTransaction[]
 }
 
 /**

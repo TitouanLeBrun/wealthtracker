@@ -3,15 +3,7 @@ import TradingViewChart from './TradingViewChart'
 import TimeRangeSelector from './TimeRangeSelector'
 import { useProjectionChartData } from './hooks/useProjectionChartData'
 import type { TimeRange } from '@renderer/types/projection'
-
-interface Objective {
-  id: number
-  targetAmount: number
-  targetYears: number
-  interestRate: number
-  createdAt: Date
-  updatedAt: Date
-}
+import type { Objective } from './types'
 
 interface Asset {
   id: number
@@ -67,9 +59,19 @@ function DualCurveChart({ objective }: DualCurveChartProps): React.JSX.Element {
   }, [])
 
   // Calculer les données du graphique
+  const fallbackObjective: Objective = {
+    targetAmount: 0,
+    targetYears: 1,
+    interestRate: 0,
+    id: 0,
+    startDate: null,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+
   const chartData = useProjectionChartData({
     timeRange,
-    objective: objective || { targetAmount: 0, targetYears: 1, interestRate: 0 },
+    objective: objective || fallbackObjective,
     assets,
     transactions
   })

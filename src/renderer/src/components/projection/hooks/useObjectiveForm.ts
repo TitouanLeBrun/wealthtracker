@@ -3,18 +3,9 @@
  */
 
 import { useState, useEffect } from 'react'
+import type { Objective } from '../types'
 
 export type StartDateMode = 'first-transaction' | 'today' | 'custom'
-
-interface Objective {
-  id: number
-  targetAmount: number
-  targetYears: number
-  interestRate: number
-  startDate: Date | null
-  createdAt: Date
-  updatedAt: Date
-}
 
 interface UseObjectiveFormReturn {
   targetAmount: number

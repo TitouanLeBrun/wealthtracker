@@ -3,15 +3,7 @@ import TradingViewChart from './TradingViewChart'
 import TimeRangeSelector from './TimeRangeSelector'
 import { useInvestmentBreakdownData } from './hooks/useInvestmentBreakdownData'
 import type { TimeRange } from '@renderer/types/projection'
-
-interface Objective {
-  id: number
-  targetAmount: number
-  targetYears: number
-  interestRate: number
-  createdAt: Date
-  updatedAt: Date
-}
+import type { Objective } from './types'
 
 interface Asset {
   id: number
@@ -69,7 +61,15 @@ function InvestmentBreakdownChart({ objective }: InvestmentBreakdownChartProps):
   // Calculer les données du graphique
   const chartData = useInvestmentBreakdownData({
     timeRange,
-    objective: objective || { targetAmount: 0, targetYears: 1, interestRate: 0 },
+    objective: objective || {
+      targetAmount: 0,
+      targetYears: 1,
+      interestRate: 0,
+      id: 0,
+      startDate: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
     assets,
     transactions
   })
