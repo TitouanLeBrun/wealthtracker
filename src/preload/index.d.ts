@@ -12,10 +12,22 @@ export interface Asset {
   id: number
   name: string
   ticker: string
+  isin?: string // Code ISIN international (ex: FR0000120271)
   currentPrice: number
   categoryId: number
   category?: Category
   createdAt: Date
+}
+
+// Yahoo Finance search result
+export interface YahooAssetSearchResult {
+  symbol: string // PLEM.PA
+  name: string // Amundi PEA Emergent EMEA
+  quoteType: string // ETF, EQUITY, CRYPTO
+  exchange: string // PAR, NYSEArca
+  isin?: string // FR0013412020
+  currency?: string // EUR, USD
+  price: number | null // Prix actuel (peut être null si API échoue)
 }
 
 // Transaction type (v0.2)
@@ -70,17 +82,26 @@ export interface API {
   getAllCategories: () => Promise<Category[]>
   createCategory: (data: { name: string; color: string }) => Promise<Category>
   deleteCategory: (id: number) => Promise<{ success: boolean }>
+  getOrCreateCategory: (name: string) => Promise<Category>
 
   // Assets
   getAllAssets: () => Promise<Asset[]>
   createAsset: (data: {
     name: string
     ticker: string
+    isin: string
     currentPrice: number
     categoryId: number
   }) => Promise<Asset>
   updateAssetPrice: (data: { assetId: number; newPrice: number }) => Promise<Asset>
   deleteAsset: (assetId: number) => Promise<Asset>
+  searchAsset: (query: string) => Promise<YahooAssetSearchResult | null>
+  refreshAllAssetPrices: () => Promise<{
+    success: boolean
+    updated: number
+    failed: number
+    total: number
+  }>
 
   // Objectives
   getCurrentObjective: () => Promise<Objective | null>

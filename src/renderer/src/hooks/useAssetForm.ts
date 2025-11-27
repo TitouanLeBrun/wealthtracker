@@ -29,6 +29,7 @@ export function useAssetForm({
   const [formData, setFormData] = useState<AssetFormData>({
     name: '',
     ticker: '',
+    isin: '',
     currentPrice: 0,
     categoryId: initialCategoryId || 0
   })
@@ -91,6 +92,7 @@ export function useAssetForm({
       await onSubmit({
         name: formData.name.trim(),
         ticker: formData.ticker.trim().toUpperCase(),
+        isin: formData.isin.trim().toUpperCase(),
         currentPrice: formData.currentPrice,
         categoryId: formData.categoryId
       })
@@ -99,6 +101,7 @@ export function useAssetForm({
       setFormData({
         name: '',
         ticker: '',
+        isin: '',
         currentPrice: 0,
         categoryId: initialCategoryId || 0
       })

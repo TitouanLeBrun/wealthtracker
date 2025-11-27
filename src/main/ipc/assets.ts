@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import { getPrismaClient } from '../database/client'
-import { resolveSymbol, getLatestPrice } from '../utils/yahoo'
+import { resolveSymbol, getLatestPrice, getBatchPrices, searchAsset } from '../utils/yahoo'
 
 export function registerAssetHandlers(): void {
   // ==================== ASSETS ====================
@@ -22,39 +22,82 @@ export function registerAssetHandlers(): void {
 
   ipcMain.handle(
     'asset:create',
-    async (_, data: { name: string; ticker: string; currentPrice: number; categoryId: number }) => {
+    async (
+      _,
+      data: {
+        name: string
+        ticker: string
+        isin: string
+        currentPrice: number
+        categoryId: number
+      }
+    ) => {
       try {
         const prisma = await getPrismaClient()
 
-        // Résolution automatique du ticker/ISIN via Yahoo Finance
-        console.log(`[Asset:Create] Tentative de résolution de: ${data.ticker}`)
-        const resolved = await resolveSymbol(data.ticker)
-
         let finalTicker = data.ticker
         let finalPrice = data.currentPrice
-        let isinCode: string | undefined = undefined
+        let isinCode: string | undefined = data.isin || undefined
 
-        if (resolved) {
-          // Symbole trouvé sur Yahoo Finance
-          console.log(`[Asset:Create] Résolu: ${data.ticker} → ${resolved.symbol}`)
-          finalTicker = resolved.symbol
-          isinCode = resolved.isin
+        // PRIORITÉ 1 : Si un ISIN est fourni, on le résout d'abord
+        if (data.isin && data.isin.trim()) {
+          console.log(`[Asset:Create] ISIN fourni: ${data.isin} - Résolution en cours...`)
+          const resolvedFromIsin = await resolveSymbol(data.isin.trim())
 
-          // Récupérer le prix actuel si non fourni ou égal à 0
-          if (finalPrice === 0 || !finalPrice) {
-            const price = await getLatestPrice(resolved.symbol)
-            if (price !== null) {
-              finalPrice = price
-              console.log(`[Asset:Create] Prix récupéré: ${finalPrice}`)
+          if (resolvedFromIsin) {
+            console.log(`[Asset:Create] ✓ ISIN résolu: ${data.isin} → ${resolvedFromIsin.symbol}`)
+            finalTicker = resolvedFromIsin.symbol
+            isinCode = data.isin.trim().toUpperCase() // Garder l'ISIN fourni
+
+            // Récupérer le prix si non fourni
+            if (finalPrice === 0 || !finalPrice) {
+              const price = await getLatestPrice(resolvedFromIsin.symbol)
+              if (price !== null) {
+                finalPrice = price
+                console.log(`[Asset:Create] ✓ Prix récupéré: ${finalPrice}`)
+              }
             }
+          } else {
+            console.warn(`[Asset:Create] ⚠ ISIN ${data.isin} non résolu, tentative avec ticker...`)
           }
-        } else {
-          console.warn(
-            `[Asset:Create] Impossible de résoudre ${data.ticker}, utilisation des valeurs brutes`
-          )
+        }
+
+        // PRIORITÉ 2 : Si pas d'ISIN ou résolution échouée, essayer le ticker
+        if (finalTicker === data.ticker && data.ticker && data.ticker.trim()) {
+          console.log(`[Asset:Create] Tentative de résolution du ticker: ${data.ticker}`)
+          const resolvedFromTicker = await resolveSymbol(data.ticker.trim())
+
+          if (resolvedFromTicker) {
+            console.log(
+              `[Asset:Create] ✓ Ticker résolu: ${data.ticker} → ${resolvedFromTicker.symbol}`
+            )
+            finalTicker = resolvedFromTicker.symbol
+            if (!isinCode && resolvedFromTicker.isin) {
+              isinCode = resolvedFromTicker.isin
+            }
+
+            // Récupérer le prix si non fourni
+            if (finalPrice === 0 || !finalPrice) {
+              const price = await getLatestPrice(resolvedFromTicker.symbol)
+              if (price !== null) {
+                finalPrice = price
+                console.log(`[Asset:Create] ✓ Prix récupéré: ${finalPrice}`)
+              }
+            }
+          } else {
+            console.warn(
+              `[Asset:Create] ⚠ Ticker ${data.ticker} non résolu, utilisation valeur brute`
+            )
+          }
         }
 
         // Créer l'actif avec les données résolues
+        console.log(`[Asset:Create] Création actif:`, {
+          ticker: finalTicker,
+          isin: isinCode,
+          price: finalPrice
+        })
+
         return await prisma.asset.create({
           data: {
             name: data.name,
@@ -109,6 +152,136 @@ export function registerAssetHandlers(): void {
       })
     } catch (error) {
       console.error('[IPC] Error deleting asset:', error)
+      throw error
+    }
+  })
+
+  // Mettre à jour tous les prix depuis Yahoo Finance
+  ipcMain.handle('asset:refreshAllPrices', async () => {
+    try {
+      const prisma = await getPrismaClient()
+
+      console.log('[Asset:RefreshPrices] Début de la mise à jour des prix...')
+
+      // Récupérer tous les actifs
+      const assets = await prisma.asset.findMany({
+        select: {
+          id: true,
+          ticker: true,
+          name: true
+        }
+      })
+
+      if (assets.length === 0) {
+        console.log('[Asset:RefreshPrices] Aucun actif à mettre à jour')
+        return { success: true, updated: 0, failed: 0 }
+      }
+
+      console.log(`[Asset:RefreshPrices] ${assets.length} actif(s) à mettre à jour`)
+
+      // Récupérer tous les prix en batch
+      const tickers = assets.map((a) => a.ticker)
+      const pricesMap = await getBatchPrices(tickers)
+
+      // Mettre à jour chaque actif
+      let updated = 0
+      let failed = 0
+
+      for (const asset of assets) {
+        const price = pricesMap.get(asset.ticker)
+
+        if (price !== null && price !== undefined && !isNaN(price)) {
+          try {
+            await prisma.asset.update({
+              where: { id: asset.id },
+              data: { currentPrice: price }
+            })
+            console.log(`[Asset:RefreshPrices] ✓ ${asset.ticker}: ${price}`)
+            updated++
+          } catch (error) {
+            console.error(`[Asset:RefreshPrices] ✗ Erreur mise à jour ${asset.ticker}:`, error)
+            failed++
+          }
+        } else {
+          console.warn(`[Asset:RefreshPrices] ✗ Prix non disponible pour ${asset.ticker}`)
+          failed++
+        }
+      }
+
+      console.log(
+        `[Asset:RefreshPrices] Terminé: ${updated} succès, ${failed} échecs sur ${assets.length} actifs`
+      )
+
+      return {
+        success: true,
+        updated,
+        failed,
+        total: assets.length
+      }
+    } catch (error) {
+      console.error('[IPC] Error refreshing all prices:', error)
+      throw error
+    }
+  })
+
+  // Rechercher un actif par ISIN ou Ticker via Yahoo Finance
+  ipcMain.handle('asset:search', async (_, query: string) => {
+    try {
+      console.log(`[IPC:AssetSearch] Recherche de: ${query}`)
+
+      const result = await searchAsset(query)
+
+      if (!result) {
+        console.log(`[IPC:AssetSearch] Aucun résultat pour: ${query}`)
+        return null
+      }
+
+      console.log(`[IPC:AssetSearch] Résultat trouvé:`, result)
+
+      return result
+    } catch (error) {
+      console.error('[IPC] Error searching asset:', error)
+      throw error
+    }
+  })
+
+  // Créer ou récupérer une catégorie par nom
+  ipcMain.handle('category:getOrCreate', async (_, name: string) => {
+    try {
+      const prisma = await getPrismaClient()
+
+      // Chercher si la catégorie existe déjà
+      let category = await prisma.category.findUnique({
+        where: { name }
+      })
+
+      // Si elle n'existe pas, la créer avec une couleur par défaut
+      if (!category) {
+        const defaultColors: Record<string, string> = {
+          ETF: '#10b981', // Vert
+          Actions: '#3b82f6', // Bleu
+          Crypto: '#f59e0b', // Orange
+          Fonds: '#8b5cf6', // Violet
+          Indices: '#ef4444', // Rouge
+          Devises: '#06b6d4', // Cyan
+          Autres: '#6b7280' // Gris
+        }
+
+        category = await prisma.category.create({
+          data: {
+            name,
+            color: defaultColors[name] || '#4CAF50'
+          }
+        })
+
+        console.log(`[IPC:CategoryGetOrCreate] ✓ Catégorie créée: ${name}`)
+      } else {
+        console.log(`[IPC:CategoryGetOrCreate] ✓ Catégorie existante: ${name}`)
+      }
+
+      return category
+    } catch (error) {
+      console.error('[IPC] Error getting or creating category:', error)
       throw error
     }
   })

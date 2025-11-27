@@ -69,14 +69,14 @@ model Asset {
 ipcMain.handle('asset:create', async (_, data) => {
   // 1. Résolution
   const resolved = await resolveSymbol(data.ticker)
-  
+
   // 2. Extraction
   const finalTicker = resolved?.symbol || data.ticker
   const isinCode = resolved?.isin
-  
+
   // 3. Prix
   const finalPrice = await getLatestPrice(finalTicker) || data.currentPrice
-  
+
   // 4. Création
   return prisma.asset.create({
     data: { ticker: finalTicker, isin: isinCode, currentPrice: finalPrice, ... }
@@ -96,14 +96,14 @@ ipcMain.handle('asset:create', async (_, data) => {
 
 ### Cas de test recommandés
 
-| Type | Entrée | Résultat attendu |
-|------|--------|------------------|
-| **Ticker US** | `AAPL` | Symbol: `AAPL`, Prix: ~$180 |
-| **Ticker Euronext** | `MC.PA` | Symbol: `MC.PA` (LVMH), Prix: ~€700 |
-| **ISIN FR** | `FR0000120271` | Symbol: `TTE.PA` (TotalEnergies), ISIN sauvegardé |
-| **ISIN LU (ETF)** | `LU1681043599` | Symbol: `CW8.PA` (Amundi MSCI World), ISIN sauvegardé |
-| **ISIN US** | `US0378331005` | Symbol: `AAPL`, ISIN sauvegardé |
-| **Invalide** | `ZZZZZZ` | Utilise valeur brute (fallback) |
+| Type                | Entrée         | Résultat attendu                                      |
+| ------------------- | -------------- | ----------------------------------------------------- |
+| **Ticker US**       | `AAPL`         | Symbol: `AAPL`, Prix: ~$180                           |
+| **Ticker Euronext** | `MC.PA`        | Symbol: `MC.PA` (LVMH), Prix: ~€700                   |
+| **ISIN FR**         | `FR0000120271` | Symbol: `TTE.PA` (TotalEnergies), ISIN sauvegardé     |
+| **ISIN LU (ETF)**   | `LU1681043599` | Symbol: `CW8.PA` (Amundi MSCI World), ISIN sauvegardé |
+| **ISIN US**         | `US0378331005` | Symbol: `AAPL`, ISIN sauvegardé                       |
+| **Invalide**        | `ZZZZZZ`       | Utilise valeur brute (fallback)                       |
 
 ### Procédure de test manuelle
 
@@ -123,16 +123,17 @@ ipcMain.handle('asset:create', async (_, data) => {
 
 ## 📊 Avantages
 
-| Avant | Après |
-|-------|-------|
-| ❌ Utilisateur doit chercher le ticker Yahoo | ✅ Utilisateur utilise l'ISIN qu'il connaît |
-| ❌ Confusion entre marchés (TTE vs TTE.PA) | ✅ Yahoo retourne automatiquement le bon marché |
-| ❌ Prix manuel à saisir | ✅ Prix récupéré automatiquement |
-| ❌ Pas de traçabilité ISIN | ✅ ISIN stocké pour référence |
+| Avant                                        | Après                                           |
+| -------------------------------------------- | ----------------------------------------------- |
+| ❌ Utilisateur doit chercher le ticker Yahoo | ✅ Utilisateur utilise l'ISIN qu'il connaît     |
+| ❌ Confusion entre marchés (TTE vs TTE.PA)   | ✅ Yahoo retourne automatiquement le bon marché |
+| ❌ Prix manuel à saisir                      | ✅ Prix récupéré automatiquement                |
+| ❌ Pas de traçabilité ISIN                   | ✅ ISIN stocké pour référence                   |
 
 ## 🚨 Gestion des erreurs
 
 ### API Yahoo indisponible
+
 ```typescript
 if (!resolved) {
   console.warn('Impossible de résoudre, utilisation valeurs brutes')
@@ -141,6 +142,7 @@ if (!resolved) {
 ```
 
 ### Prix non disponible
+
 ```typescript
 if (price === null) {
   // Utilise le prix fourni par l'utilisateur (peut être 0)
@@ -148,6 +150,7 @@ if (price === null) {
 ```
 
 ### Symbole déjà existant
+
 - Le système vérifie toujours l'unicité du ticker
 - Si `CW8.PA` existe déjà, l'erreur standard s'affiche
 

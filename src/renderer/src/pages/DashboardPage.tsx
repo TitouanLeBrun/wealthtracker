@@ -3,6 +3,7 @@ import { LayoutDashboard, ChevronDown, ChevronUp } from 'lucide-react'
 import PriceTicker from '../components/dashboard/PriceTicker'
 import EnhancedPortfolioKPI from '../components/dashboard/EnhancedPortfolioKPI'
 import AssetDetailsTable from '../components/dashboard/AssetDetailsTable'
+import RefreshPricesButton from '../components/dashboard/RefreshPricesButton'
 import { calculateEnhancedPortfolioMetrics } from '../utils/calculations/enhancedPortfolioCalculations'
 import type { Transaction, Asset } from '../types'
 import type { PortfolioMetrics } from '../utils/calculations/enhancedPortfolioCalculations'
@@ -22,6 +23,7 @@ function DashboardPage({
   const [assets, setAssets] = useState<Asset[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [loadingAssets, setLoadingAssets] = useState(true)
+  const [refreshingPrices, setRefreshingPrices] = useState(false)
 
   // États pour les dropdowns
   const [isPriceTickerOpen, setIsPriceTickerOpen] = useState(true)
@@ -100,6 +102,40 @@ function DashboardPage({
     }
   }
 
+  const handleRefreshAllPrices = async (): Promise<void> => {
+    try {
+      setRefreshingPrices(true)
+      console.log('[Dashboard] Rafraîchissement des prix depuis Yahoo Finance...')
+
+      const result = await window.api.refreshAllAssetPrices()
+
+      if (result.success) {
+        await loadAssets() // Recharger les actifs avec les nouveaux prix
+
+        if (result.updated > 0) {
+          onSuccess(
+            `✅ ${result.updated} prix mis à jour${result.failed > 0 ? ` (${result.failed} échec${result.failed > 1 ? 's' : ''})` : ''}`
+          )
+        } else if (result.failed > 0) {
+          onError(
+            `❌ Impossible de mettre à jour les prix (${result.failed} échec${result.failed > 1 ? 's' : ''})`
+          )
+        } else {
+          onSuccess('ℹ️ Aucun actif à mettre à jour')
+        }
+
+        console.log(
+          `[Dashboard] Rafraîchissement terminé: ${result.updated}/${result.total} succès`
+        )
+      }
+    } catch (error) {
+      console.error('Erreur lors du rafraîchissement des prix:', error)
+      onError('Erreur lors du rafraîchissement des prix depuis Yahoo Finance')
+    } finally {
+      setRefreshingPrices(false)
+    }
+  }
+
   const loading = loadingTransactions || loadingAssets
 
   return (
@@ -110,12 +146,20 @@ function DashboardPage({
           style={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             gap: 'var(--spacing-md)',
             marginBottom: 'var(--spacing-sm)'
           }}
         >
-          <LayoutDashboard size={32} color="var(--color-primary)" />
-          <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700' }}>Dashboard</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+            <LayoutDashboard size={32} color="var(--color-primary)" />
+            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700' }}>Dashboard</h1>
+          </div>
+
+          {/* Bouton de rafraîchissement des prix */}
+          {!loadingAssets && assets.length > 0 && (
+            <RefreshPricesButton onRefresh={handleRefreshAllPrices} isLoading={refreshingPrices} />
+          )}
         </div>
         <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '16px' }}>
           Vue d&apos;ensemble de votre portefeuille d&apos;investissement

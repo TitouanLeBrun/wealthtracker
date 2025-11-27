@@ -17,6 +17,17 @@ export interface Asset {
   createdAt: Date
 }
 
+// Yahoo Finance search result
+export interface YahooAssetSearchResult {
+  symbol: string // PLEM.PA
+  name: string // Amundi PEA Emergent EMEA
+  quoteType: string // ETF, EQUITY, CRYPTO
+  exchange: string // PAR, NYSEArca
+  isin?: string // FR0013412020
+  currency?: string // EUR, USD
+  price: number | null // Prix actuel (peut être null si API échoue)
+}
+
 // Type pour les transactions (correspond au modèle Prisma v0.2)
 export interface Transaction {
   id: number
@@ -50,6 +61,7 @@ export interface CategoryFormData {
 export interface AssetFormData {
   name: string
   ticker: string
+  isin: string // Code ISIN (ex: FR0000120271)
   currentPrice: number
   categoryId: number
 }

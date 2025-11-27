@@ -30,14 +30,22 @@ const api = {
   createCategory: (data: { name: string; color: string }) =>
     ipcRenderer.invoke('category:create', data),
   deleteCategory: (id: number) => ipcRenderer.invoke('category:delete', id),
+  getOrCreateCategory: (name: string) => ipcRenderer.invoke('category:getOrCreate', name),
 
   // Assets API
   getAllAssets: () => ipcRenderer.invoke('asset:getAll'),
-  createAsset: (data: { name: string; ticker: string; currentPrice: number; categoryId: number }) =>
-    ipcRenderer.invoke('asset:create', data),
+  createAsset: (data: {
+    name: string
+    ticker: string
+    isin: string
+    currentPrice: number
+    categoryId: number
+  }) => ipcRenderer.invoke('asset:create', data),
   updateAssetPrice: (data: { assetId: number; newPrice: number }) =>
     ipcRenderer.invoke('asset:updatePrice', data),
   deleteAsset: (assetId: number) => ipcRenderer.invoke('asset:delete', assetId),
+  refreshAllAssetPrices: () => ipcRenderer.invoke('asset:refreshAllPrices'),
+  searchAsset: (query: string) => ipcRenderer.invoke('asset:search', query),
 
   // Objectives API
   getCurrentObjective: () => ipcRenderer.invoke('objective:getCurrent'),

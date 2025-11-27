@@ -2,6 +2,7 @@ import type { AssetFormData } from '../../../types'
 import { useAssetForm } from '../../../hooks/useAssetForm'
 import AssetNameField from './AssetNameField'
 import AssetTickerField from './AssetTickerField'
+import AssetIsinField from './AssetIsinField'
 import AssetPriceField from './AssetPriceField'
 import AssetCategorySelector from './AssetCategorySelector'
 import TickerExistsAlert from './TickerExistsAlert'
@@ -49,13 +50,21 @@ function AssetForm({
             onChange={(name) => setFormData({ ...formData, name })}
           />
 
-          {/* Ticker */}
-          <AssetTickerField
-            value={formData.ticker}
-            onChange={(ticker) => setFormData({ ...formData, ticker })}
-            onCheckExists={checkTickerExists}
-            hasError={tickerExists}
-          />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            {/* Ticker */}
+            <AssetTickerField
+              value={formData.ticker}
+              onChange={(ticker) => setFormData({ ...formData, ticker })}
+              onCheckExists={checkTickerExists}
+              hasError={tickerExists}
+            />
+
+            {/* Code ISIN */}
+            <AssetIsinField
+              value={formData.isin}
+              onChange={(isin) => setFormData({ ...formData, isin })}
+            />
+          </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             {/* Prix actuel */}
