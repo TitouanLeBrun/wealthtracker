@@ -1,10 +1,28 @@
 # 💰 WealthTracker
 
-[![Lint Check](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/lint.yml/badge.svg)](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/lint.yml)
-![Version](https://img.shields.io/badge/version-0.5.0-blue)
-![Status](https://img.shields.io/badge/status-active--development-orange)
+[![CI - Tests & Build](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/ci.yml/badge.svg)](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/ci.yml)
+[![Release](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/release.yml/badge.svg)](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/release.yml)
+[![codecov](https://codecov.io/gh/TitouanLeBrun/wealthtracker/branch/main/graph/badge.svg)](https://codecov.io/gh/TitouanLeBrun/wealthtracker)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 > **Application desktop de suivi et analyse de patrimoine boursier**
+
+---
+
+## 📥 Téléchargement
+
+### Version stable (Recommandé)
+
+Téléchargez la dernière version stable depuis la page des releases :
+
+**[📦 Télécharger WealthTracker](https://github.com/TitouanLeBrun/wealthtracker/releases/latest)**
+
+#### Plateformes supportées
+
+- 🪟 **Windows** : `WealthTracker-X.X.X-Setup.exe` (Installateur) ou `WealthTracker-X.X.X-Portable.exe` (Portable)
+- 🍎 **macOS** : `WealthTracker-X.X.X-macOS.dmg`
+- 🐧 **Linux** : `WealthTracker-X.X.X-Linux.AppImage` ou `WealthTracker-X.X.X-Linux.deb`
 
 ---
 

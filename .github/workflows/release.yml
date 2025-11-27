@@ -1,0 +1,209 @@
+name: Release - Build & Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Se déclenche sur les tags comme v1.0.0, v1.2.3, etc.
+
+jobs:
+  # Job 1: Tests avant release
+  test:
+    name: Tests Unitaires
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Installation des dépendances
+        run: npm ci
+
+      - name: 🗄️ Setup Prisma
+        run: npx prisma generate
+
+      - name: ✅ Exécution des tests unitaires
+        run: npm run test
+
+      - name: 🔍 ESLint
+        run: npm run lint
+
+      - name: 🔷 TypeScript Type Check
+        run: npm run typecheck
+
+  # Job 2: Build et Release multi-plateforme
+  release:
+    name: Build & Release - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: test
+
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+            arch: x64
+          - os: macos-latest
+            platform: mac
+            arch: universal
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Installation des dépendances
+        run: npm ci
+
+      - name: 🗄️ Setup Prisma
+        run: npx prisma generate
+
+      # Build Windows
+      - name: 🏗️ Build Windows (NSIS + Portable)
+        if: matrix.platform == 'win'
+        run: |
+          $env:DATABASE_URL = "file:./prisma/dev.db"
+          npm run build
+          npx electron-builder --win --x64 --publish never
+        shell: pwsh
+
+      # Build macOS
+      - name: 🏗️ Build macOS (DMG + ZIP)
+        if: matrix.platform == 'mac'
+        run: |
+          export DATABASE_URL="file:./prisma/dev.db"
+          npm run build
+          npx electron-builder --mac --universal --publish never
+
+      # Build Linux
+      - name: 🏗️ Build Linux (AppImage + DEB)
+        if: matrix.platform == 'linux'
+        run: |
+          export DATABASE_URL="file:./prisma/dev.db"
+          npm run build
+          npx electron-builder --linux --x64 --publish never
+
+      # Upload des artifacts Windows
+      - name: 📤 Upload Windows Installers
+        if: matrix.platform == 'win'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installers
+          path: |
+            dist/*.exe
+            dist/*.exe.blockmap
+          retention-days: 7
+
+      # Upload des artifacts macOS
+      - name: 📤 Upload macOS Installers
+        if: matrix.platform == 'mac'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-installers
+          path: |
+            dist/*.dmg
+            dist/*.dmg.blockmap
+            dist/*.zip
+          retention-days: 7
+
+      # Upload des artifacts Linux
+      - name: 📤 Upload Linux Installers
+        if: matrix.platform == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-installers
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+          retention-days: 7
+
+  # Job 3: Créer la GitHub Release avec tous les assets
+  publish:
+    name: 📦 Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs: release
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installers
+          path: ./release-assets/windows
+
+      - name: 📥 Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-installers
+          path: ./release-assets/macos
+
+      - name: 📥 Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-installers
+          path: ./release-assets/linux
+
+      - name: 📋 Générer le changelog
+        id: changelog
+        run: |
+          # Extraire la version du tag
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Générer un changelog basique
+          echo "## 🎉 WealthTracker $VERSION" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "### 📦 Téléchargements disponibles" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "#### Windows" >> CHANGELOG.md
+          echo "- **WealthTracker Setup.exe** - Installateur NSIS (recommandé)" >> CHANGELOG.md
+          echo "- **WealthTracker.exe** - Version portable (sans installation)" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "#### macOS" >> CHANGELOG.md
+          echo "- **WealthTracker.dmg** - Image disque macOS" >> CHANGELOG.md
+          echo "- **WealthTracker-mac.zip** - Archive ZIP" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "#### Linux" >> CHANGELOG.md
+          echo "- **WealthTracker.AppImage** - Application portable" >> CHANGELOG.md
+          echo "- **wealthtracker.deb** - Package Debian/Ubuntu" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "### 📝 Changements" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"- %s (%h)" >> CHANGELOG.md || echo "- Version initiale" >> CHANGELOG.md
+
+      - name: 🚀 Créer GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: WealthTracker ${{ steps.changelog.outputs.version }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+          files: |
+            release-assets/windows/*
+            release-assets/macos/*
+            release-assets/linux/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🎉 Release Success
+        run: |
+          echo "✅ Release ${{ steps.changelog.outputs.version }} créée avec succès!"
+          echo "📦 Installers disponibles sur: https://github.com/${{ github.repository }}/releases/tag/${{ steps.changelog.outputs.version }}"
