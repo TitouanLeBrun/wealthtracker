@@ -22,6 +22,11 @@ export function calculateFutureValue(
   const monthlyRate = r / 12
   const months = years * 12
 
+  // Si le taux est 0, calcul simplifié (pas d'intérêts)
+  if (annualRate === 0) {
+    return presentValue + monthlyPayment * months
+  }
+
   // Valeur future du capital initial
   const fvPresent = presentValue * Math.pow(1 + r, years)
 
@@ -41,6 +46,16 @@ export function calculateMonthlyPayment(
   annualRate: number, // En % (ex: 8)
   years: number
 ): number {
+  // Si l'objectif est déjà atteint
+  if (presentValue >= futureValue) {
+    return 0
+  }
+
+  // Si le temps restant est 0, impossible d'atteindre l'objectif avec des versements
+  if (years <= 0) {
+    return 0
+  }
+
   const r = annualRate / 100
   const monthlyRate = r / 12
   const months = years * 12
@@ -53,7 +68,10 @@ export function calculateMonthlyPayment(
   const numerator = (futureValue - presentValue * Math.pow(1 + r, years)) * monthlyRate
   const denominator = Math.pow(1 + monthlyRate, months) - 1
 
-  return numerator / denominator
+  const payment = numerator / denominator
+
+  // Retourner 0 si le paiement est négatif (l'objectif est déjà dépassé)
+  return Math.max(0, payment)
 }
 
 /**

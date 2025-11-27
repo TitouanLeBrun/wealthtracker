@@ -181,8 +181,8 @@ function ProjectionInsights({ objective }: ProjectionInsightsProps): React.JSX.E
                   {metrics.historicalVsRequired > 0 && (
                     <p className="mt-1 text-xs text-gray-600">
                       Votre rythme historique est{' '}
-                      <span className="font-semibold text-red-600">insuffisant</span>. Augmentez
-                      vos investissements de{' '}
+                      <span className="font-semibold text-red-600">insuffisant</span>. Augmentez vos
+                      investissements de{' '}
                       <span className="font-semibold text-red-600">
                         {formatEuros(Math.abs(metrics.historicalVsRequired))}
                       </span>
