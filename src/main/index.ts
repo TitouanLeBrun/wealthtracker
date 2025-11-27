@@ -21,8 +21,10 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-    // 🐛 DEBUG - Ouvrir automatiquement les DevTools
-    mainWindow.webContents.openDevTools()
+    // Ouvrir les DevTools uniquement en développement
+    if (is.dev) {
+      mainWindow.webContents.openDevTools()
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
