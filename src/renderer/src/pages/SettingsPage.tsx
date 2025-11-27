@@ -13,12 +13,14 @@ interface SettingsPageProps {
   onSuccess: (message: string) => void
   onError: (message: string) => void
   onCategoryClick: (categoryId: number) => void
+  onAssetClick: (assetId: number) => void
 }
 
 function SettingsPage({
   onSuccess,
   onError,
-  onCategoryClick
+  onCategoryClick,
+  onAssetClick
 }: SettingsPageProps): React.JSX.Element {
   // États des modales
   const [showCategoryModal, setShowCategoryModal] = useState(false)
@@ -98,6 +100,7 @@ function SettingsPage({
               loadAssets()
               onSuccess('Actif supprimé avec succès !')
             }}
+            onAssetClick={onAssetClick}
             onError={onError}
           />
         </div>

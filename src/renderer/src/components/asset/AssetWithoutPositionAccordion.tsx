@@ -12,6 +12,7 @@ interface AssetWithoutPositionAccordionProps {
   assets: Asset[]
   transactions: Transaction[]
   onAssetDeleted: () => void
+  onAssetClick?: (assetId: number) => void
   onError: (message: string) => void
 }
 
@@ -19,6 +20,7 @@ function AssetWithoutPositionAccordion({
   assets,
   transactions,
   onAssetDeleted,
+  onAssetClick,
   onError
 }: AssetWithoutPositionAccordionProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
@@ -74,7 +76,8 @@ function AssetWithoutPositionAccordion({
         background: 'var(--color-card-bg)',
         borderRadius: 'var(--border-radius)',
         border: '1px solid var(--color-border)',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        marginTop: '60px'
       }}
     >
       {/* En-tête Accordion */}
@@ -140,6 +143,7 @@ function AssetWithoutPositionAccordion({
 
               return (
                 <div
+                  className="mt-4"
                   key={asset.id}
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
@@ -163,10 +167,24 @@ function AssetWithoutPositionAccordion({
                       }}
                     >
                       <span
+                        onClick={() => onAssetClick?.(asset.id)}
                         style={{
                           fontSize: '16px',
                           fontWeight: '700',
-                          color: 'var(--color-text-primary)'
+                          color: 'var(--color-primary)',
+                          cursor: onAssetClick ? 'pointer' : 'default',
+                          textDecoration: onAssetClick ? 'underline' : 'none',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (onAssetClick) {
+                            e.currentTarget.style.color = 'var(--color-primary-dark)'
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (onAssetClick) {
+                            e.currentTarget.style.color = 'var(--color-primary)'
+                          }
                         }}
                       >
                         {asset.ticker}

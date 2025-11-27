@@ -7,6 +7,12 @@ import {
   MonthlyInvestmentSimulator,
   type Objective
 } from '../components/projection'
+import CategoryPieChart from '../components/category/CategoryPieChart'
+import type { CategoryValue } from '../types'
+
+interface ProjectionPageProps {
+  onCategoryClick: (categoryId: number) => void
+}
 
 // Valeurs par défaut de l'objectif
 const DEFAULT_OBJECTIVE = {
@@ -19,9 +25,11 @@ const DEFAULT_OBJECTIVE = {
  * Page de Projection Financière
  * Permet de définir un objectif, visualiser la progression et simuler les versements nécessaires
  */
-export default function ProjectionPage(): React.JSX.Element {
+export default function ProjectionPage({ onCategoryClick }: ProjectionPageProps): React.JSX.Element {
   const [objective, setObjective] = useState<Objective | null>(null)
   const [loading, setLoading] = useState(true)
+  const [categoryValues, setCategoryValues] = useState<CategoryValue[]>([])
+  const [loadingCategories, setLoadingCategories] = useState(true)
 
   const loadCurrentObjective = useCallback(async (): Promise<void> => {
     try {
@@ -46,6 +54,83 @@ export default function ProjectionPage(): React.JSX.Element {
   useEffect(() => {
     loadCurrentObjective()
   }, [loadCurrentObjective])
+
+  // Charger les catégories et calculer les valeurs
+  useEffect(() => {
+    const loadCategoryValues = async (): Promise<void> => {
+      try {
+        setLoadingCategories(true)
+        const [assets, transactions, categories] = await Promise.all([
+          window.api.getAllAssets(),
+          window.api.getAllTransactions(),
+          window.api.getAllCategories()
+        ])
+
+        const values = categories.map((category) => {
+          const categoryAssets = assets.filter((a) => a.categoryId === category.id)
+          const assetValues: {
+            assetId: number
+            name: string
+            ticker: string
+            netQuantity: number
+            currentPrice: number
+            totalValue: number
+            percentage: number
+          }[] = []
+
+          const totalValue = categoryAssets.reduce((sum, asset) => {
+            const assetTransactions = transactions.filter((t) => t.assetId === asset.id)
+            const netQuantity = assetTransactions.reduce((qty, t) => {
+              return t.type === 'BUY' ? qty + t.quantity : qty - t.quantity
+            }, 0)
+            const value = netQuantity * asset.currentPrice
+
+            if (netQuantity > 0) {
+              assetValues.push({
+                assetId: asset.id,
+                name: asset.name,
+                ticker: asset.ticker,
+                netQuantity: netQuantity,
+                currentPrice: asset.currentPrice,
+                totalValue: value,
+                percentage: 0 // Sera calculé après
+              })
+            }
+
+            return sum + value
+          }, 0)
+
+          // Calculer les pourcentages des actifs
+          assetValues.forEach((av) => {
+            av.percentage = totalValue > 0 ? (av.totalValue / totalValue) * 100 : 0
+          })
+
+          return {
+            categoryId: category.id,
+            categoryName: category.name,
+            totalValue,
+            color: category.color,
+            assetCount: assetValues.length,
+            percentage: 0,
+            assets: assetValues
+          }
+        })
+
+        const total = values.reduce((sum, v) => sum + v.totalValue, 0)
+        values.forEach((v) => {
+          v.percentage = total > 0 ? (v.totalValue / total) * 100 : 0
+        })
+
+        setCategoryValues(values.filter((v) => v.totalValue > 0))
+      } catch (error) {
+        console.error('Error loading category values:', error)
+      } finally {
+        setLoadingCategories(false)
+      }
+    }
+
+    loadCategoryValues()
+  }, [])
 
   const handleObjectiveUpdate = async (data: {
     targetAmount: number
@@ -114,6 +199,13 @@ export default function ProjectionPage(): React.JSX.Element {
       <section className="mb-6">
         <InvestmentBreakdownChart objective={objective} />
       </section>
+
+      {/* Section 2.6 : Répartition par Catégorie */}
+      {!loadingCategories && categoryValues.length > 0 && (
+        <section className="mb-6">
+          <CategoryPieChart categoryValues={categoryValues} onCategoryClick={onCategoryClick} />
+        </section>
+      )}
 
       {/* Section 3 : Simulation Versements */}
       <section className="mb-6">

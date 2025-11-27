@@ -242,13 +242,16 @@ function App(): React.JSX.Element {
           />
         )}
 
-        {activePage === 'projection' && <ProjectionPage />}
+        {activePage === 'projection' && (
+          <ProjectionPage onCategoryClick={navigateToCategory} />
+        )}
 
         {activePage === 'settings' && (
           <SettingsPage
             onSuccess={(msg) => showMessage('success', msg)}
             onError={(msg) => showMessage('error', msg)}
             onCategoryClick={navigateToCategory}
+            onAssetClick={navigateToAsset}
           />
         )}
 
