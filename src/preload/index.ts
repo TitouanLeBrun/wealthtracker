@@ -13,6 +13,16 @@ const api = {
     fee: number
     date: Date
   }) => ipcRenderer.invoke('transaction:create', data),
+  updateTransaction: (params: {
+    id: number
+    data: {
+      type?: 'BUY' | 'SELL'
+      quantity?: number
+      pricePerUnit?: number
+      fee?: number
+      date?: string
+    }
+  }) => ipcRenderer.invoke('transaction:update', params),
   deleteTransaction: (id: number) => ipcRenderer.invoke('transaction:delete', id),
 
   // Categories API

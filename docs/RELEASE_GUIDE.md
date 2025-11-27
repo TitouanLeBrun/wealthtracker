@@ -7,6 +7,7 @@ Ce guide explique comment créer et publier une nouvelle version de WealthTracke
 ### 1. Préparer la release
 
 Avant de créer une release, assurez-vous que :
+
 - ✅ Tous les tests passent : `npm run test`
 - ✅ Le code compile sans erreur : `npm run typecheck`
 - ✅ Le linting est propre : `npm run lint`
@@ -44,6 +45,7 @@ Une fois le tag poussé, GitHub Actions va automatiquement :
 ### 4. Vérifier la release
 
 Après quelques minutes, votre release sera disponible sur :
+
 ```
 https://github.com/TitouanLeBrun/wealthtracker/releases
 ```
@@ -51,14 +53,17 @@ https://github.com/TitouanLeBrun/wealthtracker/releases
 ## 📁 Fichiers générés
 
 ### Windows (`.exe`)
+
 - `WealthTracker-X.X.X-Setup.exe` - Installateur NSIS (recommandé)
 - `WealthTracker-X.X.X-Portable.exe` - Version portable
 
 ### macOS (`.dmg`, `.zip`)
+
 - `WealthTracker-X.X.X-macOS.dmg` - Image disque (recommandé)
 - `WealthTracker-X.X.X-mac.zip` - Archive ZIP
 
 ### Linux (`.AppImage`, `.deb`)
+
 - `WealthTracker-X.X.X-Linux.AppImage` - Application portable
 - `WealthTracker-X.X.X-Linux.deb` - Package Debian/Ubuntu
 
@@ -83,6 +88,7 @@ Suivez les règles de [Semantic Versioning](https://semver.org/lang/fr/) :
 - **PATCH** (v1.0.1) : Corrections de bugs rétrocompatibles
 
 Exemples :
+
 - `v1.0.0` - Version initiale
 - `v1.1.0` - Ajout de nouvelles fonctionnalités
 - `v1.1.1` - Correction de bugs
@@ -94,16 +100,19 @@ Exemples :
 Si vous devez builder manuellement :
 
 ### Windows
+
 ```bash
 npm run build:win
 ```
 
 ### macOS
+
 ```bash
 npm run build:mac
 ```
 
 ### Linux
+
 ```bash
 npm run build:linux
 ```
@@ -138,6 +147,7 @@ git push origin main --tags
 ## 🔒 Permissions requises
 
 Le workflow nécessite les permissions suivantes (déjà configurées) :
+
 - `contents: write` - Pour créer la release et uploader les assets
 
 ## 📊 Changelog automatique
@@ -158,15 +168,18 @@ chore: mise à jour des dépendances
 ## ❓ Troubleshooting
 
 ### La release n'est pas déclenchée
+
 - Vérifiez que le tag commence par `v` (ex: `v1.0.0`)
 - Vérifiez que le tag a été poussé : `git push origin --tags`
 
 ### Le build échoue
+
 - Vérifiez les logs dans GitHub Actions
 - Assurez-vous que les tests passent localement
 - Vérifiez que `electron-builder.yml` est correct
 
 ### Les fichiers sont manquants
+
 - Vérifiez que `extraResources` dans `electron-builder.yml` inclut tous les fichiers nécessaires
 - Vérifiez que Prisma est bien généré : `npx prisma generate`
 

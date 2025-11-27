@@ -74,4 +74,66 @@ export function registerTransactionHandlers(): void {
       throw error
     }
   })
+
+  ipcMain.handle(
+    'transaction:update',
+    async (
+      _,
+      params: {
+        id: number
+        data: {
+          type?: 'BUY' | 'SELL'
+          quantity?: number
+          pricePerUnit?: number
+          fee?: number
+          date?: Date
+        }
+      }
+    ) => {
+      try {
+        const prisma = await getPrismaClient()
+
+        // Vérifier que la transaction existe
+        const existingTransaction = await prisma.transaction.findUnique({
+          where: { id: params.id }
+        })
+
+        if (!existingTransaction) {
+          throw new Error(`Transaction with id ${params.id} not found`)
+        }
+
+        // Préparer les données de mise à jour
+        const updateData: {
+          type?: 'BUY' | 'SELL'
+          quantity?: number
+          pricePerUnit?: number
+          fee?: number
+          date?: Date
+        } = {}
+
+        if (params.data.type !== undefined) updateData.type = params.data.type
+        if (params.data.quantity !== undefined) updateData.quantity = params.data.quantity
+        if (params.data.pricePerUnit !== undefined)
+          updateData.pricePerUnit = params.data.pricePerUnit
+        if (params.data.fee !== undefined) updateData.fee = params.data.fee
+        if (params.data.date !== undefined) updateData.date = new Date(params.data.date)
+
+        // Mettre à jour la transaction
+        return await prisma.transaction.update({
+          where: { id: params.id },
+          data: updateData,
+          include: {
+            asset: {
+              include: {
+                category: true
+              }
+            }
+          }
+        })
+      } catch (error) {
+        console.error('[IPC] Error updating transaction:', error)
+        throw error
+      }
+    }
+  )
 }

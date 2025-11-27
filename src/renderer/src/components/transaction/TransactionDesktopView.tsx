@@ -1,4 +1,4 @@
-import { Calendar, Trash2 } from 'lucide-react'
+import { Calendar, Trash2, Edit2 } from 'lucide-react'
 import type { Transaction } from '../../types'
 
 interface TransactionDesktopViewProps {
@@ -6,6 +6,7 @@ interface TransactionDesktopViewProps {
   total: number
   isBuy: boolean
   onDelete?: () => void
+  onEdit?: () => void
   onAssetClick?: (assetId: number) => void
 }
 
@@ -14,6 +15,7 @@ function TransactionDesktopView({
   total,
   isBuy,
   onDelete,
+  onEdit,
   onAssetClick
 }: TransactionDesktopViewProps): React.JSX.Element {
   return (
@@ -27,10 +29,10 @@ function TransactionDesktopView({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'auto 1fr 100px 100px 100px 100px 150px auto',
+          gridTemplateColumns: 'auto 1fr 100px 100px 100px 100px 150px auto auto',
           gap: 'var(--spacing-md)',
           alignItems: 'center',
-          minWidth: '850px'
+          minWidth: '900px'
         }}
       >
         {/* Col 1: Badge Type */}
@@ -185,7 +187,36 @@ function TransactionDesktopView({
           </span>
         </div>
 
-        {/* Col 8: Bouton Supprimer (à la fin) */}
+        {/* Col 8: Bouton Éditer */}
+        {onEdit && (
+          <button
+            onClick={onEdit}
+            title="Éditer cette transaction"
+            style={{
+              padding: '8px',
+              background: 'transparent',
+              border: '1px solid #e5e7eb',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#fff3cd'
+              e.currentTarget.style.borderColor = '#f59e0b'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.borderColor = '#e5e7eb'
+            }}
+          >
+            <Edit2 size={16} color="#f59e0b" />
+          </button>
+        )}
+
+        {/* Col 9: Bouton Supprimer (à la fin) */}
         {onDelete && (
           <button
             onClick={onDelete}
@@ -200,7 +231,7 @@ function TransactionDesktopView({
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.2s ease',
-              marginLeft: 'auto'
+              marginLeft: onEdit ? '0' : 'auto'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = '#fee2e2'

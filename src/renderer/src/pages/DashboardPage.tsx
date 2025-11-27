@@ -22,12 +22,12 @@ function DashboardPage({
   const [assets, setAssets] = useState<Asset[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [loadingAssets, setLoadingAssets] = useState(true)
-  
+
   // États pour les dropdowns
   const [isPriceTickerOpen, setIsPriceTickerOpen] = useState(true)
   const [isKPIOpen, setIsKPIOpen] = useState(true)
   const [isTableOpen, setIsTableOpen] = useState(true)
-  
+
   const [portfolioMetrics, setPortfolioMetrics] = useState<PortfolioMetrics>({
     totalValue: 0,
     totalInvested: 0,
@@ -246,13 +246,13 @@ function DashboardPage({
               </div>
             )}
           </div>
-                <hr
-        style={{
-          margin: 'var(--spacing-xl) 0',
-          border: 'none',
-          borderTop: '1px solid var(--color-border)'
-        }}
-      />
+          <hr
+            style={{
+              margin: 'var(--spacing-xl) 0',
+              border: 'none',
+              borderTop: '1px solid var(--color-border)'
+            }}
+          />
 
           {/* Tableau détaillé */}
           <div

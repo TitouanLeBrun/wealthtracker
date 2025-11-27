@@ -6,6 +6,8 @@ import TransactionForm from '../components/forms/transaction/TransactionForm'
 import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
 import AssetPriceChart from '../components/asset/AssetPriceChart'
 import AssetInfoPanel from '../components/asset/AssetInfoPanel'
+import EditTransactionModal from '../components/transaction/EditTransactionModal'
+import { useTransactionUpdate } from '../hooks/useTransactionUpdate'
 import type { Asset, Transaction, Category } from '../types'
 
 interface AssetDetailPageProps {
@@ -27,6 +29,10 @@ function AssetDetailPage({
   const [loading, setLoading] = useState(true)
   const [showBuyModal, setShowBuyModal] = useState(false)
   const [showSellModal, setShowSellModal] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+
+  // Hook pour la mise à jour
+  const { updateTransaction } = useTransactionUpdate()
 
   // Calculer la quantité nette et la valeur totale avec arrondi correct
   const { netQuantity, totalValue } = useMemo(() => {
@@ -107,6 +113,31 @@ function AssetDetailPage({
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
       onError('Erreur lors de la suppression de la transaction')
+    }
+  }
+
+  const handleEditTransaction = (transaction: Transaction): void => {
+    setEditingTransaction(transaction)
+  }
+
+  const handleUpdateTransaction = async (
+    id: number,
+    data: {
+      type?: 'BUY' | 'SELL'
+      quantity?: number
+      pricePerUnit?: number
+      fee?: number
+      date?: string
+    }
+  ): Promise<void> => {
+    try {
+      await updateTransaction(id, data)
+      await loadData()
+      setEditingTransaction(null)
+      onSuccess('Transaction modifiée avec succès !')
+    } catch (error) {
+      console.error('Erreur lors de la modification:', error)
+      onError('Erreur lors de la modification de la transaction')
     }
   }
 
@@ -244,6 +275,7 @@ function AssetDetailPage({
           transactions={transactions}
           loading={false}
           onDelete={handleDeleteTransaction}
+          onEdit={handleEditTransaction}
         />
       </div>
 
@@ -276,6 +308,15 @@ function AssetDetailPage({
           onError={onError}
         />
       </Modal>
+
+      {/* Modale d'édition de transaction */}
+      {editingTransaction && (
+        <EditTransactionModal
+          transaction={editingTransaction}
+          onClose={() => setEditingTransaction(null)}
+          onSave={handleUpdateTransaction}
+        />
+      )}
     </div>
   )
 }

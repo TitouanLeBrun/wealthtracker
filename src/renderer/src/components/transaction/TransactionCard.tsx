@@ -5,12 +5,14 @@ import TransactionMobileView from './TransactionMobileView'
 interface TransactionCardProps {
   transaction: Transaction
   onDelete?: () => void
+  onEdit?: () => void
   onAssetClick?: (assetId: number) => void
 }
 
 function TransactionCard({
   transaction,
   onDelete,
+  onEdit,
   onAssetClick
 }: TransactionCardProps): React.JSX.Element {
   const total = transaction.quantity * transaction.pricePerUnit + transaction.fee
@@ -39,6 +41,7 @@ function TransactionCard({
         total={total}
         isBuy={isBuy}
         onDelete={onDelete}
+        onEdit={onEdit}
         onAssetClick={onAssetClick}
       />
 
@@ -48,6 +51,7 @@ function TransactionCard({
         total={total}
         isBuy={isBuy}
         onDelete={onDelete}
+        onEdit={onEdit}
         onAssetClick={onAssetClick}
       />
     </div>

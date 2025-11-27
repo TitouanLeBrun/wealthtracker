@@ -242,9 +242,7 @@ function App(): React.JSX.Element {
           />
         )}
 
-        {activePage === 'projection' && (
-          <ProjectionPage onCategoryClick={navigateToCategory} />
-        )}
+        {activePage === 'projection' && <ProjectionPage onCategoryClick={navigateToCategory} />}
 
         {activePage === 'settings' && (
           <SettingsPage

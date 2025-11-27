@@ -54,6 +54,16 @@ export interface API {
     fee: number
     date: Date
   }) => Promise<Transaction>
+  updateTransaction: (params: {
+    id: number
+    data: {
+      type?: 'BUY' | 'SELL'
+      quantity?: number
+      pricePerUnit?: number
+      fee?: number
+      date?: Date
+    }
+  }) => Promise<Transaction>
   deleteTransaction: (id: number) => Promise<{ success: boolean }>
 
   // Categories

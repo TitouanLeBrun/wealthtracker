@@ -25,7 +25,9 @@ const DEFAULT_OBJECTIVE = {
  * Page de Projection Financière
  * Permet de définir un objectif, visualiser la progression et simuler les versements nécessaires
  */
-export default function ProjectionPage({ onCategoryClick }: ProjectionPageProps): React.JSX.Element {
+export default function ProjectionPage({
+  onCategoryClick
+}: ProjectionPageProps): React.JSX.Element {
   const [objective, setObjective] = useState<Objective | null>(null)
   const [loading, setLoading] = useState(true)
   const [categoryValues, setCategoryValues] = useState<CategoryValue[]>([])

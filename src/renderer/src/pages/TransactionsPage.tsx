@@ -3,6 +3,8 @@ import { TrendingUp, Plus } from 'lucide-react'
 import Modal from '../components/common/Modal'
 import TransactionForm from '../components/forms/transaction/TransactionForm'
 import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
+import EditTransactionModal from '../components/transaction/EditTransactionModal'
+import { useTransactionUpdate } from '../hooks/useTransactionUpdate'
 import type { Transaction, Asset } from '../types'
 
 interface TransactionsPageProps {
@@ -23,6 +25,10 @@ function TransactionsPage({
 
   // État de la modale
   const [showTransactionModal, setShowTransactionModal] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+
+  // Hook pour la mise à jour
+  const { updateTransaction } = useTransactionUpdate()
 
   // Charger les transactions
   useEffect(() => {
@@ -84,6 +90,31 @@ function TransactionsPage({
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
       onError('Erreur lors de la suppression de la transaction')
+    }
+  }
+
+  const handleEditTransaction = (transaction: Transaction): void => {
+    setEditingTransaction(transaction)
+  }
+
+  const handleUpdateTransaction = async (
+    id: number,
+    data: {
+      type?: 'BUY' | 'SELL'
+      quantity?: number
+      pricePerUnit?: number
+      fee?: number
+      date?: string
+    }
+  ): Promise<void> => {
+    try {
+      await updateTransaction(id, data)
+      await loadTransactions()
+      setEditingTransaction(null)
+      onSuccess('Transaction modifiée avec succès !')
+    } catch (error) {
+      console.error('Erreur lors de la modification:', error)
+      onError('Erreur lors de la modification de la transaction')
     }
   }
 
@@ -151,6 +182,7 @@ function TransactionsPage({
         transactions={transactions}
         loading={loading}
         onDelete={handleDeleteTransaction}
+        onEdit={handleEditTransaction}
         onAssetClick={onNavigateToAsset}
       />
 
@@ -162,6 +194,15 @@ function TransactionsPage({
       >
         <TransactionForm onSubmit={handleTransactionSubmit} onError={onError} />
       </Modal>
+
+      {/* Modale d'édition de transaction */}
+      {editingTransaction && (
+        <EditTransactionModal
+          transaction={editingTransaction}
+          onClose={() => setEditingTransaction(null)}
+          onSave={handleUpdateTransaction}
+        />
+      )}
     </div>
   )
 }

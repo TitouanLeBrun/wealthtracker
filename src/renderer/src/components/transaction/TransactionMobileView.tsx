@@ -1,4 +1,4 @@
-import { Calendar, Trash2 } from 'lucide-react'
+import { Calendar, Trash2, Edit2 } from 'lucide-react'
 import type { Transaction } from '../../types'
 
 interface TransactionMobileViewProps {
@@ -6,6 +6,7 @@ interface TransactionMobileViewProps {
   total: number
   isBuy: boolean
   onDelete?: () => void
+  onEdit?: () => void
   onAssetClick?: (assetId: number) => void
 }
 
@@ -14,6 +15,7 @@ function TransactionMobileView({
   total,
   isBuy,
   onDelete,
+  onEdit,
   onAssetClick
 }: TransactionMobileViewProps): React.JSX.Element {
   return (
@@ -80,30 +82,62 @@ function TransactionMobileView({
             {transaction.asset?.name}
           </div>
         </div>
-        {onDelete && (
-          <button
-            onClick={onDelete}
-            title="Supprimer"
-            style={{
-              padding: '8px',
-              background: 'transparent',
-              border: '1px solid #e5e7eb',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#fee2e2'
-              e.currentTarget.style.borderColor = '#ef4444'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.borderColor = '#e5e7eb'
-            }}
-          >
-            <Trash2 size={16} color="#ef4444" />
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              title="Éditer"
+              style={{
+                padding: '8px',
+                background: 'transparent',
+                border: '1px solid #e5e7eb',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#fff3cd'
+                e.currentTarget.style.borderColor = '#f59e0b'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.borderColor = '#e5e7eb'
+              }}
+            >
+              <Edit2 size={16} color="#f59e0b" />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              title="Supprimer"
+              style={{
+                padding: '8px',
+                background: 'transparent',
+                border: '1px solid #e5e7eb',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#fee2e2'
+                e.currentTarget.style.borderColor = '#ef4444'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.borderColor = '#e5e7eb'
+              }}
+            >
+              <Trash2 size={16} color="#ef4444" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Détails principaux */}

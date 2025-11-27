@@ -176,7 +176,7 @@ jobs:
           # Extraire la version du tag
           VERSION=${GITHUB_REF#refs/tags/}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
+
           # Générer un changelog basique
           echo "## 🎉 WealthTracker $VERSION" > CHANGELOG.md
           echo "" >> CHANGELOG.md

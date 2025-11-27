@@ -9,6 +9,7 @@ interface TransactionManagerCardsProps {
   transactions: Transaction[]
   loading?: boolean
   onDelete?: (transactionId: number) => Promise<void>
+  onEdit?: (transaction: Transaction) => void
   onAssetClick?: (assetId: number) => void
   preselectedCategoryId?: number
   hideCategoryFilter?: boolean
@@ -20,6 +21,7 @@ function TransactionManagerCards({
   transactions,
   loading = false,
   onDelete,
+  onEdit,
   onAssetClick,
   preselectedCategoryId,
   hideCategoryFilter = false
@@ -130,6 +132,7 @@ function TransactionManagerCards({
       <TransactionList
         transactions={currentTransactions}
         onDeleteTransaction={onDelete ? (transaction) => setDeleteConfirm(transaction) : undefined}
+        onEditTransaction={onEdit}
         onAssetClick={onAssetClick}
       />
 
