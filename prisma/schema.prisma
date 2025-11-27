@@ -18,6 +18,7 @@ model Asset {
   id           Int           @id @default(autoincrement())
   name         String
   ticker       String        @unique
+  isin         String?       // Code ISIN international (ex: FR0000120271)
   currentPrice Float         @default(0)
   categoryId   Int
   createdAt    DateTime      @default(now())

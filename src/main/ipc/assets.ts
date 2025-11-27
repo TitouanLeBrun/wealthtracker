@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron'
 import { getPrismaClient } from '../database/client'
+import { resolveSymbol, getLatestPrice } from '../utils/yahoo'
 
 export function registerAssetHandlers(): void {
   // ==================== ASSETS ====================
@@ -24,11 +25,42 @@ export function registerAssetHandlers(): void {
     async (_, data: { name: string; ticker: string; currentPrice: number; categoryId: number }) => {
       try {
         const prisma = await getPrismaClient()
+
+        // Résolution automatique du ticker/ISIN via Yahoo Finance
+        console.log(`[Asset:Create] Tentative de résolution de: ${data.ticker}`)
+        const resolved = await resolveSymbol(data.ticker)
+
+        let finalTicker = data.ticker
+        let finalPrice = data.currentPrice
+        let isinCode: string | undefined = undefined
+
+        if (resolved) {
+          // Symbole trouvé sur Yahoo Finance
+          console.log(`[Asset:Create] Résolu: ${data.ticker} → ${resolved.symbol}`)
+          finalTicker = resolved.symbol
+          isinCode = resolved.isin
+
+          // Récupérer le prix actuel si non fourni ou égal à 0
+          if (finalPrice === 0 || !finalPrice) {
+            const price = await getLatestPrice(resolved.symbol)
+            if (price !== null) {
+              finalPrice = price
+              console.log(`[Asset:Create] Prix récupéré: ${finalPrice}`)
+            }
+          }
+        } else {
+          console.warn(
+            `[Asset:Create] Impossible de résoudre ${data.ticker}, utilisation des valeurs brutes`
+          )
+        }
+
+        // Créer l'actif avec les données résolues
         return await prisma.asset.create({
           data: {
             name: data.name,
-            ticker: data.ticker,
-            currentPrice: data.currentPrice,
+            ticker: finalTicker,
+            isin: isinCode,
+            currentPrice: finalPrice,
             categoryId: data.categoryId
           },
           include: {

@@ -10,6 +10,7 @@ export interface Asset {
   id: number
   name: string
   ticker: string
+  isin?: string // Code ISIN international (ex: FR0000120271)
   currentPrice: number
   categoryId: number
   category?: Category // Relation optionnelle

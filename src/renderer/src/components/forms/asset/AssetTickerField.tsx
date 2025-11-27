@@ -29,14 +29,14 @@ function AssetTickerField({
           color: '#374151'
         }}
       >
-        Ticker / Symbole
+        Ticker ou ISIN
       </label>
       <input
         type="text"
         id="asset-ticker"
         value={value}
         onChange={(e) => handleChange(e.target.value)}
-        placeholder="Ex: AAPL, BTC, SPY"
+        placeholder="Ex: AAPL ou FR0000120271"
         style={{
           width: '100%',
           padding: '10px 12px',
@@ -56,7 +56,7 @@ function AssetTickerField({
         }}
       />
       <small style={{ color: '#6b7280', fontSize: '12px', marginTop: '4px', display: 'block' }}>
-        Sera converti en majuscules
+        Accepte un ticker Yahoo (AAPL) ou un code ISIN européen (FR0000120271)
       </small>
     </div>
   )
