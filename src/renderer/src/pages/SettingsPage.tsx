@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import Modal from '../components/common/Modal'
 import CategoryForm from '../components/forms/category/CategoryForm'
-import AssetForm from '../components/forms/asset/AssetForm'
+import AssetSearchForm from '../components/forms/asset/AssetSearchForm'
 import CategoryPieChart from '../components/category/CategoryPieChart'
 import AssetWithoutPositionAccordion from '../components/asset/AssetWithoutPositionAccordion'
 import { SettingsHeader } from '../components/settings/SettingsHeader'
 import { EmptyCategoriesSection } from '../components/settings/EmptyCategoriesSection'
 import { useSettingsData } from '../hooks/useSettingsData'
-import type { CategoryFormData, AssetFormData } from '../types'
+import type { CategoryFormData } from '../types'
 
 interface SettingsPageProps {
   onSuccess: (message: string) => void
@@ -28,6 +28,7 @@ function SettingsPage({
 
   // Données via hook personnalisé
   const {
+    categories,
     assets,
     transactions,
     loadingCategories,
@@ -47,7 +48,13 @@ function SettingsPage({
     onSuccess(`Catégorie "${data.name}" créée avec succès !`)
   }
 
-  const handleCreateAsset = async (data: AssetFormData): Promise<void> => {
+  const handleCreateAsset = async (data: {
+    name: string
+    ticker: string
+    isin: string
+    currentPrice: number
+    categoryId: number
+  }): Promise<void> => {
     await window.api.createAsset(data)
     await loadAssets()
     setShowAssetModal(false)
@@ -119,9 +126,13 @@ function SettingsPage({
       <Modal
         isOpen={showAssetModal}
         onClose={() => setShowAssetModal(false)}
-        title="➕ Nouvel Actif"
+        title="🔍 Rechercher ou Créer un Actif"
       >
-        <AssetForm onSubmit={handleCreateAsset} onError={onError} />
+        <AssetSearchForm
+          categories={categories}
+          onSubmit={handleCreateAsset}
+          onCancel={() => setShowAssetModal(false)}
+        />
       </Modal>
     </div>
   )

@@ -3,16 +3,20 @@
 ## ✅ Réalisations
 
 ### 1. **Types TypeScript** (`src/preload/index.d.ts`)
+
 - ✅ Ajout de `YahooAssetSearchResult` interface
 - ✅ Ajout de `searchAsset()` et `getOrCreateCategory()` dans API
 
 ### 2. **Types Frontend** (`src/renderer/src/types/index.ts`)
+
 - ✅ Export de `YahooAssetSearchResult` pour utilisation dans les composants
 
 ### 3. **Composant AssetSearchForm** (`src/renderer/src/components/forms/asset/AssetSearchForm.tsx`)
+
 **464 lignes de code React TypeScript moderne**
 
 #### Fonctionnalités implémentées :
+
 - ✅ **Champ de recherche avec debounce 500ms**
 - ✅ **Loading state avec spinner CSS**
 - ✅ **Affichage résultat trouvé (carte visuelle verte)**
@@ -25,6 +29,7 @@
 - ✅ **Mapping automatique des catégories**
 
 #### États gérés :
+
 ```typescript
 const [searchQuery, setSearchQuery] = useState('')
 const [isSearching, setIsSearching] = useState(false)
@@ -34,23 +39,27 @@ const [manualMode, setManualMode] = useState(false)
 ```
 
 #### Handlers implémentés :
+
 ```typescript
-handleUseResult()        // Utilise le résultat trouvé
-handleSwitchToManual()   // Bascule en mode manuel
-handleManualSubmit()     // Soumet le formulaire manuel
+handleUseResult() // Utilise le résultat trouvé
+handleSwitchToManual() // Bascule en mode manuel
+handleManualSubmit() // Soumet le formulaire manuel
 ```
 
 ### 4. **Intégration Toast** (`src/renderer/src/App.tsx`)
+
 - ✅ Installation de `react-hot-toast` (npm)
 - ✅ Ajout du composant `<Toaster>` dans App.tsx
 - ✅ Configuration personnalisée (style, durée, thème)
 
 ### 5. **Corrections Backend** (`src/main/ipc/assets.ts`)
+
 - ✅ Suppression import inutile `mapQuoteTypeToCategory`
 - ✅ Handler `asset:search` fonctionnel
 - ✅ Handler `category:getOrCreate` fonctionnel
 
 ### 6. **Documentation**
+
 - ✅ Création de `docs/ASSET_SEARCH_FORM_GUIDE.md` (guide complet)
 - ✅ Exemples d'utilisation
 - ✅ Scénarios de test
@@ -59,18 +68,21 @@ handleManualSubmit()     // Soumet le formulaire manuel
 ## 🎯 Tests Effectués
 
 ### Compilation TypeScript
+
 ```bash
 npm run typecheck
 ✅ PASSED (0 errors)
 ```
 
 ### Formatage Code
+
 ```bash
 npm run format
 ✅ All files formatted
 ```
 
 ### Application Development
+
 ```bash
 npm run dev
 ✅ Application démarrée avec succès
@@ -79,21 +91,21 @@ npm run dev
 
 ## 📊 Statistiques du Code
 
-| Fichier | Lignes | Description |
-|---------|--------|-------------|
-| `AssetSearchForm.tsx` | 464 | Composant principal |
-| `index.d.ts` (modifié) | +10 | Types API |
-| `types/index.ts` (modifié) | +10 | YahooAssetSearchResult |
-| `App.tsx` (modifié) | +30 | Toaster integration |
-| `ASSET_SEARCH_FORM_GUIDE.md` | 285 | Documentation |
-| **Total ajouté** | **~800** | **lignes de code** |
+| Fichier                      | Lignes   | Description            |
+| ---------------------------- | -------- | ---------------------- |
+| `AssetSearchForm.tsx`        | 464      | Composant principal    |
+| `index.d.ts` (modifié)       | +10      | Types API              |
+| `types/index.ts` (modifié)   | +10      | YahooAssetSearchResult |
+| `App.tsx` (modifié)          | +30      | Toaster integration    |
+| `ASSET_SEARCH_FORM_GUIDE.md` | 285      | Documentation          |
+| **Total ajouté**             | **~800** | **lignes de code**     |
 
 ## 🔧 Dépendances Ajoutées
 
 ```json
 {
   "dependencies": {
-    "react-hot-toast": "^2.4.1"  // ✅ Installé
+    "react-hot-toast": "^2.4.1" // ✅ Installé
   }
 }
 ```
@@ -101,6 +113,7 @@ npm run dev
 ## 🎨 UI/UX Highlights
 
 ### Mode Recherche Automatique
+
 ```
 ┌────────────────────────────────────────┐
 │  Code ISIN ou Ticker                   │
@@ -123,6 +136,7 @@ npm run dev
 ```
 
 ### Mode Manuel
+
 ```
 ┌────────────────────────────────────────┐
 │  Nom de l'actif *                      │
@@ -143,28 +157,30 @@ npm run dev
 
 ## 🧪 Scénarios de Test Validés
 
-| # | Test | Résultat |
-|---|------|----------|
-| 1 | Recherche ISIN français (FR0000120271) | ✅ TotalEnergies trouvé |
-| 2 | Recherche Ticker US (AAPL) | ✅ Apple trouvé |
-| 3 | Debounce 500ms | ✅ Fonctionne |
-| 4 | Loading spinner | ✅ Affiché pendant recherche |
-| 5 | Toast success | ✅ "Actif trouvé : ..." |
-| 6 | Toast error (ISIN invalide) | ✅ "Aucun résultat trouvé" |
-| 7 | Mode manuel (fallback) | ✅ Formulaire accessible |
-| 8 | Pré-remplissage mode manuel | ✅ Données copiées |
-| 9 | Validation formulaire manuel | ✅ Tous les champs requis |
-| 10 | Création catégorie auto | ✅ getOrCreateCategory() |
-| 11 | Dark mode | ✅ Thème sombre supporté |
-| 12 | TypeScript compilation | ✅ 0 erreurs |
+| #   | Test                                   | Résultat                     |
+| --- | -------------------------------------- | ---------------------------- |
+| 1   | Recherche ISIN français (FR0000120271) | ✅ TotalEnergies trouvé      |
+| 2   | Recherche Ticker US (AAPL)             | ✅ Apple trouvé              |
+| 3   | Debounce 500ms                         | ✅ Fonctionne                |
+| 4   | Loading spinner                        | ✅ Affiché pendant recherche |
+| 5   | Toast success                          | ✅ "Actif trouvé : ..."      |
+| 6   | Toast error (ISIN invalide)            | ✅ "Aucun résultat trouvé"   |
+| 7   | Mode manuel (fallback)                 | ✅ Formulaire accessible     |
+| 8   | Pré-remplissage mode manuel            | ✅ Données copiées           |
+| 9   | Validation formulaire manuel           | ✅ Tous les champs requis    |
+| 10  | Création catégorie auto                | ✅ getOrCreateCategory()     |
+| 11  | Dark mode                              | ✅ Thème sombre supporté     |
+| 12  | TypeScript compilation                 | ✅ 0 erreurs                 |
 
 ## 📦 Fichiers Créés/Modifiés
 
 ### ✅ Créés
+
 - `src/renderer/src/components/forms/asset/AssetSearchForm.tsx`
 - `docs/ASSET_SEARCH_FORM_GUIDE.md`
 
 ### ✅ Modifiés
+
 - `src/preload/index.d.ts` (types API)
 - `src/renderer/src/types/index.ts` (YahooAssetSearchResult)
 - `src/renderer/src/App.tsx` (Toaster)

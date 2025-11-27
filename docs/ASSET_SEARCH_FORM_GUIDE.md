@@ -7,12 +7,14 @@ Le nouveau formulaire **AssetSearchForm** permet de créer des actifs financiers
 ## ✨ Fonctionnalités
 
 ### 1. **Recherche Automatique par ISIN/Ticker**
+
 - Recherche en temps réel avec **debounce de 500ms**
 - Support des codes **ISIN** (ex: `FR0000120271`) et **Tickers** (ex: `AAPL`)
 - **Loading spinner** pendant la recherche
 - Affichage des résultats dans une **carte visuelle animée**
 
 ### 2. **Création Automatique de Catégorie**
+
 - Mapping intelligent basé sur le type d'actif Yahoo :
   - `ETF` → Catégorie "ETF"
   - `EQUITY` → Catégorie "Actions"
@@ -23,11 +25,13 @@ Le nouveau formulaire **AssetSearchForm** permet de créer des actifs financiers
   - Autres → Catégorie "Autres"
 
 ### 3. **Mode Manuel (Fallback)**
+
 - Accessible si aucun résultat n'est trouvé
 - Pré-remplit les données si un résultat partiel existe
 - Formulaire complet avec validation
 
 ### 4. **Notifications Toast**
+
 - Intégration de **react-hot-toast** pour les notifications
 - Feedback immédiat sur les actions (succès/erreur)
 - Style cohérent avec le thème de l'application
@@ -37,6 +41,7 @@ Le nouveau formulaire **AssetSearchForm** permet de créer des actifs financiers
 ### Recherche d'un Actif
 
 1. **Saisir un ISIN ou Ticker** dans le champ de recherche
+
    ```
    Exemples :
    - ISIN français : FR0000120271 (TotalEnergies)
@@ -55,7 +60,6 @@ Le nouveau formulaire **AssetSearchForm** permet de créer des actifs financiers
      - Type d'actif (ETF, EQUITY, CRYPTO)
      - Prix actuel + devise
      - Code ISIN (si disponible)
-   
 4. **Actions disponibles**
    - **✓ Utiliser cet actif** : Crée l'actif automatiquement
    - **✏️ Modifier manuellement** : Passe en mode manuel pour ajuster
@@ -81,16 +85,17 @@ Le nouveau formulaire **AssetSearchForm** permet de créer des actifs financiers
 
 ```typescript
 interface AssetSearchFormProps {
-  categories: Category[]           // Liste des catégories existantes
-  onSubmit: (data: {               // Callback de soumission
+  categories: Category[] // Liste des catégories existantes
+  onSubmit: (data: {
+    // Callback de soumission
     name: string
     ticker: string
     isin: string
     currentPrice: number
     categoryId: number
   }) => void
-  onCancel: () => void             // Callback d'annulation
-  isLoading?: boolean              // État de chargement externe
+  onCancel: () => void // Callback d'annulation
+  isLoading?: boolean // État de chargement externe
 }
 ```
 
@@ -101,7 +106,7 @@ import AssetSearchForm from '@renderer/components/forms/asset/AssetSearchForm'
 
 function MyPage() {
   const [categories, setCategories] = useState<Category[]>([])
-  
+
   const handleSubmit = async (data) => {
     try {
       await window.api.createAsset(data)
@@ -110,7 +115,7 @@ function MyPage() {
       toast.error('Erreur lors de la création')
     }
   }
-  
+
   return (
     <AssetSearchForm
       categories={categories}
@@ -124,11 +129,13 @@ function MyPage() {
 ## 🎨 Styles et Animations
 
 ### Animations CSS
+
 - **`animate-fadeIn`** : Animation d'apparition des résultats
 - **Spinner de chargement** : Animation de rotation CSS
 - **Hover effects** : Transitions fluides sur les boutons
 
 ### Classes Tailwind Utilisées
+
 - Gradients : `bg-gradient-to-br from-green-50 to-emerald-50`
 - Dark mode : `dark:bg-gray-700`, `dark:text-white`
 - Responsive : Adapté mobile/desktop automatiquement

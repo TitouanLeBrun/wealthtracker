@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import Modal from '../components/common/Modal'
-import AssetForm from '../components/forms/asset/AssetForm'
+import AssetSearchForm from '../components/forms/asset/AssetSearchForm'
 import TransactionForm from '../components/forms/transaction/TransactionForm'
 import CategoryHeader from '../components/category/CategoryHeader'
 import CategoryStats from '../components/category/CategoryStats'
 import CategoryAssetsList from '../components/category/CategoryAssetsList'
 import CategoryTransactionsSection from '../components/category/CategoryTransactionsSection'
-import type { Category, Asset, Transaction, AssetFormData } from '../types'
+import type { Category, Asset, Transaction } from '../types'
 import { calculateCategoryValues } from '../utils/calculations/categoryCalculations'
 
 interface CategoryDetailPageProps {
@@ -143,7 +143,13 @@ function CategoryDetailPage({
     loadData()
   }, [loadData])
 
-  const handleCreateAsset = async (data: AssetFormData): Promise<void> => {
+  const handleCreateAsset = async (data: {
+    name: string
+    ticker: string
+    isin: string
+    currentPrice: number
+    categoryId: number
+  }): Promise<void> => {
     await window.api.createAsset({ ...data, categoryId })
     await loadData()
     setShowAssetModal(false)
@@ -224,13 +230,15 @@ function CategoryDetailPage({
       <Modal
         isOpen={showAssetModal}
         onClose={() => setShowAssetModal(false)}
-        title={`➕ Nouvel Actif - ${category.name}`}
+        title={`🔍 Rechercher ou Créer un Actif - ${category.name}`}
       >
-        <AssetForm
-          onSubmit={handleCreateAsset}
-          onError={onError}
-          initialCategoryId={category.id}
-          lockCategory={true}
+        <AssetSearchForm
+          categories={[category]}
+          onSubmit={async (data) => {
+            // Force la catégorie actuelle
+            await handleCreateAsset({ ...data, categoryId: category.id })
+          }}
+          onCancel={() => setShowAssetModal(false)}
         />
       </Modal>
 

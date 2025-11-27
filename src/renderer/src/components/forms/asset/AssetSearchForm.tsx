@@ -121,8 +121,18 @@ export default function AssetSearchForm({
     if (searchResult) {
       setManualName(searchResult.name)
       setManualTicker(searchResult.symbol)
-      setManualIsin(searchResult.isin || '')
       setManualPrice(searchResult.price?.toString() || '')
+      
+      // Si la recherche était un ISIN (différent du symbol), le pré-remplir
+      const searchQueryUpper = searchQuery.trim().toUpperCase()
+      if (searchResult.isin) {
+        setManualIsin(searchResult.isin)
+      } else if (searchQueryUpper !== searchResult.symbol.toUpperCase() && searchQueryUpper.length >= 12) {
+        // Si l'utilisateur a cherché avec un ISIN mais Yahoo n'en a pas retourné, garder la recherche
+        setManualIsin(searchQueryUpper)
+      } else {
+        setManualIsin('')
+      }
     }
   }
 
@@ -171,7 +181,10 @@ export default function AssetSearchForm({
               setManualMode(false)
               setSearchQuery('')
             }}
-            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700
+                     bg-white  hover:bg-gray-50
+                     border border-gray-200 
+                     rounded-lg transition-colors shadow-sm"
           >
             ← Retour à la recherche
           </button>
@@ -193,9 +206,9 @@ export default function AssetSearchForm({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Ex: FR0000120271 (TotalEnergies) ou AAPL (Apple)"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
-                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                         bg-white text-gray-900
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         placeholder-gray-400 dark:placeholder-gray-500"
+                         placeholder-gray-400"
                 disabled={isSearching}
               />
               {isSearching && (
@@ -244,22 +257,22 @@ export default function AssetSearchForm({
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Type</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                <div className="bg-white border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                  <p className="text-xs text-blue-800 dark:text-blue-400 mb-1 font-medium">Catégorie</p>
+                  <p className="font-semibold text-blue-400">
                     {searchResult.quoteType}
                   </p>
                 </div>
-                <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Prix actuel</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                <div className="bg-white border border-emerald-200 dark:border-emerald-700 rounded-lg p-3">
+                  <p className="text-xs text-emerald-800 dark:text-emerald-400 mb-1 font-medium">Prix actuel</p>
+                  <p className="font-semibold text-emerald-400">
                     {searchResult.price?.toFixed(2) || 'N/A'} {searchResult.currency || 'EUR'}
                   </p>
                 </div>
                 {searchResult.isin && (
-                  <div className="col-span-2 bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Code ISIN</p>
-                    <p className="font-mono text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="col-span-2 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700 rounded-lg p-3">
+                    <p className="text-xs text-purple-600 dark:text-purple-400 mb-1 font-medium">Code ISIN</p>
+                    <p className="font-mono text-sm font-semibold text-purple-900 dark:text-purple-100">
                       {searchResult.isin}
                     </p>
                   </div>
@@ -287,8 +300,8 @@ export default function AssetSearchForm({
                 <button
                   type="button"
                   onClick={handleSwitchToManual}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 
-                           text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors"
+                  className="flex-1 bg-white hover:bg-gray-50 border-2 border-gray-300
+                           text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors"
                 >
                   ✏️ Modifier manuellement
                 </button>
@@ -332,98 +345,110 @@ export default function AssetSearchForm({
       {/* MODE MANUEL */}
       {manualMode && (
         <form onSubmit={handleManualSubmit} className="space-y-4">
-          {/* Nom */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Nom de l'actif *
-            </label>
-            <input
-              type="text"
-              value={manualName}
-              onChange={(e) => setManualName(e.target.value)}
-              placeholder="Ex: Apple Inc."
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+          {/* Grid 2 colonnes pour les champs */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Nom - occupe 2 colonnes */}
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Nom de l'actif *
+              </label>
+              <input
+                type="text"
+                value={manualName}
+                onChange={(e) => setManualName(e.target.value)}
+                placeholder="Ex: Apple Inc."
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 
+                       bg-white text-gray-900
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
+                required
+              />
+            </div>
+
+            {/* Ticker */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Ticker *
+              </label>
+              <input
+                type="text"
+                value={manualTicker}
+                onChange={(e) => setManualTicker(e.target.value.toUpperCase())}
+                placeholder="Ex: AAPL"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 
+                       bg-white text-gray-900
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            {/* ISIN (optionnel) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Code ISIN (optionnel)
+              </label>
+              <input
+                type="text"
+                value={manualIsin}
+                onChange={(e) => setManualIsin(e.target.value.toUpperCase())}
+                placeholder="Ex: US0378331005"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 
+                       bg-white text-gray-900
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Prix */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Prix actuel (€) *
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={manualPrice}
+                onChange={(e) => setManualPrice(e.target.value)}
+                placeholder="Ex: 150.50"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 
+                       bg-white text-gray-900
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            {/* Catégorie */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Catégorie *
+              </label>
+              <select
+                value={manualCategoryId}
+                onChange={(e) => setManualCategoryId(Number(e.target.value))}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 
+                       bg-white text-gray-900
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* Ticker */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Ticker *
-            </label>
-            <input
-              type="text"
-              value={manualTicker}
-              onChange={(e) => setManualTicker(e.target.value.toUpperCase())}
-              placeholder="Ex: AAPL"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-
-          {/* ISIN (optionnel) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Code ISIN (optionnel)
-            </label>
-            <input
-              type="text"
-              value={manualIsin}
-              onChange={(e) => setManualIsin(e.target.value.toUpperCase())}
-              placeholder="Ex: US0378331005"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          {/* Prix */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Prix actuel (€) *
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={manualPrice}
-              onChange={(e) => setManualPrice(e.target.value)}
-              placeholder="Ex: 150.50"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-
-          {/* Catégorie */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Catégorie *
-            </label>
-            <select
-              value={manualCategoryId}
-              onChange={(e) => setManualCategoryId(Number(e.target.value))}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Boutons */}
+          {/* Boutons - Annuler à gauche, Créer à droite */}
           <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={isLoading}
+              className="flex-1 bg-white hover:bg-gray-50 border-2 border-gray-300
+                       text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors"
+            >
+              Annuler
+            </button>
             <button
               type="submit"
               disabled={isLoading}
@@ -431,15 +456,6 @@ export default function AssetSearchForm({
                        rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Création...' : "Créer l'actif"}
-            </button>
-            <button
-              type="button"
-              onClick={onCancel}
-              disabled={isLoading}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 
-                       text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors"
-            >
-              Annuler
             </button>
           </div>
         </form>
@@ -451,8 +467,8 @@ export default function AssetSearchForm({
           <button
             type="button"
             onClick={onCancel}
-            className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 
-                     text-gray-700 dark:text-gray-300 font-medium py-2 px-6 rounded-lg transition-colors"
+            className="bg-white hover:bg-gray-50 border-2 border-gray-300
+                     text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors"
           >
             Annuler
           </button>
