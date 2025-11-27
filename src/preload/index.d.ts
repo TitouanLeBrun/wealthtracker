@@ -98,6 +98,47 @@ export interface API {
       startDate?: Date | null
     }
   ) => Promise<Objective>
+
+  // Import
+  importTransactions: (params: {
+    fileContent: string
+    source: 'TradeRepublic' | 'Kraken' | 'Other'
+  }) => Promise<{
+    validTransactions: ParsedTransaction[]
+    errors: ImportError[]
+    warnings: ImportWarning[]
+    summary: {
+      total: number
+      valid: number
+      errors: number
+      warnings: number
+    }
+    createdAssets: string[]
+    createdCategory: boolean
+  }>
+}
+
+export interface ParsedTransaction {
+  date: string
+  assetName: string
+  isin: string | null
+  type: 'BUY' | 'SELL'
+  quantity: number
+  pricePerUnit: number
+  fee: number
+  total: number
+}
+
+export interface ImportError {
+  line: number
+  reason: string
+  data?: Record<string, unknown>
+}
+
+export interface ImportWarning {
+  line: number
+  reason: string
+  data?: Record<string, unknown>
 }
 
 declare global {

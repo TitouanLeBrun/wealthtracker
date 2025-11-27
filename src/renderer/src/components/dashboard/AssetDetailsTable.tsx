@@ -5,7 +5,6 @@ import AssetTableHeader from './AssetTableHeader'
 import AssetTableRow from './AssetTableRow'
 import AssetMobileCard from './AssetMobileCard'
 import AssetEmptyState from './AssetEmptyState'
-import AssetTableTitle from './AssetTableTitle'
 
 interface AssetDetailsTableProps {
   assets: AssetMetrics[]

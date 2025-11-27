@@ -106,3 +106,41 @@ export interface PortfolioMetrics {
   assetCount: number // Nombre d'actifs en position ouverte
   assets: AssetPerformance[] // Détails par actif
 }
+
+// Types pour l'import de transactions
+export interface ParsedTransaction {
+  date: string // ISO format
+  assetName: string
+  isin: string | null
+  type: 'BUY' | 'SELL'
+  quantity: number
+  pricePerUnit: number
+  fee: number
+  total: number
+}
+
+export interface ImportError {
+  line: number
+  reason: string
+  data?: Record<string, unknown>
+}
+
+export interface ImportWarning {
+  line: number
+  reason: string
+  data?: Record<string, unknown>
+}
+
+export interface ImportResult {
+  validTransactions: ParsedTransaction[]
+  errors: ImportError[]
+  warnings: ImportWarning[]
+  summary: {
+    total: number
+    valid: number
+    errors: number
+    warnings: number
+  }
+  createdAssets: string[]
+  createdCategory: boolean
+}

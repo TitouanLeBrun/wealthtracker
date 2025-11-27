@@ -2,6 +2,7 @@ import { registerTransactionHandlers } from './transactions'
 import { registerCategoryHandlers } from './categories'
 import { registerAssetHandlers } from './assets'
 import { registerObjectiveHandlers } from './objectives'
+import { registerImportHandlers } from './import'
 
 /**
  * Enregistre tous les handlers IPC pour l'application
@@ -11,4 +12,5 @@ export function registerAllIpcHandlers(): void {
   registerCategoryHandlers()
   registerAssetHandlers()
   registerObjectiveHandlers()
+  registerImportHandlers()
 }

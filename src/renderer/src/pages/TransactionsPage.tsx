@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { TrendingUp, Plus } from 'lucide-react'
+import { TrendingUp, Plus, Upload } from 'lucide-react'
 import Modal from '../components/common/Modal'
 import TransactionForm from '../components/forms/transaction/TransactionForm'
 import TransactionManagerCards from '../components/transaction/TransactionManagerCards'
 import EditTransactionModal from '../components/transaction/EditTransactionModal'
+import ImportTransactionsModal from '../components/transaction/ImportTransactionsModal'
 import { useTransactionUpdate } from '../hooks/useTransactionUpdate'
 import type { Transaction, Asset } from '../types'
 
@@ -25,6 +26,7 @@ function TransactionsPage({
 
   // État de la modale
   const [showTransactionModal, setShowTransactionModal] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
   // Hook pour la mise à jour
@@ -108,7 +110,12 @@ function TransactionsPage({
     }
   ): Promise<void> => {
     try {
-      await updateTransaction(id, data)
+      // Convertir la date string en Date si nécessaire
+      const updateData = {
+        ...data,
+        date: data.date ? new Date(data.date) : undefined
+      }
+      await updateTransaction(id, updateData)
       await loadTransactions()
       setEditingTransaction(null)
       onSuccess('Transaction modifiée avec succès !')
@@ -138,39 +145,68 @@ function TransactionsPage({
             <TrendingUp size={32} color="var(--color-primary)" />
             <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700' }}>Mes Transactions</h1>
           </div>
-          <button
-            onClick={() => setShowTransactionModal(true)}
-            disabled={assets.length === 0}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--spacing-sm)',
-              padding: '12px 24px',
-              background: assets.length === 0 ? 'var(--color-border)' : 'var(--color-primary)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '12px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: assets.length === 0 ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s ease',
-              opacity: assets.length === 0 ? 0.5 : 1
-            }}
-            onMouseEnter={(e) => {
-              if (assets.length > 0) {
+          <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+            <button
+              onClick={() => setShowImportModal(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-sm)',
+                padding: '12px 24px',
+                background: '#6b7280',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#4b5563'
                 e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)'
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
-            title={assets.length === 0 ? "Créez d'abord des actifs" : 'Ajouter une transaction'}
-          >
-            <Plus size={18} />
-            Ajouter une Transaction
-          </button>
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#6b7280'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              <Upload size={20} />
+              Importer
+            </button>
+            <button
+              onClick={() => setShowTransactionModal(true)}
+              disabled={assets.length === 0}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-sm)',
+                padding: '12px 24px',
+                background: assets.length === 0 ? 'var(--color-border)' : 'var(--color-primary)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: assets.length === 0 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                opacity: assets.length === 0 ? 0.5 : 1
+              }}
+              onMouseEnter={(e) => {
+                if (assets.length > 0) {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+              title={assets.length === 0 ? "Créez d'abord des actifs" : 'Ajouter une transaction'}
+            >
+              <Plus size={18} />
+              Ajouter une Transaction
+            </button>
+          </div>
         </div>
         <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '16px' }}>
           Gérez vos achats et ventes d&apos;actifs financiers
@@ -201,6 +237,18 @@ function TransactionsPage({
           transaction={editingTransaction}
           onClose={() => setEditingTransaction(null)}
           onSave={handleUpdateTransaction}
+        />
+      )}
+
+      {/* Modale d'import de transactions */}
+      {showImportModal && (
+        <ImportTransactionsModal
+          onClose={() => setShowImportModal(false)}
+          onImportSuccess={async () => {
+            await loadTransactions()
+            await loadAssets()
+            onSuccess('Transactions importées avec succès !')
+          }}
         />
       )}
     </div>

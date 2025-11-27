@@ -45,7 +45,13 @@ const api = {
   updateObjective: (
     id: number,
     data: { targetAmount: number; targetYears: number; interestRate: number }
-  ) => ipcRenderer.invoke('objective:update', id, data)
+  ) => ipcRenderer.invoke('objective:update', id, data),
+
+  // Import API
+  importTransactions: (params: {
+    fileContent: string
+    source: 'TradeRepublic' | 'Kraken' | 'Other'
+  }) => ipcRenderer.invoke('importTransactions', params)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -131,7 +131,12 @@ function AssetDetailPage({
     }
   ): Promise<void> => {
     try {
-      await updateTransaction(id, data)
+      // Convertir la date string en Date si nécessaire
+      const updateData = {
+        ...data,
+        date: data.date ? new Date(data.date) : undefined
+      }
+      await updateTransaction(id, updateData)
       await loadData()
       setEditingTransaction(null)
       onSuccess('Transaction modifiée avec succès !')

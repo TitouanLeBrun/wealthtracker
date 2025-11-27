@@ -6,10 +6,14 @@ interface UpdateTransactionData {
   quantity?: number
   pricePerUnit?: number
   fee?: number
-  date?: string
+  date?: Date
 }
 
-export function useTransactionUpdate() {
+export function useTransactionUpdate(): {
+  updateTransaction: (id: number, data: UpdateTransactionData) => Promise<Transaction | null>
+  isUpdating: boolean
+  error: string | null
+} {
   const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
