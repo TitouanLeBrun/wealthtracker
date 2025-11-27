@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard, ChevronDown, ChevronUp } from 'lucide-react'
 import PriceTicker from '../components/dashboard/PriceTicker'
 import EnhancedPortfolioKPI from '../components/dashboard/EnhancedPortfolioKPI'
 import AssetDetailsTable from '../components/dashboard/AssetDetailsTable'
@@ -22,6 +22,12 @@ function DashboardPage({
   const [assets, setAssets] = useState<Asset[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [loadingAssets, setLoadingAssets] = useState(true)
+  
+  // États pour les dropdowns
+  const [isPriceTickerOpen, setIsPriceTickerOpen] = useState(true)
+  const [isKPIOpen, setIsKPIOpen] = useState(true)
+  const [isTableOpen, setIsTableOpen] = useState(true)
+  
   const [portfolioMetrics, setPortfolioMetrics] = useState<PortfolioMetrics>({
     totalValue: 0,
     totalInvested: 0,
@@ -117,7 +123,55 @@ function DashboardPage({
       </div>
 
       {/* Price Ticker - Barre de prix Bloomberg-style */}
-      {!loadingAssets && <PriceTicker assets={assets} onPriceUpdate={handlePriceUpdate} />}
+      {!loadingAssets && (
+        <div
+          style={{
+            background: 'var(--color-card-bg)',
+            borderRadius: 'var(--border-radius)',
+            border: '1px solid var(--color-border)',
+            overflow: 'hidden',
+            marginBottom: 'var(--spacing-lg)'
+          }}
+        >
+          <button
+            onClick={() => setIsPriceTickerOpen(!isPriceTickerOpen)}
+            style={{
+              width: '100%',
+              padding: 'var(--spacing-md)',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              transition: 'background 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+            }}
+          >
+            <h3
+              style={{
+                margin: 0,
+                fontSize: '18px',
+                fontWeight: '600',
+                color: 'var(--color-text-primary)'
+              }}
+            >
+              📊 Prix en temps réel
+            </h3>
+            {isPriceTickerOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </button>
+          {isPriceTickerOpen && (
+            <div style={{ padding: '0 var(--spacing-md) var(--spacing-md)' }}>
+              <PriceTicker assets={assets} onPriceUpdate={handlePriceUpdate} />
+            </div>
+          )}
+        </div>
+      )}
 
       <hr
         style={{
@@ -145,13 +199,110 @@ function DashboardPage({
       {!loading && (
         <>
           {/* KPI Cards - Vue d'ensemble */}
-          <div style={{ marginBottom: 'var(--spacing-xxl)' }}>
-            <EnhancedPortfolioKPI metrics={portfolioMetrics} />
+          <div
+            style={{
+              background: 'var(--color-card-bg)',
+              borderRadius: 'var(--border-radius)',
+              border: '1px solid var(--color-border)',
+              overflow: 'hidden',
+              marginBottom: 'var(--spacing-xxl)'
+            }}
+          >
+            <button
+              onClick={() => setIsKPIOpen(!isKPIOpen)}
+              style={{
+                width: '100%',
+                padding: 'var(--spacing-md)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'background 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: 'var(--color-text-primary)'
+                }}
+              >
+                📊 Vue d&apos;ensemble du portefeuille
+              </h3>
+              {isKPIOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
+            {isKPIOpen && (
+              <div style={{ padding: '0 var(--spacing-md) var(--spacing-md)' }}>
+                <EnhancedPortfolioKPI metrics={portfolioMetrics} />
+              </div>
+            )}
           </div>
+                <hr
+        style={{
+          margin: 'var(--spacing-xl) 0',
+          border: 'none',
+          borderTop: '1px solid var(--color-border)'
+        }}
+      />
 
           {/* Tableau détaillé */}
-          <div>
-            <AssetDetailsTable assets={portfolioMetrics.assets} onAssetClick={onNavigateToAsset} />
+          <div
+            style={{
+              background: 'var(--color-card-bg)',
+              borderRadius: 'var(--border-radius)',
+              border: '1px solid var(--color-border)',
+              overflow: 'hidden'
+            }}
+          >
+            <button
+              onClick={() => setIsTableOpen(!isTableOpen)}
+              style={{
+                width: '100%',
+                padding: 'var(--spacing-md)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'background 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: 'var(--color-text-primary)'
+                }}
+              >
+                📋 Détail des actifs ({portfolioMetrics.assets.length})
+              </h3>
+              {isTableOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
+            {isTableOpen && (
+              <div>
+                <AssetDetailsTable
+                  assets={portfolioMetrics.assets}
+                  onAssetClick={onNavigateToAsset}
+                />
+              </div>
+            )}
           </div>
         </>
       )}

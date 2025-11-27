@@ -13,7 +13,7 @@ function EnhancedPortfolioKPI({ metrics }: EnhancedPortfolioKPIProps): React.JSX
   return (
     <div>
       {/* Titre de section */}
-      <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+      {/* <div style={{ marginBottom: 'var(--spacing-lg)' }}>
         <h2
           style={{
             fontSize: '24px',
@@ -33,7 +33,7 @@ function EnhancedPortfolioKPI({ metrics }: EnhancedPortfolioKPIProps): React.JSX
         >
           Performance globale de votre portefeuille
         </p>
-      </div>
+      </div> */}
 
       {/* KPI Cards Grid */}
       <div

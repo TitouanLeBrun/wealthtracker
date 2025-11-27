@@ -57,7 +57,7 @@ function AssetDetailsTable({ assets, onAssetClick }: AssetDetailsTableProps): Re
   return (
     <div>
       {/* Titre */}
-      <AssetTableTitle assetCount={assets.length} />
+      {/* <AssetTableTitle assetCount={assets.length} /> */}
 
       {/* Tableau - Desktop */}
       <div
