@@ -50,7 +50,10 @@ jobs:
             arch: x64
           - os: macos-latest
             platform: mac
-            arch: universal
+            arch: x64
+          - os: macos-latest
+            platform: mac
+            arch: arm64
           - os: ubuntu-latest
             platform: linux
             arch: x64
@@ -86,7 +89,7 @@ jobs:
         run: |
           export DATABASE_URL="file:./prisma/dev.db"
           npm run build
-          npx electron-builder --mac --universal --publish never
+          npx electron-builder --mac --${{ matrix.arch }} --publish never
 
       # Build Linux
       - name: 🏗️ Build Linux (AppImage + DEB)

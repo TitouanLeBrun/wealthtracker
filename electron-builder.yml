@@ -15,8 +15,6 @@ files:
 extraResources:
   - from: prisma/schema.prisma
     to: prisma/schema.prisma
-  - from: prisma/dev.db
-    to: prisma/dev.db
   - from: node_modules/.prisma
     to: node_modules/.prisma
   - from: node_modules/@prisma/client
@@ -59,10 +57,16 @@ mac:
   target:
     - target: dmg
       arch:
-        - universal
+        - x64
+    - target: dmg
+      arch:
+        - arm64
     - target: zip
       arch:
-        - universal
+        - x64
+    - target: zip
+      arch:
+        - arm64
   hardenedRuntime: true
   gatekeeperAssess: false
   entitlements: null
