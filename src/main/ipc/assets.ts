@@ -131,6 +131,52 @@ export function registerAssetHandlers(): void {
     }
   })
 
+  // Mettre à jour un actif (nom, ticker, ISIN, catégorie, prix)
+  ipcMain.handle(
+    'asset:update',
+    async (
+      _,
+      data: {
+        id: number
+        name?: string
+        ticker?: string
+        isin?: string
+        currentPrice?: number
+        categoryId?: number
+      }
+    ) => {
+      try {
+        const prisma = await getPrismaClient()
+
+        // Préparer les données à mettre à jour
+        const updateData: {
+          name?: string
+          ticker?: string
+          isin?: string | null
+          currentPrice?: number
+          categoryId?: number
+        } = {}
+
+        if (data.name !== undefined) updateData.name = data.name
+        if (data.ticker !== undefined) updateData.ticker = data.ticker
+        if (data.isin !== undefined) updateData.isin = data.isin || null
+        if (data.currentPrice !== undefined) updateData.currentPrice = data.currentPrice
+        if (data.categoryId !== undefined) updateData.categoryId = data.categoryId
+
+        console.log(`[Asset:Update] Mise à jour actif ID ${data.id}:`, updateData)
+
+        return await prisma.asset.update({
+          where: { id: data.id },
+          data: updateData,
+          include: { category: true }
+        })
+      } catch (error) {
+        console.error('[IPC] Error updating asset:', error)
+        throw error
+      }
+    }
+  )
+
   ipcMain.handle('asset:delete', async (_, assetId: number) => {
     try {
       const prisma = await getPrismaClient()

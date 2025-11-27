@@ -6,6 +6,7 @@ import CategoryPieChart from '../components/category/CategoryPieChart'
 import AssetWithoutPositionAccordion from '../components/asset/AssetWithoutPositionAccordion'
 import { SettingsHeader } from '../components/settings/SettingsHeader'
 import { EmptyCategoriesSection } from '../components/settings/EmptyCategoriesSection'
+import { AssetManagementSection } from '../components/settings/AssetManagementSection'
 import { useSettingsData } from '../hooks/useSettingsData'
 import type { CategoryFormData } from '../types'
 
@@ -94,6 +95,17 @@ function SettingsPage({
         <EmptyCategoriesSection
           categories={categoriesWithoutAssets}
           onCategoryClick={onCategoryClick}
+        />
+      )}
+
+      {/* Gestion des actifs (drag & drop + édition ticker) */}
+      {!loadingCategories && !loadingAssets && (
+        <AssetManagementSection
+          assets={assets}
+          categories={categories}
+          onAssetUpdated={loadAssets}
+          onSuccess={onSuccess}
+          onError={onError}
         />
       )}
 

@@ -94,6 +94,14 @@ export interface API {
     categoryId: number
   }) => Promise<Asset>
   updateAssetPrice: (data: { assetId: number; newPrice: number }) => Promise<Asset>
+  updateAsset: (data: {
+    id: number
+    name?: string
+    ticker?: string
+    isin?: string
+    currentPrice?: number
+    categoryId?: number
+  }) => Promise<Asset>
   deleteAsset: (assetId: number) => Promise<Asset>
   searchAsset: (query: string) => Promise<YahooAssetSearchResult | null>
   refreshAllAssetPrices: () => Promise<{

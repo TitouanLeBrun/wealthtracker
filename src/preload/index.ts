@@ -43,6 +43,14 @@ const api = {
   }) => ipcRenderer.invoke('asset:create', data),
   updateAssetPrice: (data: { assetId: number; newPrice: number }) =>
     ipcRenderer.invoke('asset:updatePrice', data),
+  updateAsset: (data: {
+    id: number
+    name?: string
+    ticker?: string
+    isin?: string
+    currentPrice?: number
+    categoryId?: number
+  }) => ipcRenderer.invoke('asset:update', data),
   deleteAsset: (assetId: number) => ipcRenderer.invoke('asset:delete', assetId),
   refreshAllAssetPrices: () => ipcRenderer.invoke('asset:refreshAllPrices'),
   searchAsset: (query: string) => ipcRenderer.invoke('asset:search', query),
