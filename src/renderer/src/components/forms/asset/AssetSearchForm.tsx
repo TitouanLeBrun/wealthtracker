@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import type { Category, YahooAssetSearchResult } from '@renderer/types'
+import type { Category, Asset, YahooAssetSearchResult } from '@renderer/types'
 
 interface AssetSearchFormProps {
   categories: Category[]
+  existingAssets?: Asset[]
   onSubmit: (data: {
     name: string
     ticker: string
@@ -30,6 +31,7 @@ function mapQuoteTypeToCategory(quoteType: string): string {
 
 export default function AssetSearchForm({
   categories,
+  existingAssets = [],
   onSubmit,
   onCancel,
   isLoading = false
@@ -46,6 +48,29 @@ export default function AssetSearchForm({
   const [manualIsin, setManualIsin] = useState('')
   const [manualPrice, setManualPrice] = useState('')
   const [manualCategoryId, setManualCategoryId] = useState<number>(categories[0]?.id || 0)
+
+  // Fonction pour vérifier si l'actif existe déjà
+  const checkDuplicateAsset = (ticker: string, isin: string): Asset | undefined => {
+    const tickerUpper = ticker.trim().toUpperCase()
+    const isinUpper = isin.trim().toUpperCase()
+
+    return existingAssets.find((asset) => {
+      const assetTickerUpper = asset.ticker.toUpperCase()
+      const assetIsinUpper = asset.isin?.toUpperCase() || ''
+
+      // Vérifier par ticker
+      if (tickerUpper && assetTickerUpper === tickerUpper) {
+        return true
+      }
+
+      // Vérifier par ISIN (seulement si les deux ont un ISIN)
+      if (isinUpper && assetIsinUpper && isinUpper === assetIsinUpper) {
+        return true
+      }
+
+      return false
+    })
+  }
 
   // Debounce pour la recherche automatique
   useEffect(() => {
@@ -85,6 +110,19 @@ export default function AssetSearchForm({
   // Handler : Utiliser le résultat trouvé
   const handleUseResult = async (): Promise<void> => {
     if (!searchResult) return
+
+    // Vérifier si l'actif existe déjà
+    const duplicate = checkDuplicateAsset(searchResult.symbol, searchResult.isin || '')
+    if (duplicate) {
+      toast.error(
+        `Cet actif existe déjà dans votre portefeuille : "${duplicate.name}" (${duplicate.ticker})`,
+        {
+          duration: 5000,
+          icon: '⚠️'
+        }
+      )
+      return
+    }
 
     try {
       // Créer/récupérer la catégorie automatiquement
@@ -155,6 +193,19 @@ export default function AssetSearchForm({
     }
     if (!manualCategoryId) {
       toast.error('Veuillez sélectionner une catégorie')
+      return
+    }
+
+    // Vérifier si l'actif existe déjà
+    const duplicate = checkDuplicateAsset(manualTicker, manualIsin)
+    if (duplicate) {
+      toast.error(
+        `Cet actif existe déjà dans votre portefeuille : "${duplicate.name}" (${duplicate.ticker})`,
+        {
+          duration: 5000,
+          icon: '⚠️'
+        }
+      )
       return
     }
 

@@ -234,6 +234,7 @@ function CategoryDetailPage({
       >
         <AssetSearchForm
           categories={[category]}
+          existingAssets={allAssets}
           onSubmit={async (data) => {
             // Force la catégorie actuelle
             await handleCreateAsset({ ...data, categoryId: category.id })
