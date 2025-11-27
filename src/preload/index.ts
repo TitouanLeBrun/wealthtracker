@@ -29,6 +29,7 @@ const api = {
   getAllCategories: () => ipcRenderer.invoke('category:getAll'),
   createCategory: (data: { name: string; color: string }) =>
     ipcRenderer.invoke('category:create', data),
+  deleteCategory: (id: number) => ipcRenderer.invoke('category:delete', id),
 
   // Assets API
   getAllAssets: () => ipcRenderer.invoke('asset:getAll'),

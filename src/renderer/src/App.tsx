@@ -5,12 +5,19 @@ import ProjectionPage from './pages/ProjectionPage'
 import SettingsPage from './pages/SettingsPage'
 import CategoryDetailPage from './pages/CategoryDetailPage'
 import AssetDetailPage from './pages/AssetDetailPage'
+import DataManagementPage from './pages/DataManagementPage'
 import Notification from './components/common/Notification'
 import type { NotificationMessage } from './types'
 
 function App(): React.JSX.Element {
   const [activePage, setActivePage] = useState<
-    'dashboard' | 'transactions' | 'projection' | 'settings' | 'category' | 'asset'
+    | 'dashboard'
+    | 'transactions'
+    | 'projection'
+    | 'settings'
+    | 'category'
+    | 'asset'
+    | 'data-management'
   >('dashboard')
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [selectedAssetId, setSelectedAssetId] = useState<number | null>(null)
@@ -208,6 +215,37 @@ function App(): React.JSX.Element {
               <span>⚙️</span>
               <span className="nav-text">Configuration</span>
             </button>
+            <button
+              onClick={() => setActivePage('data-management')}
+              style={{
+                padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px)',
+                backgroundColor: activePage === 'data-management' ? '#dc2626' : 'transparent',
+                color: activePage === 'data-management' ? 'white' : 'var(--color-text-secondary)',
+                border: 'none',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                fontWeight: activePage === 'data-management' ? '600' : '500',
+                fontSize: 'clamp(13px, 2.5vw, 15px)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-xs)',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (activePage !== 'data-management') {
+                  e.currentTarget.style.background = 'rgba(220, 38, 38, 0.1)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activePage !== 'data-management') {
+                  e.currentTarget.style.background = 'transparent'
+                }
+              }}
+            >
+              <span>🗑️</span>
+              <span className="nav-text">Données</span>
+            </button>
           </div>
         </div>
       </nav>
@@ -250,6 +288,13 @@ function App(): React.JSX.Element {
             onError={(msg) => showMessage('error', msg)}
             onCategoryClick={navigateToCategory}
             onAssetClick={navigateToAsset}
+          />
+        )}
+
+        {activePage === 'data-management' && (
+          <DataManagementPage
+            onSuccess={(msg) => showMessage('success', msg)}
+            onError={(msg) => showMessage('error', msg)}
           />
         )}
 

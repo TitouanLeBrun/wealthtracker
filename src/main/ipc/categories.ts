@@ -30,4 +30,18 @@ export function registerCategoryHandlers(): void {
       throw error
     }
   })
+
+  ipcMain.handle('category:delete', async (_, categoryId: number) => {
+    try {
+      const prisma = await getPrismaClient()
+      // Supprimer la catégorie (cascade supprimera les actifs et transactions liés)
+      await prisma.category.delete({
+        where: { id: categoryId }
+      })
+      return { success: true }
+    } catch (error) {
+      console.error('[IPC] Error deleting category:', error)
+      throw error
+    }
+  })
 }

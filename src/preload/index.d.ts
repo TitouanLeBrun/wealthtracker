@@ -69,6 +69,7 @@ export interface API {
   // Categories
   getAllCategories: () => Promise<Category[]>
   createCategory: (data: { name: string; color: string }) => Promise<Category>
+  deleteCategory: (id: number) => Promise<{ success: boolean }>
 
   // Assets
   getAllAssets: () => Promise<Asset[]>
