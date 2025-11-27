@@ -38,7 +38,7 @@ jobs:
 
   # Job 2: Build et Release multi-plateforme
   release:
-    name: Build & Release - ${{ matrix.os }}
+    name: Build & Release - ${{ matrix.os }} (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     needs: test
 
@@ -115,7 +115,7 @@ jobs:
         if: matrix.platform == 'mac'
         uses: actions/upload-artifact@v4
         with:
-          name: macos-installers
+          name: macos-installers-${{ matrix.arch }}
           path: |
             dist/*.dmg
             dist/*.dmg.blockmap
@@ -152,10 +152,16 @@ jobs:
           name: windows-installers
           path: ./release-assets/windows
 
-      - name: 📥 Download macOS artifacts
+      - name: 📥 Download macOS x64 artifacts
         uses: actions/download-artifact@v4
         with:
-          name: macos-installers
+          name: macos-installers-x64
+          path: ./release-assets/macos
+
+      - name: 📥 Download macOS arm64 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-installers-arm64
           path: ./release-assets/macos
 
       - name: 📥 Download Linux artifacts
@@ -176,15 +182,15 @@ jobs:
           echo "" >> CHANGELOG.md
           echo "### 📦 Téléchargements disponibles" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
-          echo "#### Windows" >> CHANGELOG.md
+          echo "#### Windows (x64)" >> CHANGELOG.md
           echo "- **WealthTracker Setup.exe** - Installateur NSIS (recommandé)" >> CHANGELOG.md
           echo "- **WealthTracker.exe** - Version portable (sans installation)" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
           echo "#### macOS" >> CHANGELOG.md
-          echo "- **WealthTracker.dmg** - Image disque macOS" >> CHANGELOG.md
-          echo "- **WealthTracker-mac.zip** - Archive ZIP" >> CHANGELOG.md
+          echo "- **WealthTracker-macOS-x64.dmg** - Image disque macOS Intel" >> CHANGELOG.md
+          echo "- **WealthTracker-macOS-arm64.dmg** - Image disque macOS Apple Silicon (M1/M2/M3)" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
-          echo "#### Linux" >> CHANGELOG.md
+          echo "#### Linux (x64)" >> CHANGELOG.md
           echo "- **WealthTracker.AppImage** - Application portable" >> CHANGELOG.md
           echo "- **wealthtracker.deb** - Package Debian/Ubuntu" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
