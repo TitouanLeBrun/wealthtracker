@@ -3,10 +3,12 @@
 [![CI - Tests & Build](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/ci.yml/badge.svg)](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/ci.yml)
 [![Release](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/release.yml/badge.svg)](https://github.com/TitouanLeBrun/wealthtracker/actions/workflows/release.yml)
 [![codecov](https://codecov.io/gh/TitouanLeBrun/wealthtracker/branch/main/graph/badge.svg)](https://codecov.io/gh/TitouanLeBrun/wealthtracker)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> **Application desktop de suivi et analyse de patrimoine boursier**
+> **Application desktop professionnelle de gestion et analyse de portefeuille financier**
+
+WealthTracker est une solution moderne et complète pour suivre, analyser et optimiser vos investissements boursiers. Conçue avec les technologies les plus récentes, elle offre une expérience utilisateur fluide et des fonctionnalités avancées de calcul financier.
 
 ---
 
@@ -28,27 +30,462 @@ Téléchargez la dernière version stable depuis la page des releases :
 
 ## 📋 Table des matières
 
-- [Contexte et Description](#-contexte-et-description)
-- [Use Cases](#-use-cases)
-- [Modèle de Domaine](#-modèle-de-domaine-mdd)
-- [Architecture](#-architecture)
-- [Installation et Lancement](#-installation-et-lancement)
-- [Guide d'Utilisation](#-guide-dutilisation)
-- [Stack Technique](#-stack-technique)
+- [Présentation](#-présentation-de-lapplication)
+- [Architecture](#️-architecture)
+- [Environnement Logiciel](#-environnement-logiciel)
+- [CI/CD](#-cicd)
+- [Installation](#-installation-et-lancement)
+- [Utilisation](#-guide-dutilisation)
 - [Développement](#️-développement)
-- [Documentation Technique](#-documentation-technique)
+- [Documentation](#-documentation-technique)
 - [Roadmap](#️-roadmap)
+- [Conclusion](#-conclusion)
 
 ---
 
-## 🎯 Contexte et Description
+## 🎯 Présentation de l'Application
 
 ### Contexte
 
-Dans un monde où les investissements boursiers sont de plus en plus accessibles, il devient crucial de pouvoir **suivre efficacement son patrimoine financier** pour prendre des décisions éclairées. Les solutions existantes sont souvent :
+Dans un environnement financier de plus en plus accessible, **WealthTracker** répond au besoin croissant des investisseurs particuliers de suivre et analyser leur patrimoine boursier de manière professionnelle.
 
-- Limitées aux plateformes de courtage (vision silotée)
-- Complexes et payantes
+#### Problématiques adressées
+
+- 📊 **Centralisation** : Regrouper tous vos actifs financiers en un seul endroit
+- 📈 **Analyse** : Calculs financiers avancés (CAGR, volatilité, Sharpe ratio)
+- 🎯 **Projection** : Simulation d'objectifs financiers avec intérêts composés
+- 📥 **Import** : Intégration automatique des transactions depuis TradeRepublic/Kraken
+- 🔒 **Confidentialité** : 100% local, aucune donnée envoyée en ligne
+
+### Fonctionnalités principales
+
+#### 📊 **Dashboard Analytique**
+- Vue d'ensemble du portefeuille avec KPIs en temps réel
+- Performance globale (gain/perte, pourcentage, CAGR)
+- Ratios financiers (Sharpe, volatilité, diversification)
+- Graphiques de répartition par catégorie
+- Top performers et underperformers
+
+#### 💼 **Gestion d'Actifs**
+- Organisation par catégories personnalisables (Actions, ETF, Crypto, etc.)
+- Suivi détaillé de chaque actif (positions, transactions, historique)
+- Calcul automatique des gains/pertes réalisés et latents
+- Métriques avancées par actif (ROI, PRU, quantité détenue)
+
+#### 📈 **Transactions**
+- Enregistrement des achats et ventes
+- Import CSV automatisé (TradeRepublic, Kraken)
+- Pagination professionnelle avec ellipses (1 2 3 ... 56 57)
+- Historique complet avec filtres et recherche
+- Calcul automatique des frais et totaux
+
+#### 🎯 **Projection Financière**
+- Simulation d'objectifs d'épargne avec intérêts composés
+- Calcul de trajectoire d'investissement
+- Recommandations d'investissement mensuel
+- Graphiques de projection à long terme
+- Analyse de scénarios multiples
+
+#### 🗑️ **Gestion des Données**
+- Suppression en masse (transactions, actifs, catégories)
+- Statistiques en temps réel
+- Confirmations de sécurité à plusieurs niveaux
+- Export/Import de données (à venir)
+
+### Avantages compétitifs
+
+| Critère | WealthTracker | Alternatives |
+|---------|---------------|--------------|
+| **Prix** | ✅ Gratuit & Open Source | ❌ Souvent payant (10-50€/mois) |
+| **Confidentialité** | ✅ 100% local, hors ligne | ❌ Cloud avec partage de données |
+| **Multi-broker** | ✅ Import TradeRepublic, Kraken | ⚠️ Limité à 1-2 plateformes |
+| **Calculs avancés** | ✅ CAGR, Sharpe, Volatilité | ⚠️ Basiques uniquement |
+| **Personnalisation** | ✅ Catégories illimitées | ❌ Catégories prédéfinies |
+| **Projections** | ✅ Simulation avec intérêts composés | ❌ Rarement disponible |
+
+---
+
+## 🏗️ Architecture
+
+WealthTracker suit une **architecture en couches moderne** basée sur Electron avec séparation stricte des responsabilités.
+
+### Vue d'ensemble
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    RENDERER PROCESS (React)                  │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐   │
+│  │   Pages     │  │  Components  │  │  Hooks & Utils   │   │
+│  │  Dashboard  │  │  Dashboard   │  │  useTableSort    │   │
+│  │ Transactions│  │  Forms       │  │  Calculations    │   │
+│  │ Projection  │  │  Charts      │  │  Formatters      │   │
+│  │  Settings   │  │  Modals      │  │  Validators      │   │
+│  │ DataMgmt    │  │  Pagination  │  │  ...             │   │
+│  └─────────────┘  └──────────────┘  └──────────────────┘   │
+│                           │                                  │
+│                           ↓                                  │
+│                    Window API Bridge                         │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ IPC Communication
+┌───────────────────────────┴─────────────────────────────────┐
+│                    PRELOAD SCRIPT (Secure)                   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  Exposes safe APIs: window.api.*                    │    │
+│  │  - getAllTransactions()                             │    │
+│  │  - createAsset()                                    │    │
+│  │  - importTransactions()                             │    │
+│  │  - deleteCategory()                                 │    │
+│  └─────────────────────────────────────────────────────┘    │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+┌───────────────────────────┴─────────────────────────────────┐
+│                    MAIN PROCESS (Node.js)                    │
+│  ┌──────────────┐  ┌────────────────┐  ┌───────────────┐   │
+│  │   IPC        │  │   Database     │  │   Utilities   │   │
+│  │  Handlers    │  │  Prisma ORM    │  │   Parsers     │   │
+│  │  assets.ts   │  │  SQLite        │  │   CSV Import  │   │
+│  │  categories  │  │  Migrations    │  │   Validators  │   │
+│  │  transactions│  │  Client Pool   │  │   ...         │   │
+│  │  import.ts   │  │                │  │               │   │
+│  └──────────────┘  └────────────────┘  └───────────────┘   │
+│                           │                                  │
+│                           ↓                                  │
+│                    SQLite Database                           │
+│                    (prisma/dev.db)                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Couches applicatives
+
+#### 1️⃣ **Renderer Process (Frontend)**
+- **Technologie** : React 18 + TypeScript
+- **Responsabilité** : Interface utilisateur, expérience utilisateur
+- **Structure** :
+  - `pages/` : Pages principales (Dashboard, Transactions, etc.)
+  - `components/` : Composants réutilisables (Dashboard, Forms, Charts)
+  - `hooks/` : Logique métier réutilisable (useTableSort, useTransactionForm)
+  - `utils/` : Calculs financiers, formatage, validation
+
+#### 2️⃣ **Preload Script (Security Layer)**
+- **Technologie** : Electron Context Bridge
+- **Responsabilité** : Exposition sécurisée des APIs au renderer
+- **Principe** : Zero-trust, APIs explicites uniquement
+
+#### 3️⃣ **Main Process (Backend)**
+- **Technologie** : Node.js + TypeScript
+- **Responsabilité** : Logique métier, accès base de données
+- **Structure** :
+  - `ipc/` : Handlers IPC par domaine (assets, transactions, import)
+  - `database/` : Client Prisma, connexions
+  - `utils/` : Parsers CSV, importeurs (TradeRepublic, Kraken)
+
+#### 4️⃣ **Database Layer**
+- **Technologie** : SQLite + Prisma ORM
+- **Responsabilité** : Persistance des données
+- **Avantages** : 
+  - Portable (fichier unique)
+  - Performant (queries optimisées)
+  - Type-safe (Prisma Client)
+
+### Modèle de données
+
+```prisma
+// Schema simplifié
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  color  String
+  assets Asset[]
+}
+
+model Asset {
+  id           Int           @id @default(autoincrement())
+  name         String
+  ticker       String        @unique
+  currentPrice Float
+  categoryId   Int
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id           Int      @id @default(autoincrement())
+  assetId      Int
+  type         String   // BUY | SELL
+  quantity     Float
+  pricePerUnit Float
+  fee          Float
+  date         DateTime
+  asset        Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+}
+
+model Objective {
+  id           Int      @id @default(autoincrement())
+  targetAmount Float
+  targetYears  Int
+  interestRate Float
+  startDate    DateTime
+}
+```
+
+### Flux de données
+
+#### Exemple : Import de transactions
+
+```
+1. User uploads CSV → ImportTransactionsModal (React)
+2. File content sent → window.api.importTransactions()
+3. IPC call → Main Process (import.ts handler)
+4. Parse CSV → tradeRepublicParser.ts
+5. Validate data → ImportResult with errors/warnings
+6. Create missing assets → getOrCreateAsset()
+7. Insert transactions → Prisma.transaction.create()
+8. Return summary → Renderer displays report
+```
+
+### Patterns architecturaux
+
+- ✅ **Séparation des responsabilités** (SoC)
+- ✅ **Single Source of Truth** (Prisma DB)
+- ✅ **Type Safety** (TypeScript everywhere)
+- ✅ **Error Boundaries** (Try-catch + user feedback)
+- ✅ **Optimistic UI** (Loading states + spinners)
+
+---
+
+## 💻 Environnement Logiciel
+
+### Prérequis
+
+| Outil | Version minimale | Recommandé | Purpose |
+|-------|------------------|------------|---------|
+| **Node.js** | 18.x | 20.x LTS | Runtime JavaScript |
+| **npm** | 9.x | 10.x | Gestionnaire de paquets |
+| **Git** | 2.30+ | Latest | Contrôle de version |
+
+### Stack technique complète
+
+#### **Frontend**
+```json
+{
+  "react": "^18.3.1",              // UI Library
+  "typescript": "^5.7.2",          // Type safety
+  "vite": "^7.2.4",                // Build tool
+  "lucide-react": "^0.468.0",      // Icons
+  "recharts": "^2.15.0"            // Charts
+}
+```
+
+#### **Backend**
+```json
+{
+  "electron": "^34.0.0",           // Desktop framework
+  "@prisma/client": "^6.1.0",      // ORM
+  "prisma": "^6.1.0",              // Database toolkit
+  "papaparse": "^5.4.1"            // CSV parsing
+}
+```
+
+#### **Dev Tools**
+```json
+{
+  "eslint": "^9.17.0",             // Linter
+  "prettier": "^3.4.2",            // Code formatter
+  "vitest": "^3.0.5",              // Unit testing
+  "electron-builder": "^25.1.8"   // Packaging
+}
+```
+
+### Configuration de l'environnement
+
+#### 1. Installation des dépendances
+
+```bash
+# Clone du projet
+git clone https://github.com/TitouanLeBrun/wealthtracker.git
+cd wealthtracker
+
+# Installation
+npm install
+
+# Configuration de la base de données
+npm run db:generate
+npm run db:migrate
+npm run db:seed  # (Optionnel) Données de test
+```
+
+#### 2. Variables d'environnement
+
+Créer un fichier `.env` à la racine :
+
+```env
+DATABASE_URL="file:./prisma/dev.db"
+NODE_ENV="development"
+```
+
+#### 3. Structure des scripts
+
+```json
+{
+  "dev": "electron-vite dev",                    // Développement
+  "build": "electron-vite build",                // Build production
+  "preview": "electron-vite preview",            // Preview build
+  "test": "vitest",                              // Tests unitaires
+  "test:ui": "vitest --ui",                      // UI tests
+  "lint": "eslint .",                            // Linting
+  "format": "prettier --write .",                // Formatting
+  "db:generate": "prisma generate",              // Générer client Prisma
+  "db:migrate": "prisma migrate dev",            // Migrations DB
+  "db:seed": "tsx prisma/seed.ts",               // Seed DB
+  "package:win": "npm run build && electron-builder --win",
+  "package:mac": "npm run build && electron-builder --mac",
+  "package:linux": "npm run build && electron-builder --linux"
+}
+```
+
+### Configuration IDE (VS Code recommandé)
+
+Extensions recommandées :
+
+```json
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",           // ESLint
+    "esbenp.prettier-vscode",           // Prettier
+    "prisma.prisma",                    // Prisma support
+    "ms-vscode.vscode-typescript-next", // TypeScript
+    "vitest.explorer"                   // Vitest
+  ]
+}
+```
+
+---
+
+## 🔄 CI/CD
+
+### Pipeline de Continuous Integration
+
+WealthTracker utilise **GitHub Actions** pour automatiser tests, builds et releases.
+
+#### Workflow CI (Tests & Build)
+
+```yaml
+# .github/workflows/ci.yml
+name: CI - Tests & Build
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - Checkout code
+      - Setup Node.js 20
+      - Install dependencies
+      - Run linter (ESLint)
+      - Run unit tests (Vitest)
+      - Upload coverage to Codecov
+  
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - Checkout code
+      - Setup Node.js 20
+      - Install dependencies
+      - Build Electron app
+      - Upload artifacts
+```
+
+#### Workflow Release (Automatic Deployment)
+
+```yaml
+# .github/workflows/release.yml
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags (v1.0.0, v1.0.1, etc.)
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - Checkout code
+      - Setup Node.js 20
+      - Install dependencies
+      - Build & Package
+      - Create GitHub Release
+      - Upload release assets:
+          * Windows: .exe installer + portable
+          * macOS: .dmg
+          * Linux: .AppImage + .deb
+```
+
+### Process de release
+
+#### 1️⃣ **Développement**
+```bash
+git checkout develop
+# ... développement ...
+git commit -m "feat: nouvelle fonctionnalité"
+git push origin develop
+```
+
+#### 2️⃣ **Préparation release**
+```bash
+# Mettre à jour version dans package.json
+npm version patch|minor|major
+
+# Générer changelog
+git log --oneline > CHANGELOG.md
+
+# Merge vers main
+git checkout main
+git merge develop
+git push origin main
+```
+
+#### 3️⃣ **Création tag**
+```bash
+git tag -a v1.0.3 -m "Release v1.0.3"
+git push origin v1.0.3
+```
+
+#### 4️⃣ **CI automatique**
+- ✅ Tests exécutés
+- ✅ Build multi-plateformes
+- ✅ Release GitHub créée
+- ✅ Assets uploadés automatiquement
+
+### Badges de statut
+
+Les badges en haut du README reflètent l'état en temps réel :
+
+- ![CI](https://img.shields.io/badge/CI-passing-brightgreen) : Tous les tests passent
+- ![Release](https://img.shields.io/badge/release-v1.0.3-blue) : Dernière version
+- ![Coverage](https://img.shields.io/badge/coverage-85%25-green) : Couverture de tests
+
+### Outils de qualité
+
+| Outil | Purpose | Seuil |
+|-------|---------|-------|
+| **ESLint** | Linting TypeScript/React | 0 errors |
+| **Prettier** | Code formatting | Auto-fix |
+| **Vitest** | Unit testing | > 80% coverage |
+| **TypeScript** | Type checking | Strict mode |
+
+---
 - Non adaptées aux investisseurs particuliers français
 
 ### Description du Projet
@@ -847,25 +1284,145 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
 
 ## 🗺️ Roadmap
 
-### 🎯 Version 1.0 (Objectif : Q1 2025)
+### ✅ Version 1.0 (Q4 2024) - **RELEASED**
 
-- [ ] **Module Projection Financière** ✅ (En cours - 90%)
-  - [x] Graphique double courbe (réalité vs objectif)
-  - [x] Calculs de projection exponentielle
-  - [x] Simulateur de versements mensuels
-  - [ ] Tests et optimisations
-- [ ] **Recommandations Personnalisées**
-  - [ ] Calcul montant mensuel pour atteindre objectif
-  - [ ] Scénarios multiples (pessimiste/réaliste/optimiste)
-  - [ ] Prise en compte de l'inflation
+- [x] Dashboard avec KPIs financiers avancés
+- [x] Gestion complète des transactions (achats/ventes)
+- [x] Organisation par catégories personnalisables
+- [x] Calculs financiers (CAGR, Sharpe, volatilité)
+- [x] Projections financières avec intérêts composés
+- [x] Import CSV TradeRepublic automatisé
+- [x] Base de données SQLite avec Prisma ORM
+- [x] Tests unitaires et CI/CD GitHub Actions
+- [x] Build multi-plateformes (Windows, macOS, Linux)
 
-### 🚀 Version 1.1 (À définir)
+### 🚀 Version 1.1 (Q1 2025)
 
-- [ ] Import automatique via APIs (CoinGecko, Yahoo Finance)
-- [ ] Export de données (CSV, PDF)
-- [ ] Notifications et alertes
-- [ ] Mode clair/sombre
-- [ ] Multi-devises
+- [ ] **Import avancé**
+  - [ ] Support Kraken complet
+  - [ ] Support Binance
+  - [ ] Détection automatique du format CSV
+  - [ ] Prévisualisation avant import
+- [ ] **Export de données**
+  - [ ] Export PDF de rapports
+  - [ ] Export CSV complet
+  - [ ] Backup/Restore automatique
+- [ ] **Améliorations UX**
+  - [ ] Mode clair/sombre
+  - [ ] Notifications système
+  - [ ] Raccourcis clavier
+  - [ ] Multi-devises (EUR, USD, GBP, etc.)
+
+### 🔮 Version 2.0 (Q2-Q3 2025)
+
+- [ ] **Connexion APIs temps réel**
+  - [ ] CoinGecko pour les cryptos
+  - [ ] Yahoo Finance pour actions/ETF
+  - [ ] Mise à jour automatique des prix
+- [ ] **Analyse avancée**
+  - [ ] Corrélation entre actifs
+  - [ ] Backtest de stratégies
+  - [ ] Optimisation de portefeuille (Markowitz)
+  - [ ] Alertes de prix/objectifs
+- [ ] **Social & Cloud** (Optionnel)
+  - [ ] Synchronisation cloud chiffrée
+  - [ ] Partage de portefeuilles publics anonymes
+  - [ ] Communauté d'investisseurs
+
+---
+
+## 🎓 Conclusion
+
+### Ce que nous avons appris
+
+**WealthTracker** est bien plus qu'une simple application de suivi de portefeuille. Ce projet a été l'occasion d'explorer et maîtriser un écosystème technologique moderne et professionnel :
+
+#### **Technologies**
+- ⚡ **Electron** : Construction d'applications desktop cross-platform
+- ⚛️ **React 18** : Hooks, composition, optimisation des rendus
+- 🔷 **TypeScript** : Type safety, intellisense, refactoring sûr
+- 🗄️ **Prisma ORM** : Modélisation de données, migrations, type-safety DB
+- 📊 **Recharts** : Visualisation de données financières
+- ✅ **Vitest** : Tests unitaires et couverture de code
+
+#### **Architecture & Patterns**
+- 🏗️ **Séparation des responsabilités** : Main/Renderer/Preload
+- 🔒 **Sécurité** : Context isolation, zero-trust API exposure
+- 📦 **Modularité** : Composants réutilisables, hooks personnalisés
+- 🎯 **Type-driven development** : Types explicites partout
+- 🧪 **Test-driven approach** : Tests avant features
+
+#### **DevOps & CI/CD**
+- 🔄 **GitHub Actions** : CI/CD automatisé
+- 📦 **Electron Builder** : Packaging multi-plateformes
+- 🏷️ **Semantic Versioning** : Gestion des releases
+- 📈 **Code Coverage** : Suivi de la qualité avec Codecov
+
+### Défis relevés
+
+| Défi | Solution apportée |
+|------|-------------------|
+| 🔐 **Sécurité Electron** | Context Bridge + IPC handlers sécurisés |
+| 📊 **Calculs financiers complexes** | Algorithmes éprouvés (CAGR, Sharpe, XIRR) |
+| 🗄️ **Gestion base de données** | Prisma avec migrations versionnées |
+| 📥 **Import CSV multi-formats** | Parsers modulaires (TradeRepublic, Kraken) |
+| 🎨 **UX professionnelle** | Design system cohérent, animations CSS |
+| 🧪 **Qualité du code** | ESLint strict + Prettier + tests unitaires |
+
+### Impact et perspective
+
+WealthTracker démontre qu'il est possible de créer une **application desktop professionnelle** avec des technologies web modernes, tout en garantissant :
+
+✅ **Performance** : Réactivité native grâce à Electron + React optimisé  
+✅ **Sécurité** : Données 100% locales, aucun tracking  
+✅ **Maintenabilité** : Code propre, typé, testé et documenté  
+✅ **Évolutivité** : Architecture modulaire prête pour de nouvelles features  
+
+### Utilisations possibles
+
+- 📚 **Portfolio technique** : Démontre la maîtrise d'un stack moderne
+- 🎓 **Outil pédagogique** : Codebase clean pour apprendre Electron/React/Prisma
+- 💼 **Usage personnel** : Outil gratuit pour gérer son patrimoine
+- 🚀 **Base de startup** : Foundation solide pour un produit SaaS
+
+### Remerciements
+
+Un grand merci à la communauté open-source pour les outils fantastiques :
+
+- **Electron** - Pour rendre le desktop accessible aux développeurs web
+- **Prisma** - Pour l'ORM le plus élégant de l'écosystème TypeScript
+- **React** - Pour la révolution des composants et hooks
+- **Vite** - Pour la vitesse de développement incroyable
+- **Lucide** - Pour les icônes magnifiques
+- **Recharts** - Pour les graphiques qui donnent vie aux données
+
+---
+
+## 📧 Contact & Contribution
+
+### Auteur
+
+**Titouan Le Brun**  
+- 📧 Email : [contact@example.com](mailto:contact@example.com)
+- 💼 LinkedIn : [linkedin.com/in/titouan-lebrun](https://linkedin.com/in/titouan-lebrun)
+- 🐙 GitHub : [@TitouanLeBrun](https://github.com/TitouanLeBrun)
+
+### Contribuer
+
+Les contributions sont les bienvenues ! Pour contribuer :
+
+1. **Fork** le projet
+2. Créer une **branche** (`git checkout -b feature/AmazingFeature`)
+3. **Commit** vos changements (`git commit -m 'feat: Add AmazingFeature'`)
+4. **Push** vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une **Pull Request**
+
+### Guidelines de contribution
+
+- ✅ Suivre les conventions de code (ESLint + Prettier)
+- ✅ Ajouter des tests pour les nouvelles features
+- ✅ Mettre à jour la documentation si nécessaire
+- ✅ Utiliser des commits conventionnels (`feat:`, `fix:`, `docs:`, etc.)
 
 ---
 
@@ -873,16 +1430,30 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
 
 Ce projet est sous licence **MIT**.
 
+Vous êtes libre de :
+- ✅ Utiliser commercialement
+- ✅ Modifier
+- ✅ Distribuer
+- ✅ Utiliser en privé
+
+Sous les conditions de :
+- 📄 Inclure la license et le copyright
+- ⚠️ Aucune garantie fournie
+
+Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
+
 ---
 
-## 🙏 Remerciements
+<div align="center">
 
-- **Electron** pour le framework desktop
-- **Prisma** pour l'ORM moderne
-- **Lucide** pour les icônes élégantes
-- **React** pour l'interface utilisateur
-- **Recharts** pour les graphiques interactifs
+## ⭐ Si WealthTracker vous aide, donnez-lui une étoile !
+
+[![GitHub stars](https://img.shields.io/github/stars/TitouanLeBrun/wealthtracker?style=social)](https://github.com/TitouanLeBrun/wealthtracker)
 
 ---
 
 **Développé avec ❤️ pour les investisseurs particuliers**
+
+*« Investir dans la connaissance paie les meilleurs intérêts. » - Benjamin Franklin*
+
+</div>
