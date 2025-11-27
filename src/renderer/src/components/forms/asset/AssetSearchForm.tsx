@@ -160,12 +160,15 @@ export default function AssetSearchForm({
       setManualName(searchResult.name)
       setManualTicker(searchResult.symbol)
       setManualPrice(searchResult.price?.toString() || '')
-      
+
       // Si la recherche était un ISIN (différent du symbol), le pré-remplir
       const searchQueryUpper = searchQuery.trim().toUpperCase()
       if (searchResult.isin) {
         setManualIsin(searchResult.isin)
-      } else if (searchQueryUpper !== searchResult.symbol.toUpperCase() && searchQueryUpper.length >= 12) {
+      } else if (
+        searchQueryUpper !== searchResult.symbol.toUpperCase() &&
+        searchQueryUpper.length >= 12
+      ) {
         // Si l'utilisateur a cherché avec un ISIN mais Yahoo n'en a pas retourné, garder la recherche
         setManualIsin(searchQueryUpper)
       } else {
@@ -309,20 +312,24 @@ export default function AssetSearchForm({
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="bg-white border border-blue-200 dark:border-blue-700 rounded-lg p-3">
-                  <p className="text-xs text-blue-800 dark:text-blue-400 mb-1 font-medium">Catégorie</p>
-                  <p className="font-semibold text-blue-400">
-                    {searchResult.quoteType}
+                  <p className="text-xs text-blue-800 dark:text-blue-400 mb-1 font-medium">
+                    Catégorie
                   </p>
+                  <p className="font-semibold text-blue-400">{searchResult.quoteType}</p>
                 </div>
                 <div className="bg-white border border-emerald-200 dark:border-emerald-700 rounded-lg p-3">
-                  <p className="text-xs text-emerald-800 dark:text-emerald-400 mb-1 font-medium">Prix actuel</p>
+                  <p className="text-xs text-emerald-800 dark:text-emerald-400 mb-1 font-medium">
+                    Prix actuel
+                  </p>
                   <p className="font-semibold text-emerald-400">
                     {searchResult.price?.toFixed(2) || 'N/A'} {searchResult.currency || 'EUR'}
                   </p>
                 </div>
                 {searchResult.isin && (
                   <div className="col-span-2 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700 rounded-lg p-3">
-                    <p className="text-xs text-purple-600 dark:text-purple-400 mb-1 font-medium">Code ISIN</p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400 mb-1 font-medium">
+                      Code ISIN
+                    </p>
                     <p className="font-mono text-sm font-semibold text-purple-900 dark:text-purple-100">
                       {searchResult.isin}
                     </p>

@@ -127,12 +127,14 @@ function SettingsPage({
         isOpen={showAssetModal}
         onClose={() => setShowAssetModal(false)}
         title="🔍 Rechercher ou Créer un Actif"
-      >          <AssetSearchForm
-            categories={categories}
-            existingAssets={assets}
-            onSubmit={handleCreateAsset}
-            onCancel={() => setShowAssetModal(false)}
-          />
+      >
+        {' '}
+        <AssetSearchForm
+          categories={categories}
+          existingAssets={assets}
+          onSubmit={handleCreateAsset}
+          onCancel={() => setShowAssetModal(false)}
+        />
       </Modal>
     </div>
   )

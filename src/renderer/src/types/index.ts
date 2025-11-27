@@ -144,6 +144,18 @@ export interface ImportWarning {
   data?: Record<string, unknown>
 }
 
+export interface UnresolvedAsset {
+  assetName: string
+  isin: string | null
+  transactions: {
+    date: string
+    type: 'BUY' | 'SELL'
+    quantity: number
+    pricePerUnit: number
+    fee: number
+  }[]
+}
+
 export interface ImportResult {
   validTransactions: ParsedTransaction[]
   errors: ImportError[]
@@ -156,4 +168,5 @@ export interface ImportResult {
   }
   createdAssets: string[]
   createdCategory: boolean
+  unresolvedAssets: UnresolvedAsset[]
 }

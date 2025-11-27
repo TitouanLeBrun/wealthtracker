@@ -30,6 +30,7 @@ export interface YahooAssetSearchResult {
   exchange: string // Bourse (ex: PAR, NYSEArca)
   isin?: string // Code ISIN si disponible
   currency?: string // Devise (USD, EUR, etc.)
+  price: number | null // Prix actuel (null si non disponible)
 }
 
 interface YahooChartResult {
@@ -37,6 +38,11 @@ interface YahooChartResult {
     regularMarketPrice?: number
     currency?: string
     symbol?: string
+  }
+  indicators?: {
+    quote?: Array<{
+      close?: (number | null)[]
+    }>
   }
 }
 
@@ -168,6 +174,78 @@ export async function getLatestPrice(symbol: string): Promise<number | null> {
     return price
   } catch (error) {
     console.error('[Yahoo] Erreur lors de la récupération du prix:', error)
+    return null
+  }
+}
+
+/**
+ * Récupère le prix historique d'un symbole à une date donnée
+ * @param symbol - Symbole Yahoo (ex: AAPL, CW8.PA)
+ * @param date - Date au format ISO (ex: 2024-01-15T10:30:00.000Z)
+ * @returns Prix à cette date ou null si non disponible
+ */
+export async function getHistoricalPrice(
+  symbol: string,
+  date: string | Date
+): Promise<number | null> {
+  try {
+    const trimmedSymbol = symbol.trim()
+    if (!trimmedSymbol) {
+      console.warn('[Yahoo] Symbole vide')
+      return null
+    }
+
+    const targetDate = new Date(date)
+    if (isNaN(targetDate.getTime())) {
+      console.error('[Yahoo] Date invalide:', date)
+      return null
+    }
+
+    // Convertir en timestamp Unix (secondes)
+    const period1 = Math.floor(targetDate.getTime() / 1000) - 86400 // -1 jour
+    const period2 = Math.floor(targetDate.getTime() / 1000) + 86400 // +1 jour
+
+    console.log(
+      `[Yahoo] Récupération prix historique pour: ${trimmedSymbol} à ${targetDate.toISOString()}`
+    )
+
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(trimmedSymbol)}?period1=${period1}&period2=${period2}&interval=1d`
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    })
+
+    if (!response.ok) {
+      console.error(`[Yahoo] Erreur HTTP ${response.status}`)
+      return null
+    }
+
+    const data = (await response.json()) as YahooChartResponse
+
+    if (data.chart?.error) {
+      console.error(`[Yahoo] Erreur API:`, data.chart.error)
+      return null
+    }
+
+    // Récupérer le prix du marché régulier (regularMarketPrice)
+    const result = data.chart?.result?.[0]
+    const price = result?.meta?.regularMarketPrice
+
+    if (typeof price !== 'number' || isNaN(price)) {
+      console.warn(`[Yahoo] Prix historique non disponible pour: ${trimmedSymbol}`)
+      return null
+    }
+
+    console.log(
+      `[Yahoo] Prix historique pour ${trimmedSymbol} (${targetDate.toLocaleDateString()}): ${price}`
+    )
+
+    return price
+  } catch (error) {
+    console.error('[Yahoo] Erreur lors de la récupération du prix historique:', error)
     return null
   }
 }
@@ -347,4 +425,13 @@ export function mapQuoteTypeToCategory(quoteType: string): string {
   }
 
   return mapping[quoteType.toUpperCase()] || 'Autres'
+}
+
+/**
+ * Alias pour searchAsset, utilisé pour clarifier qu'on recherche par ISIN
+ * @param isin - Code ISIN
+ * @returns Résultat de recherche ou null
+ */
+export async function searchAssetByISIN(isin: string): Promise<YahooAssetSearchResult | null> {
+  return searchAsset(isin)
 }

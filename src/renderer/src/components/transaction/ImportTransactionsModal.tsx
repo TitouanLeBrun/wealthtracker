@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { X, Upload, FileText, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react'
-import type { ImportResult } from '../../types'
+import type { ImportResult, UnresolvedAsset, Category, Asset } from '../../types'
+import UnresolvedAssetsModal from '../import/UnresolvedAssetsModal'
 
 interface ImportTransactionsModalProps {
   onClose: () => void
@@ -16,7 +17,28 @@ function ImportTransactionsModal({
   const [isProcessing, setIsProcessing] = useState(false)
   const [result, setResult] = useState<ImportResult | null>(null)
   const [step, setStep] = useState<'upload' | 'preview' | 'result'>('upload')
+  const [unresolvedAssets, setUnresolvedAssets] = useState<UnresolvedAsset[]>([])
+  const [showUnresolvedModal, setShowUnresolvedModal] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [assets, setAssets] = useState<Asset[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Charger les catégories et actifs au montage
+  useEffect(() => {
+    const loadData = async (): Promise<void> => {
+      try {
+        const [loadedCategories, loadedAssets] = await Promise.all([
+          window.api.getAllCategories(),
+          window.api.getAllAssets()
+        ])
+        setCategories(loadedCategories)
+        setAssets(loadedAssets)
+      } catch (error) {
+        console.error('Erreur chargement données:', error)
+      }
+    }
+    loadData()
+  }, [])
 
   const handleFileSelect = (selectedFile: File): void => {
     const extension = selectedFile.name.split('.').pop()?.toLowerCase()
@@ -62,10 +84,16 @@ function ImportTransactionsModal({
       })
 
       setResult(importResult)
-      setStep('result')
 
-      if (importResult.summary.valid > 0) {
-        onImportSuccess()
+      // Si des actifs n'ont pas pu être résolus, afficher le modal
+      if (importResult.unresolvedAssets && importResult.unresolvedAssets.length > 0) {
+        setUnresolvedAssets(importResult.unresolvedAssets)
+        setShowUnresolvedModal(true)
+      } else {
+        setStep('result')
+        if (importResult.summary.valid > 0) {
+          onImportSuccess()
+        }
       }
     } catch (error) {
       console.error("Erreur lors de l'import:", error)
@@ -73,6 +101,50 @@ function ImportTransactionsModal({
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  const handleResolveAsset = async (
+    unresolvedAsset: UnresolvedAsset,
+    assetData: {
+      name: string
+      ticker: string
+      isin: string
+      currentPrice: number
+      categoryId: number
+    }
+  ): Promise<void> => {
+    try {
+      // Créer l'actif
+      const createdAsset = await window.api.createAsset(assetData)
+
+      // Créer les transactions associées
+      for (const tx of unresolvedAsset.transactions) {
+        await window.api.createTransaction({
+          assetId: createdAsset.id,
+          type: tx.type,
+          quantity: tx.quantity,
+          pricePerUnit: tx.pricePerUnit,
+          fee: tx.fee,
+          date: new Date(tx.date)
+        })
+      }
+
+      // Mettre à jour la liste des actifs
+      setAssets((prev) => [...prev, createdAsset])
+    } catch (error) {
+      console.error('Erreur lors de la résolution:', error)
+      throw error
+    }
+  }
+
+  const handleSkipAsset = (unresolvedAsset: UnresolvedAsset): void => {
+    console.log('Actif ignoré:', unresolvedAsset.assetName)
+  }
+
+  const handleCloseUnresolvedModal = (): void => {
+    setShowUnresolvedModal(false)
+    setStep('result')
+    onImportSuccess()
   }
 
   return (
@@ -538,6 +610,18 @@ function ImportTransactionsModal({
           )}
         </div>
       </div>
+
+      {/* Modal de résolution des actifs non trouvés */}
+      {showUnresolvedModal && unresolvedAssets.length > 0 && (
+        <UnresolvedAssetsModal
+          unresolvedAssets={unresolvedAssets}
+          categories={categories}
+          existingAssets={assets}
+          onResolve={handleResolveAsset}
+          onSkip={handleSkipAsset}
+          onClose={handleCloseUnresolvedModal}
+        />
+      )}
     </div>
   )
 }

@@ -137,7 +137,20 @@ export interface API {
     }
     createdAssets: string[]
     createdCategory: boolean
+    unresolvedAssets: UnresolvedAsset[]
   }>
+}
+
+export interface UnresolvedAsset {
+  assetName: string
+  isin: string | null
+  transactions: {
+    date: string
+    type: 'BUY' | 'SELL'
+    quantity: number
+    pricePerUnit: number
+    fee: number
+  }[]
 }
 
 export interface ParsedTransaction {

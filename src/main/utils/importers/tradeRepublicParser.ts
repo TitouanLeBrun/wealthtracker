@@ -9,6 +9,9 @@ export interface ParsedTransaction {
   pricePerUnit: number
   fee: number
   total: number
+  isPEA: boolean // Indicateur si l'actif est en PEA
+  amountValue: number // Montant total de la transaction (colonne amount.value)
+  needsPriceResolution: boolean // Si true, besoin de récupérer le prix historique (quantité et total manquants)
 }
 
 export interface ImportResult {
@@ -90,6 +93,13 @@ function getTransactionType(subtitle: string): 'BUY' | 'SELL' | null {
 }
 
 /**
+ * Détermine si un actif est dans un PEA
+ */
+function isPEAAsset(assetName: string): boolean {
+  return assetName.toUpperCase().includes('PEA')
+}
+
+/**
  * Parse un fichier CSV TradeRepublic
  */
 export function parseTradeRepublicCSV(fileContent: string): ImportResult {
@@ -168,11 +178,19 @@ export function parseTradeRepublicCSV(fileContent: string): ImportResult {
       const pricePerUnit = parseAmount(csvRow['Cours du titre'])
       const fee = parseAmount(csvRow.Frais)
       const total = parseAmount(csvRow.Total)
+      const amountValue = parseAmount(csvRow['amount.value']) // Montant total de la transaction
+
+      // Déterminer si c'est un actif PEA
+      const isPEA = isPEAAsset(assetName)
+
+      // Déterminer si on a besoin de résoudre le prix historique
+      // Pour TOUS les actifs : si quantité ET total sont à 0 mais amountValue existe
+      const needsPriceResolution = quantity === 0 && total === 0 && amountValue > 0
 
       // Vérifier si les données sont manquantes
       let hasWarning = false
 
-      if (quantity === 0) {
+      if (quantity === 0 && !needsPriceResolution) {
         result.warnings.push({
           line: lineNumber,
           reason: 'Quantité manquante ou nulle (importée avec 0)',
@@ -181,7 +199,7 @@ export function parseTradeRepublicCSV(fileContent: string): ImportResult {
         hasWarning = true
       }
 
-      if (pricePerUnit === 0) {
+      if (pricePerUnit === 0 && !needsPriceResolution) {
         result.warnings.push({
           line: lineNumber,
           reason: 'Prix unitaire manquant ou nul (importé avec 0)',
@@ -203,7 +221,10 @@ export function parseTradeRepublicCSV(fileContent: string): ImportResult {
         quantity,
         pricePerUnit,
         fee,
-        total
+        total,
+        isPEA,
+        amountValue,
+        needsPriceResolution
       }
 
       result.validTransactions.push(transaction)
