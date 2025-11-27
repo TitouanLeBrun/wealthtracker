@@ -60,6 +60,7 @@ Dans un environnement financier de plus en plus accessible, **WealthTracker** r�
 ### Fonctionnalités principales
 
 #### 📊 **Dashboard Analytique**
+
 - Vue d'ensemble du portefeuille avec KPIs en temps réel
 - Performance globale (gain/perte, pourcentage, CAGR)
 - Ratios financiers (Sharpe, volatilité, diversification)
@@ -67,12 +68,14 @@ Dans un environnement financier de plus en plus accessible, **WealthTracker** r�
 - Top performers et underperformers
 
 #### 💼 **Gestion d'Actifs**
+
 - Organisation par catégories personnalisables (Actions, ETF, Crypto, etc.)
 - Suivi détaillé de chaque actif (positions, transactions, historique)
 - Calcul automatique des gains/pertes réalisés et latents
 - Métriques avancées par actif (ROI, PRU, quantité détenue)
 
 #### 📈 **Transactions**
+
 - Enregistrement des achats et ventes
 - Import CSV automatisé (TradeRepublic, Kraken)
 - Pagination professionnelle avec ellipses (1 2 3 ... 56 57)
@@ -80,6 +83,7 @@ Dans un environnement financier de plus en plus accessible, **WealthTracker** r�
 - Calcul automatique des frais et totaux
 
 #### 🎯 **Projection Financière**
+
 - Simulation d'objectifs d'épargne avec intérêts composés
 - Calcul de trajectoire d'investissement
 - Recommandations d'investissement mensuel
@@ -87,6 +91,7 @@ Dans un environnement financier de plus en plus accessible, **WealthTracker** r�
 - Analyse de scénarios multiples
 
 #### 🗑️ **Gestion des Données**
+
 - Suppression en masse (transactions, actifs, catégories)
 - Statistiques en temps réel
 - Confirmations de sécurité à plusieurs niveaux
@@ -94,14 +99,14 @@ Dans un environnement financier de plus en plus accessible, **WealthTracker** r�
 
 ### Avantages compétitifs
 
-| Critère | WealthTracker | Alternatives |
-|---------|---------------|--------------|
-| **Prix** | ✅ Gratuit & Open Source | ❌ Souvent payant (10-50€/mois) |
-| **Confidentialité** | ✅ 100% local, hors ligne | ❌ Cloud avec partage de données |
-| **Multi-broker** | ✅ Import TradeRepublic, Kraken | ⚠️ Limité à 1-2 plateformes |
-| **Calculs avancés** | ✅ CAGR, Sharpe, Volatilité | ⚠️ Basiques uniquement |
-| **Personnalisation** | ✅ Catégories illimitées | ❌ Catégories prédéfinies |
-| **Projections** | ✅ Simulation avec intérêts composés | ❌ Rarement disponible |
+| Critère              | WealthTracker                        | Alternatives                     |
+| -------------------- | ------------------------------------ | -------------------------------- |
+| **Prix**             | ✅ Gratuit & Open Source             | ❌ Souvent payant (10-50€/mois)  |
+| **Confidentialité**  | ✅ 100% local, hors ligne            | ❌ Cloud avec partage de données |
+| **Multi-broker**     | ✅ Import TradeRepublic, Kraken      | ⚠️ Limité à 1-2 plateformes      |
+| **Calculs avancés**  | ✅ CAGR, Sharpe, Volatilité          | ⚠️ Basiques uniquement           |
+| **Personnalisation** | ✅ Catégories illimitées             | ❌ Catégories prédéfinies        |
+| **Projections**      | ✅ Simulation avec intérêts composés | ❌ Rarement disponible           |
 
 ---
 
@@ -158,6 +163,7 @@ WealthTracker suit une **architecture en couches moderne** basée sur Electron a
 ### Couches applicatives
 
 #### 1️⃣ **Renderer Process (Frontend)**
+
 - **Technologie** : React 18 + TypeScript
 - **Responsabilité** : Interface utilisateur, expérience utilisateur
 - **Structure** :
@@ -167,11 +173,13 @@ WealthTracker suit une **architecture en couches moderne** basée sur Electron a
   - `utils/` : Calculs financiers, formatage, validation
 
 #### 2️⃣ **Preload Script (Security Layer)**
+
 - **Technologie** : Electron Context Bridge
 - **Responsabilité** : Exposition sécurisée des APIs au renderer
 - **Principe** : Zero-trust, APIs explicites uniquement
 
 #### 3️⃣ **Main Process (Backend)**
+
 - **Technologie** : Node.js + TypeScript
 - **Responsabilité** : Logique métier, accès base de données
 - **Structure** :
@@ -180,9 +188,10 @@ WealthTracker suit une **architecture en couches moderne** basée sur Electron a
   - `utils/` : Parsers CSV, importeurs (TradeRepublic, Kraken)
 
 #### 4️⃣ **Database Layer**
+
 - **Technologie** : SQLite + Prisma ORM
 - **Responsabilité** : Persistance des données
-- **Avantages** : 
+- **Avantages** :
   - Portable (fichier unique)
   - Performant (queries optimisées)
   - Type-safe (Prisma Client)
@@ -257,42 +266,45 @@ model Objective {
 
 ### Prérequis
 
-| Outil | Version minimale | Recommandé | Purpose |
-|-------|------------------|------------|---------|
-| **Node.js** | 18.x | 20.x LTS | Runtime JavaScript |
-| **npm** | 9.x | 10.x | Gestionnaire de paquets |
-| **Git** | 2.30+ | Latest | Contrôle de version |
+| Outil       | Version minimale | Recommandé | Purpose                 |
+| ----------- | ---------------- | ---------- | ----------------------- |
+| **Node.js** | 18.x             | 20.x LTS   | Runtime JavaScript      |
+| **npm**     | 9.x              | 10.x       | Gestionnaire de paquets |
+| **Git**     | 2.30+            | Latest     | Contrôle de version     |
 
 ### Stack technique complète
 
 #### **Frontend**
+
 ```json
 {
-  "react": "^18.3.1",              // UI Library
-  "typescript": "^5.7.2",          // Type safety
-  "vite": "^7.2.4",                // Build tool
-  "lucide-react": "^0.468.0",      // Icons
-  "recharts": "^2.15.0"            // Charts
+  "react": "^18.3.1", // UI Library
+  "typescript": "^5.7.2", // Type safety
+  "vite": "^7.2.4", // Build tool
+  "lucide-react": "^0.468.0", // Icons
+  "recharts": "^2.15.0" // Charts
 }
 ```
 
 #### **Backend**
+
 ```json
 {
-  "electron": "^34.0.0",           // Desktop framework
-  "@prisma/client": "^6.1.0",      // ORM
-  "prisma": "^6.1.0",              // Database toolkit
-  "papaparse": "^5.4.1"            // CSV parsing
+  "electron": "^34.0.0", // Desktop framework
+  "@prisma/client": "^6.1.0", // ORM
+  "prisma": "^6.1.0", // Database toolkit
+  "papaparse": "^5.4.1" // CSV parsing
 }
 ```
 
 #### **Dev Tools**
+
 ```json
 {
-  "eslint": "^9.17.0",             // Linter
-  "prettier": "^3.4.2",            // Code formatter
-  "vitest": "^3.0.5",              // Unit testing
-  "electron-builder": "^25.1.8"   // Packaging
+  "eslint": "^9.17.0", // Linter
+  "prettier": "^3.4.2", // Code formatter
+  "vitest": "^3.0.5", // Unit testing
+  "electron-builder": "^25.1.8" // Packaging
 }
 ```
 
@@ -327,16 +339,16 @@ NODE_ENV="development"
 
 ```json
 {
-  "dev": "electron-vite dev",                    // Développement
-  "build": "electron-vite build",                // Build production
-  "preview": "electron-vite preview",            // Preview build
-  "test": "vitest",                              // Tests unitaires
-  "test:ui": "vitest --ui",                      // UI tests
-  "lint": "eslint .",                            // Linting
-  "format": "prettier --write .",                // Formatting
-  "db:generate": "prisma generate",              // Générer client Prisma
-  "db:migrate": "prisma migrate dev",            // Migrations DB
-  "db:seed": "tsx prisma/seed.ts",               // Seed DB
+  "dev": "electron-vite dev", // Développement
+  "build": "electron-vite build", // Build production
+  "preview": "electron-vite preview", // Preview build
+  "test": "vitest", // Tests unitaires
+  "test:ui": "vitest --ui", // UI tests
+  "lint": "eslint .", // Linting
+  "format": "prettier --write .", // Formatting
+  "db:generate": "prisma generate", // Générer client Prisma
+  "db:migrate": "prisma migrate dev", // Migrations DB
+  "db:seed": "tsx prisma/seed.ts", // Seed DB
   "package:win": "npm run build && electron-builder --win",
   "package:mac": "npm run build && electron-builder --mac",
   "package:linux": "npm run build && electron-builder --linux"
@@ -350,11 +362,11 @@ Extensions recommandées :
 ```json
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",           // ESLint
-    "esbenp.prettier-vscode",           // Prettier
-    "prisma.prisma",                    // Prisma support
+    "dbaeumer.vscode-eslint", // ESLint
+    "esbenp.prettier-vscode", // Prettier
+    "prisma.prisma", // Prisma support
     "ms-vscode.vscode-typescript-next", // TypeScript
-    "vitest.explorer"                   // Vitest
+    "vitest.explorer" // Vitest
   ]
 }
 ```
@@ -389,7 +401,7 @@ jobs:
       - Run linter (ESLint)
       - Run unit tests (Vitest)
       - Upload coverage to Codecov
-  
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -435,6 +447,7 @@ jobs:
 ### Process de release
 
 #### 1️⃣ **Développement**
+
 ```bash
 git checkout develop
 # ... développement ...
@@ -443,6 +456,7 @@ git push origin develop
 ```
 
 #### 2️⃣ **Préparation release**
+
 ```bash
 # Mettre à jour version dans package.json
 npm version patch|minor|major
@@ -457,12 +471,14 @@ git push origin main
 ```
 
 #### 3️⃣ **Création tag**
+
 ```bash
 git tag -a v1.0.3 -m "Release v1.0.3"
 git push origin v1.0.3
 ```
 
 #### 4️⃣ **CI automatique**
+
 - ✅ Tests exécutés
 - ✅ Build multi-plateformes
 - ✅ Release GitHub créée
@@ -478,14 +494,15 @@ Les badges en haut du README reflètent l'état en temps réel :
 
 ### Outils de qualité
 
-| Outil | Purpose | Seuil |
-|-------|---------|-------|
-| **ESLint** | Linting TypeScript/React | 0 errors |
-| **Prettier** | Code formatting | Auto-fix |
-| **Vitest** | Unit testing | > 80% coverage |
-| **TypeScript** | Type checking | Strict mode |
+| Outil          | Purpose                  | Seuil          |
+| -------------- | ------------------------ | -------------- |
+| **ESLint**     | Linting TypeScript/React | 0 errors       |
+| **Prettier**   | Code formatting          | Auto-fix       |
+| **Vitest**     | Unit testing             | > 80% coverage |
+| **TypeScript** | Type checking            | Strict mode    |
 
 ---
+
 - Non adaptées aux investisseurs particuliers français
 
 ### Description du Projet
@@ -1338,6 +1355,7 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
 **WealthTracker** est bien plus qu'une simple application de suivi de portefeuille. Ce projet a été l'occasion d'explorer et maîtriser un écosystème technologique moderne et professionnel :
 
 #### **Technologies**
+
 - ⚡ **Electron** : Construction d'applications desktop cross-platform
 - ⚛️ **React 18** : Hooks, composition, optimisation des rendus
 - 🔷 **TypeScript** : Type safety, intellisense, refactoring sûr
@@ -1346,6 +1364,7 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
 - ✅ **Vitest** : Tests unitaires et couverture de code
 
 #### **Architecture & Patterns**
+
 - 🏗️ **Séparation des responsabilités** : Main/Renderer/Preload
 - 🔒 **Sécurité** : Context isolation, zero-trust API exposure
 - 📦 **Modularité** : Composants réutilisables, hooks personnalisés
@@ -1353,6 +1372,7 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
 - 🧪 **Test-driven approach** : Tests avant features
 
 #### **DevOps & CI/CD**
+
 - 🔄 **GitHub Actions** : CI/CD automatisé
 - 📦 **Electron Builder** : Packaging multi-plateformes
 - 🏷️ **Semantic Versioning** : Gestion des releases
@@ -1360,14 +1380,14 @@ Pour une documentation détaillée sur l'architecture, les modules et le dévelo
 
 ### Défis relevés
 
-| Défi | Solution apportée |
-|------|-------------------|
-| 🔐 **Sécurité Electron** | Context Bridge + IPC handlers sécurisés |
-| 📊 **Calculs financiers complexes** | Algorithmes éprouvés (CAGR, Sharpe, XIRR) |
-| 🗄️ **Gestion base de données** | Prisma avec migrations versionnées |
-| 📥 **Import CSV multi-formats** | Parsers modulaires (TradeRepublic, Kraken) |
-| 🎨 **UX professionnelle** | Design system cohérent, animations CSS |
-| 🧪 **Qualité du code** | ESLint strict + Prettier + tests unitaires |
+| Défi                                | Solution apportée                          |
+| ----------------------------------- | ------------------------------------------ |
+| 🔐 **Sécurité Electron**            | Context Bridge + IPC handlers sécurisés    |
+| 📊 **Calculs financiers complexes** | Algorithmes éprouvés (CAGR, Sharpe, XIRR)  |
+| 🗄️ **Gestion base de données**      | Prisma avec migrations versionnées         |
+| 📥 **Import CSV multi-formats**     | Parsers modulaires (TradeRepublic, Kraken) |
+| 🎨 **UX professionnelle**           | Design system cohérent, animations CSS     |
+| 🧪 **Qualité du code**              | ESLint strict + Prettier + tests unitaires |
 
 ### Impact et perspective
 
@@ -1376,7 +1396,7 @@ WealthTracker démontre qu'il est possible de créer une **application desktop p
 ✅ **Performance** : Réactivité native grâce à Electron + React optimisé  
 ✅ **Sécurité** : Données 100% locales, aucun tracking  
 ✅ **Maintenabilité** : Code propre, typé, testé et documenté  
-✅ **Évolutivité** : Architecture modulaire prête pour de nouvelles features  
+✅ **Évolutivité** : Architecture modulaire prête pour de nouvelles features
 
 ### Utilisations possibles
 
@@ -1402,7 +1422,8 @@ Un grand merci à la communauté open-source pour les outils fantastiques :
 
 ### Auteur
 
-**Titouan Le Brun**  
+**Titouan Le Brun**
+
 - 📧 Email : [contact@example.com](mailto:contact@example.com)
 - 💼 LinkedIn : [linkedin.com/in/titouan-lebrun](https://linkedin.com/in/titouan-lebrun)
 - 🐙 GitHub : [@TitouanLeBrun](https://github.com/TitouanLeBrun)
@@ -1431,12 +1452,14 @@ Les contributions sont les bienvenues ! Pour contribuer :
 Ce projet est sous licence **MIT**.
 
 Vous êtes libre de :
+
 - ✅ Utiliser commercialement
 - ✅ Modifier
 - ✅ Distribuer
 - ✅ Utiliser en privé
 
 Sous les conditions de :
+
 - 📄 Inclure la license et le copyright
 - ⚠️ Aucune garantie fournie
 
@@ -1454,6 +1477,6 @@ Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
 
 **Développé avec ❤️ pour les investisseurs particuliers**
 
-*« Investir dans la connaissance paie les meilleurs intérêts. » - Benjamin Franklin*
+_« Investir dans la connaissance paie les meilleurs intérêts. » - Benjamin Franklin_
 
 </div>
