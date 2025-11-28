@@ -5,6 +5,11 @@ node_modules
 dist
 out
 
+# Electron builder metadata (auto-generated)
+latest*.yml
+builder-debug.yml
+*.blockmap
+
 # Prisma
 /src/generated/prisma
 *.db
