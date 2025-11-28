@@ -139,7 +139,7 @@ function App(): React.JSX.Element {
                 whiteSpace: 'nowrap'
               }}
             >
-              v0.5.0
+              v{__APP_VERSION__}
             </span>
           </div>
 
@@ -355,7 +355,8 @@ function App(): React.JSX.Element {
         }}
       >
         <div style={{ marginBottom: 'var(--spacing-sm)' }}>
-          <strong>WealthTracker v0.4.0</strong> - Gestion professionnelle de portefeuille financier
+          <strong>WealthTracker v{__APP_VERSION__}</strong> - Gestion professionnelle de
+          portefeuille financier
         </div>
         <div style={{ fontSize: '12px', color: 'var(--color-text-disabled)' }}>
           Made with ❤️ using Electron + React + Prisma

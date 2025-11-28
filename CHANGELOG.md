@@ -5,6 +5,25 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.3.3] - 2024-11-28
+
+### Corrigé
+
+- **Affichage des versions**
+  - ✅ Version dynamique depuis `package.json` au lieu de versions codées en dur
+  - ✅ Header affiche maintenant la vraie version (était `v0.5.0` → maintenant `v1.3.3`)
+  - ✅ Footer affiche maintenant la vraie version (était `v0.4.0` → maintenant `v1.3.3`)
+  - ✅ Configuration Vite avec constante globale `__APP_VERSION__`
+
+### Technique
+
+- **Configuration**
+  - Ajout de `__APP_VERSION__` dans `electron.vite.config.ts`
+  - Déclaration TypeScript dans `env.d.ts`
+  - Utilisation de la constante dans `App.tsx` (header et footer)
+
+> **Note** : Les versions affichées dans l'interface se mettent maintenant automatiquement à jour à chaque release.
+
 ## [1.3.2] - 2024-11-28
 
 ### Amélioré
@@ -187,6 +206,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+[1.3.3]: https://github.com/votre-username/wealthtracker/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/votre-username/wealthtracker/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/votre-username/wealthtracker/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/votre-username/wealthtracker/compare/v1.2.1...v1.3.0
