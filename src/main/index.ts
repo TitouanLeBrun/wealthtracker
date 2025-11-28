@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { closePrismaClient } from './database/client'
 import { registerAllIpcHandlers } from './ipc'
+import { applyProductionMigrations } from './database/migrations'
 
 function createWindow(): void {
   // Create the browser window.
@@ -44,9 +45,17 @@ function createWindow(): void {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+
+  // Appliquer les migrations Prisma au démarrage
+  try {
+    await applyProductionMigrations()
+  } catch (error) {
+    console.error('[App] Erreur critique lors des migrations:', error)
+    // Continuer quand même pour permettre le démarrage en cas d'erreur non critique
+  }
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
