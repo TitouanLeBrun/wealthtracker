@@ -22,9 +22,9 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     // Ouvrir les DevTools uniquement en développement
-    if (is.dev) {
-      mainWindow.webContents.openDevTools()
-    }
+    // if (is.dev) {
+    mainWindow.webContents.openDevTools()
+    // }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
