@@ -5,6 +5,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.3.1] - 2024-11-28
+
+### Corrigé
+
+- **Workflow GitHub Actions**
+  - ✅ Ajout des fichiers `*.yml` dans les artifacts uploadés (Windows, macOS, Linux)
+  - ✅ Génération des fichiers `latest.yml`, `latest-mac.yml`, etc. nécessaires pour l'auto-update
+  - ✅ Publication automatique des métadonnées de version dans la release GitHub
+
+> **Note** : Cette version corrige le problème de la v1.3.0 où les fichiers YML n'étaient pas publiés, empêchant l'auto-update de fonctionner.
+
 ## [1.3.0] - 2024-11-28
 
 ### Ajouté
@@ -158,6 +169,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+[1.3.1]: https://github.com/votre-username/wealthtracker/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/votre-username/wealthtracker/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/votre-username/wealthtracker/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/votre-username/wealthtracker/compare/v1.1.0...v1.2.0

@@ -18,6 +18,15 @@ if (
 autoUpdater.autoDownload = false // Téléchargement manuel uniquement
 autoUpdater.autoInstallOnAppQuit = true // Installation automatique à la fermeture
 
+// Configuration de l'URL de feed pour utiliser le bon fichier yml selon la plateforme
+if (process.platform === 'win32') {
+  autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: 'TitouanLeBrun',
+    repo: 'wealthtracker'
+  })
+}
+
 export class AppUpdater implements IUpdater {
   private mainWindow: BrowserWindow | null = null
   private updateCheckTimeout: NodeJS.Timeout | null = null
