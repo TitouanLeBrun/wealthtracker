@@ -5,6 +5,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.2.1] - 2024-11-28
+
+### Corrigé
+
+- **Système de migration en production**
+  - Suppression de l'option `--no-seed` invalide pour `prisma generate`
+  - Le seed n'est plus exécuté en production (section `prisma.seed` supprimée)
+  - Création automatique de toutes les tables au premier lancement
+  - Résolution de l'erreur de build dans GitHub Actions
+
 ## [1.2.0] - 2024-11-28
 
 ### Ajouté

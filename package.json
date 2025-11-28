@@ -1,6 +1,6 @@
 {
   "name": "wealthtracker",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -18,7 +18,7 @@
     "start": "electron-vite preview",
     "dev": "set DATABASE_URL=file:./prisma/dev.db&& electron-vite dev",
     "build": "set DATABASE_URL=file:./prisma/dev.db&& npm run typecheck && electron-vite build",
-    "postinstall": "electron-builder install-app-deps && prisma generate --no-seed",
+    "postinstall": "electron-builder install-app-deps && prisma generate",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "set DATABASE_URL=file:./prisma/dev.db&& npm run build && electron-builder --win --x64",
     "build:win:portable": "set DATABASE_URL=file:./prisma/dev.db&& npm run build && electron-builder --win --x64 portable",
