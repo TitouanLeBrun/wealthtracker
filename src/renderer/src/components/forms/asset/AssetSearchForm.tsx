@@ -386,7 +386,7 @@ export default function AssetSearchForm({
                 </svg>
               </div>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Aucun actif trouvé pour "{searchQuery}"
+                Aucun actif trouvé pour &ldquo;{searchQuery}&rdquo;
               </p>
               <button
                 type="button"
@@ -408,7 +408,7 @@ export default function AssetSearchForm({
             {/* Nom - occupe 2 colonnes */}
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Nom de l'actif *
+                Nom de l&apos;actif *
               </label>
               <input
                 type="text"

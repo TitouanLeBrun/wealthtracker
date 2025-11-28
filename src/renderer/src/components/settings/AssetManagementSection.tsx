@@ -535,9 +535,7 @@ export function AssetManagementSection({
                   >
                     {editingAsset.ticker}
                   </span>
-                  <span style={{ fontSize: '13px', color: '#6b7280' }}>
-                    {editingAsset.name}
-                  </span>
+                  <span style={{ fontSize: '13px', color: '#6b7280' }}>{editingAsset.name}</span>
                 </div>
                 <div style={{ fontSize: '12px', color: '#6b7280' }}>
                   {editingAsset.isin && `ISIN: ${editingAsset.isin} • `}

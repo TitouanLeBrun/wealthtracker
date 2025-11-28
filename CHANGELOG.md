@@ -8,12 +8,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [1.2.0] - 2024-11-28
 
 ### Ajouté
+
 - **Import de transactions Trade Republic** : Fonctionnalité complète d'import CSV
   - Modal d'import avec fond blanc et interface moderne
   - Parser CSV Trade Republic avec détection automatique des colonnes
   - Support de multiples formats de CSV (timestamp, colonnes françaises/allemandes)
   - Gestion des erreurs et warnings détaillés
-  
 - **Gestion automatique des actifs PEA**
   - Création automatique de la catégorie "PEA" lors de l'import
   - Détection et catégorisation des actifs PEA
@@ -36,6 +36,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   - Intégration avec le formulaire de recherche Yahoo Finance
 
 ### Amélioré
+
 - **Formulaire de recherche d'actifs**
   - Échappement correct des caractères spéciaux (guillemets, apostrophes)
   - Correction du gradient CSS (`bg-gradient-to-br` → `bg-linear-to-br`)
@@ -49,12 +50,14 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   - Gestion des lignes vides et des transactions non-boursières
 
 ### Corrigé
+
 - Erreurs de linting dans `AssetSearchForm.tsx`
 - Problème de formatage CRLF dans plusieurs fichiers
 - Gestion correcte des warnings sans champ `data`
 - Utilisation cohérente de `finalPricePerUnit` dans le parser
 
 ### Technique
+
 - Ajout de l'API `importTransactions` dans le preload
 - Création du handler IPC `import.ts`
 - Création du fichier `tradeRepublicParser.ts`
@@ -64,17 +67,20 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [1.1.0] - 2024-11-27
 
 ### Ajouté
+
 - Pagination professionnelle des transactions
 - Gestion des données avancée
 - Support ISIN pour les actifs
 
 ### Amélioré
+
 - Interface utilisateur modernisée
 - Performance de l'application
 
 ## [1.0.0] - 2024-11-25
 
 ### Ajouté
+
 - Version initiale stable
 - Gestion de portefeuille
 - Suivi des transactions
