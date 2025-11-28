@@ -5,6 +5,24 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.3.2] - 2024-11-28
+
+### Amélioré
+
+- **Documentation**
+  - ✅ Ajout de `FAQ_LATEST_YML.md` - Explique pourquoi latest.yml ne doit pas être dans Git
+  - ✅ Ajout de `AUTO_UPDATE_TESTING_STEPS.md` - Guide détaillé de test de l'auto-update
+  - ✅ Ajout de `AUTO_UPDATE_USER_ANNOUNCEMENT.md` - Communication utilisateurs
+  - ✅ Ajout de `AUTO_UPDATE_V1.3.1_RELEASE_SUMMARY.md` - Résumé technique complet
+
+### Corrigé
+
+- **Configuration**
+  - ✅ Amélioration du `.gitignore` - Exclusion des fichiers YML générés automatiquement
+  - ✅ Exclusion des fichiers `.blockmap` (delta updates)
+
+> **Note** : Cette version sert de test pour valider le système d'auto-update complet. Les utilisateurs avec v1.3.1 devraient recevoir automatiquement cette mise à jour.
+
 ## [1.3.1] - 2024-11-28
 
 ### Corrigé
@@ -169,6 +187,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+[1.3.2]: https://github.com/votre-username/wealthtracker/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/votre-username/wealthtracker/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/votre-username/wealthtracker/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/votre-username/wealthtracker/compare/v1.2.0...v1.2.1
