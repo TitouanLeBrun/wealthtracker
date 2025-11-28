@@ -71,6 +71,46 @@ const api = {
   }) => ipcRenderer.invoke('importTransactions', params)
 }
 
+// Updater API
+const updater = {
+  // Méthodes pour contrôler les mises à jour
+  checkForUpdates: () => ipcRenderer.invoke('updater:check-for-updates'),
+  downloadUpdate: () => ipcRenderer.invoke('updater:download-update'),
+  quitAndInstall: () => ipcRenderer.invoke('updater:quit-and-install'),
+
+  // Listeners pour les événements
+  onUpdateChecking: (callback: () => void): (() => void) => {
+    const listener = (): void => callback()
+    ipcRenderer.on('updater:update-checking', listener)
+    return () => ipcRenderer.removeListener('updater:update-checking', listener)
+  },
+  onUpdateAvailable: (callback: (info: unknown) => void): (() => void) => {
+    const listener = (_event: unknown, info: unknown): void => callback(info)
+    ipcRenderer.on('updater:update-available', listener)
+    return () => ipcRenderer.removeListener('updater:update-available', listener)
+  },
+  onUpdateNotAvailable: (callback: (info: unknown) => void): (() => void) => {
+    const listener = (_event: unknown, info: unknown): void => callback(info)
+    ipcRenderer.on('updater:update-not-available', listener)
+    return () => ipcRenderer.removeListener('updater:update-not-available', listener)
+  },
+  onUpdateError: (callback: (error: unknown) => void): (() => void) => {
+    const listener = (_event: unknown, error: unknown): void => callback(error)
+    ipcRenderer.on('updater:update-error', listener)
+    return () => ipcRenderer.removeListener('updater:update-error', listener)
+  },
+  onDownloadProgress: (callback: (progress: unknown) => void): (() => void) => {
+    const listener = (_event: unknown, progress: unknown): void => callback(progress)
+    ipcRenderer.on('updater:download-progress', listener)
+    return () => ipcRenderer.removeListener('updater:download-progress', listener)
+  },
+  onUpdateDownloaded: (callback: (info: unknown) => void): (() => void) => {
+    const listener = (_event: unknown, info: unknown): void => callback(info)
+    ipcRenderer.on('updater:update-downloaded', listener)
+    return () => ipcRenderer.removeListener('updater:update-downloaded', listener)
+  }
+}
+
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
@@ -78,6 +118,7 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('updater', updater)
   } catch (error) {
     console.error(error)
   }
@@ -86,4 +127,6 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
+  // @ts-ignore (define in dts)
+  window.updater = updater
 }

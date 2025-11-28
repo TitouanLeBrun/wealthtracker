@@ -143,3 +143,333 @@ table tbody tr {
 table tbody tr:hover {
   background-color: rgba(33, 150, 243, 0.04);
 }
+
+/* ============================================
+   🔄 UPDATER COMPONENTS
+   ============================================ */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-container {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.modal-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.modal-close-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.modal-body {
+  padding: var(--spacing-lg);
+}
+
+.modal-footer {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  justify-content: flex-end;
+}
+
+/* Update version badge */
+.update-version-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-success-bg) 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.update-version-label {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.update-version-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Release notes */
+.update-release-notes {
+  margin-bottom: var(--spacing-lg);
+}
+
+.release-notes-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.release-notes-content {
+  padding: var(--spacing-md);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.update-release-date {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.update-info-box {
+  padding: var(--spacing-md);
+  background: var(--color-info-bg);
+  border-left: 3px solid var(--color-info);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-lg);
+}
+
+.update-info-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* Download progress */
+.download-progress-container {
+  padding: var(--spacing-md) 0;
+}
+
+.download-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.download-progress-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.download-progress-percent {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.progress-bar-container {
+  margin-bottom: var(--spacing-md);
+}
+
+.progress-bar-background {
+  width: 100%;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-success) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  to {
+    left: 100%;
+  }
+}
+
+.download-progress-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.download-stat {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.download-progress-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-disabled);
+  font-style: italic;
+}
+
+/* Install notification */
+.install-notification {
+  position: fixed;
+  bottom: -200px;
+  right: 20px;
+  z-index: 10000;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-lg);
+  min-width: 400px;
+  max-width: 500px;
+  border: 2px solid var(--color-success);
+  transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.install-notification-visible {
+  bottom: 20px;
+}
+
+.install-notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.install-notification-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.install-notification-text {
+  flex: 1;
+}
+
+.install-notification-title {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.install-notification-message {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.install-notification-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+/* Button variants */
+.btn-primary-sm,
+.btn-secondary-sm {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all var(--transition-base);
+}
+
+.btn-primary-sm {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-primary-sm:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.btn-secondary-sm {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary-sm:hover:not(:disabled) {
+  background: var(--color-bg);
+  border-color: var(--color-text-secondary);
+}

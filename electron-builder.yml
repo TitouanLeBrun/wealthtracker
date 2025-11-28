@@ -24,6 +24,11 @@ asarUnpack:
   - node_modules/.prisma/**
   - node_modules/@prisma/client/**
   - '**/*.node'
+publish:
+  provider: github
+  owner: TitouanLeBrun
+  repo: wealthtracker
+  releaseType: release
 win:
   executableName: WealthTracker
   target:

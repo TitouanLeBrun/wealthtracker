@@ -9,6 +9,10 @@ import AssetDetailPage from './pages/AssetDetailPage'
 import DataManagementPage from './pages/DataManagementPage'
 import Notification from './components/common/Notification'
 import type { NotificationMessage } from './types'
+import { useUpdater } from './hooks/useUpdater'
+import { UpdateModal } from './components/updater/UpdateModal'
+import { DownloadProgressComponent } from './components/updater/DownloadProgress'
+import { InstallNotification } from './components/updater/InstallNotification'
 
 function App(): React.JSX.Element {
   const [activePage, setActivePage] = useState<
@@ -23,6 +27,25 @@ function App(): React.JSX.Element {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [selectedAssetId, setSelectedAssetId] = useState<number | null>(null)
   const [message, setMessage] = useState<NotificationMessage | null>(null)
+
+  // Hook de mise à jour
+  const { status, updateInfo, downloadProgress, error, downloadUpdate, installUpdate, resetState } =
+    useUpdater()
+
+  // Afficher la modal de mise à jour disponible
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+
+  // Gérer l'ouverture de la modal quand une mise à jour est disponible
+  const handleUpdateAvailable = (): void => {
+    if (status === 'available' && !showUpdateModal) {
+      setShowUpdateModal(true)
+    }
+  }
+
+  // Déclencher l'affichage quand le status change
+  if (status === 'available' && !showUpdateModal) {
+    handleUpdateAvailable()
+  }
 
   // Fonction pour afficher un message temporaire
   const showMessage = (type: 'success' | 'error', text: string): void => {
@@ -363,6 +386,75 @@ function App(): React.JSX.Element {
           }
         }}
       />
+
+      {/* Système de mise à jour */}
+      <UpdateModal
+        isOpen={showUpdateModal}
+        updateInfo={updateInfo}
+        onDownload={() => {
+          downloadUpdate()
+          setShowUpdateModal(false)
+        }}
+        onClose={() => {
+          setShowUpdateModal(false)
+          resetState()
+        }}
+      />
+
+      {status === 'downloading' && downloadProgress && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 1000,
+            backgroundColor: 'var(--color-surface)',
+            padding: 'var(--spacing-lg)',
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: 'var(--shadow-xl)',
+            minWidth: '400px',
+            maxWidth: '500px'
+          }}
+        >
+          <DownloadProgressComponent progress={downloadProgress} />
+        </div>
+      )}
+
+      <InstallNotification
+        isVisible={status === 'downloaded'}
+        updateInfo={updateInfo}
+        onInstallNow={installUpdate}
+        onInstallLater={() => resetState()}
+      />
+
+      {status === 'error' && error && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 1000,
+            backgroundColor: 'var(--color-danger-bg)',
+            color: 'var(--color-danger)',
+            padding: 'var(--spacing-lg)',
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: 'var(--shadow-xl)',
+            minWidth: '300px',
+            maxWidth: '400px',
+            border: '1px solid var(--color-danger)'
+          }}
+        >
+          <strong>❌ Erreur de mise à jour</strong>
+          <p style={{ marginTop: 'var(--spacing-sm)', fontSize: '14px' }}>{error}</p>
+          <button
+            className="btn-secondary-sm"
+            style={{ marginTop: 'var(--spacing-md)' }}
+            onClick={resetState}
+          >
+            Fermer
+          </button>
+        </div>
+      )}
     </div>
   )
 }

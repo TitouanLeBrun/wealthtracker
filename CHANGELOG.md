@@ -5,6 +5,65 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.3.0] - 2024-11-28
+
+### Ajouté
+
+- **Système de mise à jour automatique** 🔄
+  - Intégration complète de `electron-updater` pour les mises à jour automatiques
+  - Vérification automatique au démarrage (après 10 secondes en production)
+  - Modal élégante pour notifier les nouvelles versions disponibles
+  - Barre de progression animée pendant le téléchargement
+  - Notification de mise à jour prête avec choix d'installation
+  - Options "Installer maintenant" ou "À la fermeture de l'application"
+  - Gestion complète des erreurs avec messages clairs
+  - Téléchargement en arrière-plan sans bloquer l'application
+  - Configuration GitHub Releases pour distribution automatique
+
+- **Infrastructure backend (Main Process)**
+  - Classe `AppUpdater` pour gérer le cycle de vie des mises à jour
+  - Handlers IPC dédiés pour les actions utilisateur
+  - Logging détaillé avec electron-log
+  - Désactivation automatique en mode développement
+
+- **Composants UI frontend (Renderer)**
+  - `UpdateModal` : Modal d'annonce de nouvelle version
+  - `DownloadProgressComponent` : Barre de progression avec statistiques
+  - `InstallNotification` : Notification flottante de mise à jour prête
+  - Hook `useUpdater` : Gestion centralisée de l'état des mises à jour
+  - Styles CSS modernes avec animations fluides
+
+- **Configuration de publication**
+  - Configuration GitHub dans `electron-builder.yml`
+  - Workflow GitHub Actions pour releases automatiques
+  - Support multi-plateformes (Windows, macOS, Linux)
+  - Génération automatique de fichiers `.blockmap` pour delta updates
+
+### Amélioré
+
+- **Architecture IPC**
+  - Support optionnel de `AppUpdater` dans `registerAllIpcHandlers()`
+  - Bridge Preload étendu avec API `window.updater`
+  - Types TypeScript complets pour UpdateInfo et DownloadProgress
+
+- **Expérience utilisateur**
+  - Notifications non intrusives
+  - Choix utilisateur pour l'installation
+  - Téléchargement en arrière-plan
+  - Messages d'erreur clairs et actionnables
+
+### Technique
+
+- **Sécurité**
+  - Configuration `autoDownload: false` pour contrôle manuel
+  - Vérification des signatures désactivée (pas de certificat Windows)
+  - Installation automatique à la fermeture si sélectionné
+
+- **Performance**
+  - Vérification différée de 10 secondes au démarrage
+  - Téléchargement asynchrone non bloquant
+  - Cleanup automatique des ressources
+
 ## [1.2.1] - 2024-11-28
 
 ### Corrigé
@@ -99,6 +158,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+[1.3.0]: https://github.com/votre-username/wealthtracker/compare/v1.2.1...v1.3.0
+[1.2.1]: https://github.com/votre-username/wealthtracker/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/votre-username/wealthtracker/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/votre-username/wealthtracker/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/votre-username/wealthtracker/releases/tag/v1.0.0

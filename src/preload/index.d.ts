@@ -54,6 +54,38 @@ export interface Objective {
   updatedAt: Date
 }
 
+// Update info from electron-updater
+export interface UpdateInfo {
+  version: string
+  releaseNotes?: string | unknown
+  releaseDate?: string
+  files?: unknown[]
+}
+
+// Download progress info
+export interface DownloadProgress {
+  percent: number
+  bytesPerSecond: number
+  transferred: number
+  total: number
+}
+
+// Updater API type
+export interface UpdaterAPI {
+  // Méthodes pour contrôler les mises à jour
+  checkForUpdates: () => Promise<{ success: boolean }>
+  downloadUpdate: () => Promise<{ success: boolean }>
+  quitAndInstall: () => Promise<{ success: boolean }>
+
+  // Listeners pour les événements
+  onUpdateChecking: (callback: () => void) => () => void
+  onUpdateAvailable: (callback: (info: UpdateInfo) => void) => () => void
+  onUpdateNotAvailable: (callback: (info: { version: string }) => void) => () => void
+  onUpdateError: (callback: (error: { message: string }) => void) => () => void
+  onDownloadProgress: (callback: (progress: DownloadProgress) => void) => () => void
+  onUpdateDownloaded: (callback: (info: UpdateInfo) => void) => () => void
+}
+
 // API type
 export interface API {
   // Transactions
@@ -188,5 +220,6 @@ declare global {
   interface Window {
     electron: ElectronAPI
     api: API
+    updater: UpdaterAPI
   }
 }

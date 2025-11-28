@@ -5,6 +5,10 @@ import icon from '../../resources/icon.png?asset'
 import { closePrismaClient } from './database/client'
 import { registerAllIpcHandlers } from './ipc'
 import { applyProductionMigrations } from './database/migrations'
+import { AppUpdater } from './updater/autoUpdater'
+import { MockUpdater } from './updater/mockUpdater'
+
+let appUpdater: AppUpdater | MockUpdater | null = null
 
 function createWindow(): void {
   // Create the browser window.
@@ -67,10 +71,28 @@ app.whenReady().then(async () => {
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
-  // Enregistrer tous les handlers IPC
-  registerAllIpcHandlers()
-
   createWindow()
+
+  // Initialiser l'auto-updater
+  const mainWindow = BrowserWindow.getAllWindows()[0]
+  if (mainWindow) {
+    const useMockUpdater = is.dev && process.env.MOCK_AUTO_UPDATE === 'true'
+
+    if (useMockUpdater) {
+      // Mode simulation pour tester l'UI sans vraie release
+      console.log("🎭 [Dev] Utilisation du MockUpdater pour tester l'UI")
+      appUpdater = new MockUpdater(mainWindow)
+      appUpdater.startUpdateCheck()
+    } else if (!is.dev) {
+      // Mode production normal
+      appUpdater = new AppUpdater(mainWindow)
+      appUpdater.startUpdateCheck()
+    }
+    // Sinon, en dev sans MOCK_AUTO_UPDATE, pas d'updater
+  }
+
+  // Enregistrer tous les handlers IPC (avec appUpdater si disponible)
+  registerAllIpcHandlers(appUpdater || undefined)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -83,6 +105,9 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  if (appUpdater) {
+    appUpdater.cleanup()
+  }
   closePrismaClient()
   if (process.platform !== 'darwin') {
     app.quit()
